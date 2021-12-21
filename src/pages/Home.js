@@ -13,25 +13,28 @@ const Home = () => {
   const classes = useStyles(theme);
   return (
     <Container maxWidth="sm">
-      <Typography component="h1" variant="h1" align="center" color="textPrimary" gutterBottom>
+      <Typography component="h1" variant="h1" align="left" color="textPrimary" gutterBottom>
         Fabble
+      </Typography>
+      <Typography component="h1" variant="subtitle1" align="left" color="textPrimary" gutterBottom>
+        The annonymous messaging app
       </Typography>
       <br />
       <div className={classes.root}>
-        <Typography variant="h3" align="center" color="textPrimary" paragraph>
-          The annonymous messaging app
+        <Typography variant="h3" align="left" color="textPrimary" paragraph>
+          Welcome To Our Community
         </Typography>
       </div>
       <br />
-      <Grid container direction="row" justify="center" spacing={4}>
+      <Grid container direction="row" spacing={4}>
         <Grid item>
           <Button variant="contained" color="secondary">
-            Button 1
+            EXPLORE
           </Button>
         </Grid>
         <Grid item>
           <Button variant="outlined" color="secondary">
-            Button 2
+            LOGIN
           </Button>
         </Grid>
       </Grid>
