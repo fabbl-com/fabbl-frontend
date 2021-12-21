@@ -1,6 +1,19 @@
 import React from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { Button, Container, Grid, Typography } from "@material-ui/core";
+import { Button, Container, Grid, Typography, Link } from "@material-ui/core";
+
+function Copyright() {
+  return (
+    <Typography variant="body2" color="textSecondary" align="center">
+      {"Copyright © "}
+      <Link color="inherit" href="https://github.com/cipher10111">
+        Cipher
+      </Link>{" "}
+      {new Date().getFullYear()}
+      {"."}
+    </Typography>
+  );
+}
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -39,6 +52,7 @@ const Home = () => {
         </Grid>
       </Grid>
       <br />
+      <Copyright />
     </Container>
   );
 };

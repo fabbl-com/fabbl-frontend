@@ -4,7 +4,7 @@ import { CssBaseline } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/styles";
 import { createTheme } from "@material-ui/core/styles";
 import { dark, light } from "./assets/theme";
-import { Chat, Home } from "./pages";
+import { Chat, Home, Auth } from "./pages";
 import { Navbar } from "./components";
 
 const App = () => {
@@ -22,6 +22,7 @@ const App = () => {
             <Switch>
               <Route path="/" exact component={Home} />
               <Route path="/chat" component={Chat} />
+              <Route path="/auth" component={Auth} />
             </Switch>
           </Router>
         </ThemeProvider>
