@@ -2,7 +2,7 @@ import React from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { Button, Container, Grid, Typography } from "@material-ui/core";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     flexGrow: 1
   }
