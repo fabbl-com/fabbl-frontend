@@ -1,9 +1,10 @@
 import React from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { CssBaseline } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/styles";
 import { createTheme } from "@material-ui/core/styles";
 import { dark, light } from "./assets/theme";
-import { Home } from "./pages";
+import { Chat, Home } from "./pages";
 import { Navbar } from "./components";
 
 const App = () => {
@@ -13,11 +14,18 @@ const App = () => {
 
   return (
     <React.Fragment>
-      <ThemeProvider theme={appliedTheme}>
-        <CssBaseline />
-        <Navbar isTheme={isTheme} setTheme={setTheme} />
-        <Home />
-      </ThemeProvider>
+      <Router>
+        <ThemeProvider theme={appliedTheme}>
+          <Router>
+            <CssBaseline />
+            <Navbar isTheme={isTheme} setTheme={setTheme} />
+            <Switch>
+              <Route path="/" exact component={Home} />
+              <Route path="/chat" component={Chat} />
+            </Switch>
+          </Router>
+        </ThemeProvider>
+      </Router>
     </React.Fragment>
   );
 };

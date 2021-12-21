@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { AppBar, Switch, Toolbar, Typography } from "@material-ui/core";
+import { useTheme } from "@material-ui/core/styles";
+import { AppBar, Switch, Toolbar } from "@material-ui/core";
 import PropTypes from "prop-types";
 
 const Navbar = ({ isTheme, setTheme }) => {
