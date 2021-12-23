@@ -61,7 +61,7 @@ const Auth = () => {
             {"Don't have an account?"}
             <Button
               color="primary"
-              disableRipple="true"
+              disableRipple={true}
               onClick={() => {
                 setRegistered(!isRegistered);
               }}>
@@ -74,7 +74,7 @@ const Auth = () => {
             {"Already have an account?"}
             <Button
               color="primary"
-              disableRipple="true"
+              disableRipple={true}
               onClick={() => {
                 setRegistered(!isRegistered);
               }}>

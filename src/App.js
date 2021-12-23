@@ -21,7 +21,10 @@ const App = () => {
             <Navbar isTheme={isTheme} setTheme={setTheme} />
             <Switch>
               <Route path="/" exact component={Home} />
-              <Route path="/chat" component={Chat} />
+              <Route
+                path="/chat"
+                component={() => <Chat isTheme={isTheme} setTheme={setTheme} />}
+              />
               <Route path="/auth" component={Auth} />
             </Switch>
           </Router>

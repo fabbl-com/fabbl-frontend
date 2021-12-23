@@ -1,16 +1,14 @@
 import React, { useState } from "react";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { AppBar, Switch, Toolbar, Typography, IconButton, Button } from "@material-ui/core";
-import HomeOutlinedIcon from "@material-ui/icons/HomeOutlined";
+import { AppBar, Switch, Toolbar, Typography, IconButton, makeStyles } from "@material-ui/core";
 import NotificationsActiveIcon from "@material-ui/icons/NotificationsActive";
 import MenuIcon from "@material-ui/icons/Menu";
 import PropTypes from "prop-types";
+import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
-  nav: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between"
+  appBar: {
+    backgroundColor: theme.palette.background.global,
+    color: theme.palette.text.global
   }
 }));
 
@@ -22,34 +20,27 @@ const Navbar = ({ isTheme, setTheme }) => {
     setTheme(!isTheme);
     setChecked(!checked);
   };
-  const theme = useTheme();
   return (
-    <AppBar position="static" color="transparent" elevation={0}>
-      <Toolbar className={classes.nav}>
-        <Button disableRipple="true" startIcon={<HomeOutlinedIcon />} size="large">
-          <Typography variant="h6" component="h6" style={{ color: theme.palette.primary.main }}>
-            {" "}
+    <AppBar className={classes.appBar} position="fixed" elevation={0}>
+      <Toolbar variant="dense">
+        <Link to="/">
+          <Typography variant="h3" component="h1">
             Fabbl
           </Typography>
-        </Button>
-        {/* 
-        <HomeOutlinedIcon />
-        <Typography variant="h6" color="inherit">
-          Fabbl
-        </Typography>
-        */}
+        </Link>
+        <div style={{ flexGrow: 1 }} />
         <div>
           <Switch
+            size="small"
             checked={checked}
             onChange={() => {
               changeTheme();
             }}
-            style={{ color: theme.palette.secondary.icons }}
           />
-          <IconButton edge="start" color="inherit" aria-label="Notifications">
+          <IconButton size="small" edge="start" color="inherit" aria-label="Notifications">
             <NotificationsActiveIcon />
           </IconButton>
-          <IconButton edge="start" color="inherit" aria-label="Menu">
+          <IconButton size="small" edge="start" color="inherit" aria-label="Menu">
             <MenuIcon />
           </IconButton>
         </div>

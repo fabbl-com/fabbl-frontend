@@ -1,5 +1,5 @@
 import React from "react";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { Button, Container, Grid, Typography, Link } from "@material-ui/core";
 
 function Copyright() {
@@ -15,17 +15,19 @@ function Copyright() {
   );
 }
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
+    marginTop: theme.spacing(6),
+    backgroundColor: theme.palette.background.global,
+    color: theme.palette.background.global
   }
 }));
 
 const Home = () => {
-  const theme = useTheme();
-  const classes = useStyles(theme);
+  const classes = useStyles();
   return (
-    <Container maxWidth="sm">
+    <Container className={classes.root} maxWidth="sm">
       <Typography component="h1" variant="h1" align="left" color="textPrimary" gutterBottom>
         Fabble
       </Typography>
@@ -33,7 +35,7 @@ const Home = () => {
         The annonymous messaging app
       </Typography>
       <br />
-      <div className={classes.root}>
+      <div>
         <Typography variant="h3" align="left" color="textPrimary" paragraph>
           Welcome To Our Community
         </Typography>

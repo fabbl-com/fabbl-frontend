@@ -1,26 +1,66 @@
-import React from "react";
+import React, { useState } from "react";
 import {
-  Grid,
-  Divider,
   makeStyles,
   Card,
   CardHeader,
   Avatar,
   Typography,
-  Badge
+  Badge,
+  IconButton,
+  useTheme,
+  useScrollTrigger,
+  Toolbar,
+  AppBar,
+  Container,
+  Zoom,
+  Fab,
+  InputBase,
+  Menu,
+  MenuItem
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/styles";
+import { Brightness4, BrightnessHigh, KeyboardArrowUp, MoreVert, Search } from "@material-ui/icons";
+import { Link } from "react-router-dom";
+import { PropTypes } from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    flexGrow: 1,
-    padding: theme.spacing(1, 2)
+    flexGrow: 1
   },
-  divider: {
-    backgroundColor: theme.palette.text.secondary
+  appBar: {
+    marginTop: theme.spacing(6),
+    backgroundColor: theme.palette.background.default
+  },
+  search: {
+    position: "relative",
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    "&:hover": {
+      backgroundColor: "rgba(255, 255, 255, 0.4)"
+    },
+    marginLeft: theme.spacing(3)
+  },
+  searchIcon: {
+    position: "absolute",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+    padding: theme.spacing(0, 2),
+    pointerEvents: "none"
+  },
+  inputRoot: {
+    color: "inherit"
+  },
+  inputInput: {
+    padding: theme.spacing(1, 1, 1, 0),
+    paddingLeft: `calc(1em + ${theme.spacing(4)}px)`,
+    transition: theme.transitions.create("width"),
+    width: "100%"
   },
   msgContainer: {
-    padding: theme.spacing(3, 0),
+    marginTop: theme.spacing(12),
+    padding: theme.spacing(1),
     "& > div": {
       margin: theme.spacing(0.5)
     }
@@ -62,6 +102,31 @@ const useStyles = makeStyles((theme) => ({
     "& > span": {
       transform: "scale(0.7)"
     }
+  },
+  menu: {
+    backgroundColor: theme.palette.background.default,
+    top: "48px !important",
+    left: "auto !important",
+    right: 0,
+    width: "150px",
+    "& > ul": {
+      padding: 0
+    }
+  },
+  menuItem: {
+    // padding: theme.spacing(0, 1.5),
+    display: "flex",
+    justifyContent: "space-between",
+    borderTop: `1px solid ${theme.palette.icons.primary}`,
+    "&:hover": {
+      backgroundColor: theme.palette.background.hover
+    },
+    "&:first-child": {
+      border: "none",
+      "&:hover": {
+        backgroundColor: "transparent"
+      }
+    }
   }
 }));
 
@@ -94,18 +159,121 @@ const ProfileBadge = withStyles((theme) => ({
   }
 }))(Badge);
 
-const Chat = () => {
+const ScrollTop = ({ children, window }) => {
+  const trigger = useScrollTrigger({
+    target: window && window(),
+    disableHysteresis: true,
+    threshold: 100
+  });
+  const theme = useTheme();
+
+  const handleScrollUp = (e) => {
+    const anchor = (e.target.ownerDocument || document).querySelector("#scroll-to-top");
+
+    if (anchor) {
+      anchor.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  };
+
+  return (
+    <Zoom in={trigger}>
+      <div
+        style={{ position: "fixed", bottom: theme.spacing(2), right: theme.spacing(2), zIndex: 3 }}
+        onClick={handleScrollUp}
+        role="presentation">
+        {children}
+      </div>
+    </Zoom>
+  );
+};
+
+ScrollTop.propTypes = {
+  children: PropTypes.element.isRequired,
+  window: PropTypes.func
+};
+
+const Chat = ({ isTheme, setTheme }) => {
   const classes = useStyles();
+  const theme = useTheme();
+  const [isSearchMode, setSearchMode] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const Actions = (
+    <Menu
+      classes={{
+        paper: classes.menu
+      }}
+      id="actions-menu"
+      anchorEl={anchorEl}
+      open={Boolean(anchorEl)}>
+      <MenuItem disableRipple className={classes.menuItem}>
+        <Typography>Theme</Typography>
+        <IconButton color="primary" onClick={() => setTheme(!isTheme)}>
+          {!isTheme ? <Brightness4 /> : <BrightnessHigh />}
+        </IconButton>
+      </MenuItem>
+      <MenuItem className={classes.menuItem} onClick={handleMenuClose}>
+        My account
+      </MenuItem>
+    </Menu>
+  );
 
   return (
     <div className={classes.root}>
-      <Grid container justifyContent="space-between">
-        <Grid item>Chat</Grid>
-        <Grid item>Chat</Grid>
-      </Grid>
-      <Divider className={classes.divider} />
-      <div className={classes.msgContainer}>
-        {[0, 1, 2, 3, 4, 5].map((el, i) => (
+      <div id="scroll-to-top" />
+      <AppBar elevation={1} className={classes.appBar} color="inherit">
+        <Toolbar variant="dense">
+          <Typography
+            style={{ marginRight: theme.spacing(2) }}
+            color="textSecondary"
+            component="h1"
+            variant="h6"
+            align="center">
+            <Link to="/ikabir/friends">Friends</Link>
+          </Typography>
+          <Typography color="textSecondary" component="h1" variant="h6" align="center">
+            <Link to="/all">All</Link>
+          </Typography>
+          <div style={{ flexGrow: 1 }} />
+          {isSearchMode ? (
+            <div className={classes.search}>
+              <div className={classes.searchIcon}>
+                <Search />
+              </div>
+              <InputBase
+                placeholder="Search…"
+                classes={{
+                  root: classes.inputRoot,
+                  input: classes.inputInput
+                }}
+                inputProps={{ "aria-label": "search" }}
+              />
+            </div>
+          ) : (
+            <IconButton
+              onClick={() => setSearchMode(true)}
+              style={{ color: theme.palette.icons.primary }}
+              size="small">
+              <Search />
+            </IconButton>
+          )}
+
+          <IconButton
+            aria-controls="actions-menu"
+            onClick={(e) => setAnchorEl(e.currentTarget)}
+            style={{ color: theme.palette.icons.primary }}
+            size="small">
+            <MoreVert />
+          </IconButton>
+          {Actions}
+        </Toolbar>
+      </AppBar>
+      <Container className={classes.msgContainer}>
+        {Array.from(Array(10).keys()).map((el, i) => (
           <Card key={i} className={classes.msgCard}>
             <CardHeader
               classes={{
@@ -150,9 +318,19 @@ const Chat = () => {
             />
           </Card>
         ))}
-      </div>
+      </Container>
+      <ScrollTop>
+        <Fab color="secondary" size="small" aria-label="scroll back to top">
+          <KeyboardArrowUp />
+        </Fab>
+      </ScrollTop>
     </div>
   );
+};
+
+Chat.propTypes = {
+  isTheme: PropTypes.bool.isRequired,
+  setTheme: PropTypes.func.isRequired
 };
 
 export default Chat;

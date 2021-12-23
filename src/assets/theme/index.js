@@ -28,7 +28,6 @@ import { createTheme, responsiveFontSizes } from "@material-ui/core/styles";
 
 export const light = responsiveFontSizes(
   createTheme({
-    spacing: 8,
     typography: {
       fontFamily: ["Poppins", "Raleway", "Open Sans"].join(","),
       h1: {
@@ -38,28 +37,47 @@ export const light = responsiveFontSizes(
       h3: {
         fontSize: "2.5rem",
         fontFamily: "Open Sans"
+      },
+      body2: {
+        fontSize: "0.8rem"
+      },
+      button: {
+        textTransform: "inherit"
       }
     },
     palette: {
       background: {
-        default: "#eee"
+        default: "#eee",
+        global: "#a9f7e0",
+        hover: "#aaabb8"
       },
       primary: {
-        main: "#009900"
+        main: "#1976d2"
       },
       secondary: {
-        main: "#12111c",
+        main: "#9c27b0",
         icons: "#009900"
+      },
+      icons: {
+        primary: "#333"
       },
       text: {
         primary: "#12111c",
-        secondary: "#333"
+        secondary: "#333",
+        global: "#333"
       },
       card: {
         default: "#fff"
       },
-      icons: {
-        main: "#009900"
+      h3: {
+        fontSize: "2.5rem",
+        fontFamily: "Open Sans"
+      },
+      body2: {
+        fontSize: "0.8rem"
+      },
+      button: {
+        textTransform: "inherit"
       }
     }
   })
@@ -67,7 +85,6 @@ export const light = responsiveFontSizes(
 
 export const dark = responsiveFontSizes(
   createTheme({
-    spacing: 8,
     typography: {
       fontFamily: ["Poppins", "Raleway", "Open Sans"].join(","),
       h1: {
@@ -77,11 +94,16 @@ export const dark = responsiveFontSizes(
       h3: {
         fontSize: "2.5rem",
         fontFamily: "Open Sans"
+      },
+      button: {
+        textTransform: "inherit"
       }
     },
     palette: {
       background: {
-        default: "#12111c"
+        default: "#12111c",
+        global: "#a9f7e0",
+        hover: "#182628"
       },
       primary: {
         main: "#6749dc"
@@ -90,15 +112,16 @@ export const dark = responsiveFontSizes(
         main: "#eee",
         icons: "#6749dc"
       },
+      icons: {
+        primary: "#eee"
+      },
       text: {
         primary: "#eee",
-        secondary: "#eee"
+        secondary: "#eee",
+        global: "#333"
       },
       card: {
         default: "#25274d"
-      },
-      icons: {
-        main: "#6749dc"
       }
     }
   })
