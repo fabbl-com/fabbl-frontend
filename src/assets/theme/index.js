@@ -49,7 +49,8 @@ export const light = responsiveFontSizes(
       background: {
         default: "#eee",
         global: "#a9f7e0",
-        hover: "#aaabb8"
+        hover: "#aaabb8",
+        warning: "#f8f2ce"
       },
       primary: {
         main: "#1976d2"
@@ -79,6 +80,16 @@ export const light = responsiveFontSizes(
       button: {
         textTransform: "inherit"
       }
+    },
+    msg: {
+      bg: {
+        left: "#fff",
+        right: "#6749DB"
+      },
+      text: {
+        left: "#4E5251",
+        right: "#eee"
+      }
     }
   })
 );
@@ -95,6 +106,9 @@ export const dark = responsiveFontSizes(
         fontSize: "2.5rem",
         fontFamily: "Open Sans"
       },
+      body2: {
+        fontSize: "0.8rem"
+      },
       button: {
         textTransform: "inherit"
       }
@@ -103,7 +117,8 @@ export const dark = responsiveFontSizes(
       background: {
         default: "#12111c",
         global: "#a9f7e0",
-        hover: "#182628"
+        hover: "#182628",
+        warning: "#182628"
       },
       primary: {
         main: "#6749dc"
@@ -122,6 +137,16 @@ export const dark = responsiveFontSizes(
       },
       card: {
         default: "#25274d"
+      }
+    },
+    msg: {
+      bg: {
+        left: "#25274d",
+        right: "#6749DB"
+      },
+      text: {
+        left: "#eee",
+        right: "#eee"
       }
     }
   })
