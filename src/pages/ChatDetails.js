@@ -26,7 +26,9 @@ import {
   List,
   ListItem,
   ListItemText,
-  TextField
+  TextField,
+  TextareaAutosize,
+  InputAdornment
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/styles";
 import {
@@ -39,7 +41,9 @@ import {
   AccountCircle,
   EnhancedEncryption,
   Send,
-  KeyboardArrowDown
+  KeyboardArrowDown,
+  InsertEmoticon,
+  Gif
 } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 import { PropTypes } from "prop-types";
@@ -110,6 +114,7 @@ const useStyles = makeStyles((theme) => ({
     }
   },
   msgContainer: {
+    position: "relative",
     paddingTop: theme.spacing(6),
     paddingBottom: theme.spacing(5)
   },
@@ -139,30 +144,43 @@ const useStyles = makeStyles((theme) => ({
       textDecoration: "underline"
     }
   },
-  sendMessage: {
+  msgWrapper: {
     position: "fixed",
-    height: theme.spacing(5),
-    width: `calc(100% - ${theme.spacing(4)}px)`,
+    minHeight: theme.spacing(6),
+    width: `calc(100% - ${theme.spacing(6)}px)`,
     bottom: theme.spacing(2),
     borderRadius: theme.spacing(1),
     left: "50%",
     transform: "translateX(-50%)",
     backgroundColor: theme.palette.background.default,
-    zIndex: "2"
+    zIndex: "2",
+    textAlign: "left",
+    padding: theme.spacing(1)
   },
-  input: {
-    position: "fixed",
-    width: `calc(80% - ${theme.spacing(4)}px)`,
-    bottom: theme.spacing(1),
-    borderRadius: theme.spacing(2),
-    backgroundColor: "#fff",
-    left: theme.spacing(2)
+  sendMessage: {
+    display: "flex",
+    justifyContent: "space-around",
+    alignItems: "end"
   },
   inputRoot: {
-    color: "inherit"
+    padding: theme.spacing(0, 0.6),
+    display: "flex",
+    alignItems: "end",
+    width: `calc(100% - ${theme.spacing(6)}px)`,
+    borderRadius: theme.spacing(3),
+    backgroundColor: theme.palette.background.default,
+    border: `1px solid ${theme.palette.background.hover}`
   },
-  inputInput: {
-    padding: theme.spacing(1, 2)
+  input: {
+    marginLeft: theme.spacing(1),
+    flex: 1,
+    fontSize: "12px"
+  },
+  iconButton1: {
+    padding: 5
+  },
+  iconButton2: {
+    padding: 7
   }
 }));
 
@@ -409,17 +427,26 @@ const ChatDetails = ({ isTheme, setTheme }) => {
               Et laudantium fesgeg esgeesgesg segg sges segsgseg
             </Message>
             <Message align="right">Lorem</Message>
-            <div className={classes.sendMessage}>
-              <div className={classes.input}>
-                <InputBase
-                  fullWidth
-                  placeholder="Write your message..."
-                  classes={{
-                    root: classes.inputRoot,
-                    input: classes.inputInput
-                  }}
-                  inputProps={{ "aria-label": "type message" }}
-                />
+            <div className={classes.msgWrapper}>
+              <div className={classes.sendMessage}>
+                <div component="form" className={classes.inputRoot}>
+                  <InputBase
+                    className={classes.input}
+                    maxRows={3}
+                    multiline
+                    placeholder="Write your message..."
+                    variant="outlined"
+                  />
+                  <IconButton color="secondary" className={classes.iconButton1}>
+                    <Gif />
+                  </IconButton>
+                  <IconButton color="secondary" className={classes.iconButton1}>
+                    <InsertEmoticon />
+                  </IconButton>
+                </div>
+                <IconButton color="primary" className={classes.iconButton2}>
+                  <Send />
+                </IconButton>
               </div>
             </div>
           </Container>
