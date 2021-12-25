@@ -1,3 +1,4 @@
 import chatStyles from "./chatStyles";
+import chatDetailsStyles from "./chatDetailsStyles";
 
-export { chatStyles };
+export { chatDetailsStyles, chatStyles };
