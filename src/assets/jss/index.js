@@ -1,5 +1,6 @@
 import chatStyles from "./chatStyles";
 import chatDetailsStyles from "./chatDetailsStyles";
-import ProfileStyles from "./ProfileStyles";
+import profileStyles from "./profileStyles";
+import settingsStyles from "./settingsStyles";
 
-export { chatDetailsStyles, chatStyles, ProfileStyles };
+export { chatDetailsStyles, chatStyles, profileStyles, settingsStyles };

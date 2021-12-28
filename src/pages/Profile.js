@@ -17,9 +17,9 @@ import {
   CheckCircleOutlined
 } from "@material-ui/icons";
 
-import { ProfileStyles } from "../assets/jss";
+import { profileStyles } from "../assets/jss";
 
-const useStyles = makeStyles((theme) => ProfileStyles(theme));
+const useStyles = makeStyles((theme) => profileStyles(theme));
 const tagsColor = [
   "#000000",
   "#172774",

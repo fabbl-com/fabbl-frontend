@@ -3,4 +3,5 @@ import ChatDetails from "./ChatDetails";
 import Home from "./Home";
 import Auth from "./Auth";
 import Profile from "./Profile";
-export { Chat, ChatDetails, Home, Auth, Profile };
+import Settings from "./Settings";
+export { Chat, ChatDetails, Home, Auth, Profile, Settings };

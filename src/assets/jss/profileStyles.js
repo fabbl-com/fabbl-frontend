@@ -40,7 +40,9 @@ const chatStyles = (theme) => ({
     alignItems: "center"
   },
   divider: {
-    margin: theme.spacing(2, 0)
+    margin: theme.spacing(2, 0),
+    height: 0,
+    borderTop: "1px solid"
   },
   tags: {
     borderRadius: theme.spacing(2),

@@ -50,6 +50,7 @@ export const light = responsiveFontSizes(
     },
     palette: {
       background: {
+        paper: "#eee",
         default: "#eee",
         global: "#a9f7e0",
         hover: "#aaabb8",
@@ -83,7 +84,8 @@ export const light = responsiveFontSizes(
       },
       button: {
         textTransform: "inherit"
-      }
+      },
+      divider: "#999"
     },
     msg: {
       bg: {
@@ -122,6 +124,7 @@ export const dark = responsiveFontSizes(
     },
     palette: {
       background: {
+        paper: "#424242",
         default: "#12111c",
         global: "#a9f7e0",
         hover: "#182628",
@@ -145,7 +148,8 @@ export const dark = responsiveFontSizes(
       },
       card: {
         default: "#25274d"
-      }
+      },
+      divider: "#999"
     },
     msg: {
       bg: {
