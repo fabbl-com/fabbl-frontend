@@ -38,6 +38,9 @@ export const light = responsiveFontSizes(
         fontSize: "2.5rem",
         fontFamily: "Open Sans"
       },
+      body1: {
+        fontSize: "0.9rem"
+      },
       body2: {
         fontSize: "0.8rem"
       },
@@ -50,7 +53,8 @@ export const light = responsiveFontSizes(
         default: "#eee",
         global: "#a9f7e0",
         hover: "#aaabb8",
-        warning: "#f8f2ce"
+        warning: "#f8f2ce",
+        error: "#ef006f"
       },
       primary: {
         main: "#1976d2"
@@ -106,6 +110,9 @@ export const dark = responsiveFontSizes(
         fontSize: "2.5rem",
         fontFamily: "Open Sans"
       },
+      body1: {
+        fontSize: "0.9rem"
+      },
       body2: {
         fontSize: "0.8rem"
       },
@@ -118,7 +125,8 @@ export const dark = responsiveFontSizes(
         default: "#12111c",
         global: "#a9f7e0",
         hover: "#182628",
-        warning: "#182628"
+        warning: "#182628",
+        error: "#ef006f"
       },
       primary: {
         main: "#6749dc"
