@@ -15,6 +15,8 @@ import Circle from "@material-ui/icons/FiberManualRecord";
 import MicIcon from "@material-ui/icons/Mic";
 import lottie from "lottie-web";
 
+import animationData from "../assets/animation/home.json";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "100%",
@@ -74,7 +76,7 @@ const VoiceUpload = () => {
       renderer: "svg",
       loop: true,
       autoplay: true,
-      animationData: require("../assets/animation/home.json")
+      animationData
     });
   }, []);
 
