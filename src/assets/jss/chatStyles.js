@@ -80,10 +80,10 @@ const chatStyles = (theme) => ({
   },
   menu: {
     backgroundColor: theme.palette.background.default,
-    top: "48px !important",
+    top: `48px !important`,
     left: "auto !important",
     right: 0,
-    width: "150px",
+    minWidth: "200px",
     "& > ul": {
       padding: 0
     }
@@ -91,15 +91,18 @@ const chatStyles = (theme) => ({
   menuItem: {
     display: "flex",
     justifyContent: "space-between",
-    borderTop: `1px solid ${theme.palette.icons.primary}`,
     "&:hover": {
       backgroundColor: theme.palette.background.hover
     },
     "&:first-child": {
-      border: "none",
       "&:hover": {
         backgroundColor: "transparent"
       }
+    }
+  },
+  menuIcons: {
+    "&:hover": {
+      background: "none"
     }
   }
 });

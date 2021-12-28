@@ -17,7 +17,7 @@ import lottie from "lottie-web";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "92vh",
+    height: "100%",
     backgroundColor: "#a9f7e0",
     marginTop: "3rem",
     color: "#000"

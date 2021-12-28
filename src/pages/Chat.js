@@ -19,7 +19,14 @@ import {
   MenuItem
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/styles";
-import { Brightness4, BrightnessHigh, KeyboardArrowUp, MoreVert, Search } from "@material-ui/icons";
+import {
+  AccountCircle,
+  Brightness4,
+  BrightnessHigh,
+  KeyboardArrowUp,
+  MoreVert,
+  Search
+} from "@material-ui/icons";
 import { Link } from "react-router-dom";
 import { PropTypes } from "prop-types";
 
@@ -105,16 +112,21 @@ const Chat = ({ isTheme, setTheme }) => {
         paper: classes.menu
       }}
       id="actions-menu"
+      keepMounted
       anchorEl={anchorEl}
+      onClose={handleMenuClose}
       open={Boolean(anchorEl)}>
       <MenuItem disableRipple className={classes.menuItem}>
-        <Typography>Theme</Typography>
+        <Typography>Change Theme</Typography>
         <IconButton color="primary" onClick={() => setTheme(!isTheme)}>
           {!isTheme ? <Brightness4 /> : <BrightnessHigh />}
         </IconButton>
       </MenuItem>
       <MenuItem className={classes.menuItem} onClick={handleMenuClose}>
-        My account
+        <Typography>My account</Typography>
+        <IconButton className={classes.menuIcons} color="primary">
+          <AccountCircle />
+        </IconButton>
       </MenuItem>
     </Menu>
   );
@@ -215,12 +227,12 @@ const Chat = ({ isTheme, setTheme }) => {
             />
           </Card>
         ))}
+        <ScrollTop>
+          <Fab color="secondary" size="small" aria-label="scroll back to top">
+            <KeyboardArrowUp />
+          </Fab>
+        </ScrollTop>
       </Container>
-      <ScrollTop>
-        <Fab color="secondary" size="small" aria-label="scroll back to top">
-          <KeyboardArrowUp />
-        </Fab>
-      </ScrollTop>
     </div>
   );
 };

@@ -38,6 +38,9 @@ export const light = responsiveFontSizes(
         fontSize: "2.5rem",
         fontFamily: "Open Sans"
       },
+      body1: {
+        fontSize: "0.9rem"
+      },
       body2: {
         fontSize: "0.8rem"
       },
@@ -47,9 +50,12 @@ export const light = responsiveFontSizes(
     },
     palette: {
       background: {
+        paper: "#eee",
         default: "#eee",
         global: "#a9f7e0",
-        hover: "#aaabb8"
+        hover: "#aaabb8",
+        warning: "#f8f2ce",
+        error: "#ef006f"
       },
       primary: {
         main: "#1976d2"
@@ -78,6 +84,17 @@ export const light = responsiveFontSizes(
       },
       button: {
         textTransform: "inherit"
+      },
+      divider: "#999"
+    },
+    msg: {
+      bg: {
+        left: "#fff",
+        right: "#6749DB"
+      },
+      text: {
+        left: "#4E5251",
+        right: "#eee"
       }
     }
   })
@@ -95,15 +112,24 @@ export const dark = responsiveFontSizes(
         fontSize: "2.5rem",
         fontFamily: "Open Sans"
       },
+      body1: {
+        fontSize: "0.9rem"
+      },
+      body2: {
+        fontSize: "0.8rem"
+      },
       button: {
         textTransform: "inherit"
       }
     },
     palette: {
       background: {
+        paper: "#424242",
         default: "#12111c",
         global: "#a9f7e0",
-        hover: "#182628"
+        hover: "#182628",
+        warning: "#182628",
+        error: "#ef006f"
       },
       primary: {
         main: "#6749dc"
@@ -122,6 +148,17 @@ export const dark = responsiveFontSizes(
       },
       card: {
         default: "#25274d"
+      },
+      divider: "#999"
+    },
+    msg: {
+      bg: {
+        left: "#25274d",
+        right: "#6749DB"
+      },
+      text: {
+        left: "#eee",
+        right: "#eee"
       }
     }
   })

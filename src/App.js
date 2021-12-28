@@ -4,7 +4,16 @@ import { CssBaseline } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/styles";
 import { createTheme } from "@material-ui/core/styles";
 import { dark, light } from "./assets/theme";
-import { Chat, Home, Auth, ImageUpload, VerifyVoice } from "./pages";
+import {
+  Chat,
+  ChatDetails,
+  Home,
+  Auth,
+  Profile,
+  Settings,
+  ImageUpload,
+  VerifyVoice
+} from "./pages";
 import { Navbar } from "./components";
 
 const App = () => {
@@ -24,6 +33,18 @@ const App = () => {
               <Route
                 path="/chat"
                 component={() => <Chat isTheme={isTheme} setTheme={setTheme} />}
+              />
+              <Route
+                path="/chat-details"
+                component={() => <ChatDetails isTheme={isTheme} setTheme={setTheme} />}
+              />
+              <Route
+                path="/profile"
+                component={() => <Profile isTheme={isTheme} setTheme={setTheme} />}
+              />
+              <Route
+                path="/settings"
+                component={() => <Settings isTheme={isTheme} setTheme={setTheme} />}
               />
               <Route path="/auth" component={Auth} />
               <Route path="/image" component={ImageUpload} />
