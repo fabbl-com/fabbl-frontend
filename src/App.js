@@ -6,6 +6,7 @@ import { createTheme } from "@material-ui/core/styles";
 import { dark, light } from "./assets/theme";
 import { Chat, ChatDetails, Home, Auth, Profile, Settings } from "./pages";
 import { Navbar } from "./components";
+import PersonalData from "./pages/PersonalData";
 
 const App = () => {
   const [isTheme, setTheme] = React.useState(false);
@@ -37,6 +38,7 @@ const App = () => {
                 path="/settings"
                 component={() => <Settings isTheme={isTheme} setTheme={setTheme} />}
               />
+              <Route path="/edit/personal-data" component={PersonalData} />
               <Route path="/auth" component={Auth} />
             </Switch>
           </Router>
