@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import {
   Button,
@@ -11,11 +11,12 @@ import {
   Grid
 } from "@material-ui/core";
 import Circle from "@material-ui/icons/FiberManualRecord";
+import lottie from "lottie-web";
 
 import { FacebookIcon, GoogleIcon } from "../assets/icons/index";
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "92vh",
+    height: "100%",
     backgroundColor: "#a9f7e0",
     marginTop: "3rem"
   },
@@ -41,8 +42,23 @@ const Auth = () => {
   const theme = useTheme();
   const classes = useStyles(theme);
   const [isRegistered, setRegistered] = useState(false);
+
+  const container = useRef(null);
+
+  useEffect(() => {
+    lottie.loadAnimation({
+      container: container.current,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+      animationData: require("../assets/animation/home.json")
+    });
+  }, []);
+
   return (
     <Container maxWidth="sm" className={classes.root}>
+      <div className={classes.animation} ref={container}></div>
+
       <Typography variant="h5" align="center" color="textPrimary">
         {isRegistered ? "Sign into your Account" : "Create an Account"}
       </Typography>
@@ -85,10 +101,10 @@ const Auth = () => {
       </Grid>
 
       {isRegistered || (
-        <Box align="center">
+        <Box align="center" m={2}>
           <Circle fontSize="small" color="secondary" />
-          <Circle fontSize="small" color="primary" />
-          <Circle fontSize="small" color="primary" />
+          <Circle fontSize="small" style={{ color: "#fff" }} />
+          <Circle fontSize="small" style={{ color: "#fff" }} />
         </Box>
       )}
       <div className={classes.authControll}>
