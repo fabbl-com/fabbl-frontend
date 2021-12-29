@@ -12,7 +12,8 @@ import {
   Profile,
   Settings,
   ImageUpload,
-  VerifyVoice
+  VerifyVoice,
+  SecurityData
 } from "./pages";
 import { Navbar } from "./components";
 import PersonalData from "./pages/PersonalData";
@@ -48,6 +49,7 @@ const App = () => {
                 component={() => <Settings isTheme={isTheme} setTheme={setTheme} />}
               />
               <Route path="/edit/personal-data" component={PersonalData} />
+              <Route path="/edit/security-data" component={SecurityData} />
               <Route path="/auth" component={Auth} />
               <Route path="/image" component={ImageUpload} />
               <Route path="/verifyvoice" component={VerifyVoice} />

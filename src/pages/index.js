@@ -7,5 +7,17 @@ import VerifyVoice from "./VerifyVoice";
 import Profile from "./Profile";
 import Settings from "./Settings";
 import PersonalData from "./PersonalData";
+import SecurityData from "./SecurityData";
 
-export { Chat, ChatDetails, Home, Auth, Profile, Settings, PersonalData, ImageUpload, VerifyVoice };
+export {
+  Chat,
+  ChatDetails,
+  Home,
+  Auth,
+  Profile,
+  Settings,
+  PersonalData,
+  ImageUpload,
+  VerifyVoice,
+  SecurityData
+};
