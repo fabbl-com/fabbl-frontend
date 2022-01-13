@@ -12,7 +12,8 @@ import {
   Profile,
   Settings,
   ImageUpload,
-  VerifyVoice
+  VerifyVoice,
+  Random
 } from "./pages";
 import { Navbar } from "./components";
 
@@ -49,6 +50,7 @@ const App = () => {
               <Route path="/auth" component={Auth} />
               <Route path="/image" component={ImageUpload} />
               <Route path="/verifyvoice" component={VerifyVoice} />
+              <Route path="/random" component={Random} />
             </Switch>
           </Router>
         </ThemeProvider>

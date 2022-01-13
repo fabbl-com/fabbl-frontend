@@ -17,10 +17,9 @@ import lottie from "lottie-web";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "100%",
-    backgroundColor: "#a9f7e0",
-    marginTop: "3rem",
-    color: "#000"
+    height: "110vh",
+    backgroundColor: "#2e9cca",
+    color: "#fff"
   },
   authControll: {
     backgroundColor: "#fff",
@@ -32,10 +31,11 @@ const useStyles = makeStyles((theme) => ({
   },
   formControl: {
     margin: theme.spacing(2, 0),
-    minWidth: 110
+    minWidth: 110,
+    Color: "#fff"
   },
   lines: {
-    backgroundColor: "#AAABB8",
+    backgroundColor: "#333",
     padding: theme.spacing(2),
     borderRadius: theme.spacing(2),
     margin: theme.spacing(2, 0)
@@ -74,14 +74,14 @@ const VoiceUpload = () => {
       renderer: "svg",
       loop: true,
       autoplay: true,
-      animationData: require("../assets/animation/home.json")
+      animationData: require("../assets/animation/auth.json")
     });
   }, []);
 
   return (
     <Container maxWidth="sm" className={classes.root} align="center">
       <div className={classes.animation} ref={container}></div>
-      <Typography variant="h5" align="center" color="textPrimary">
+      <Typography variant="h5" align="center">
         Get a verified profile
       </Typography>
 
@@ -107,7 +107,7 @@ const VoiceUpload = () => {
           </FormControl>
         </Grid>
       </Grid>
-      <Typography variant="h5" align="center" color="textPrimary">
+      <Typography variant="h5" align="center">
         Speak the lines
       </Typography>
       <Box align="center" className={classes.lines}>

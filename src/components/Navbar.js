@@ -1,25 +1,19 @@
-import React, { useState } from "react";
-import { AppBar, Switch, Toolbar, Typography, IconButton, makeStyles } from "@material-ui/core";
+import React from "react";
+import { AppBar, Toolbar, Typography, IconButton, makeStyles } from "@material-ui/core";
 import NotificationsActiveIcon from "@material-ui/icons/NotificationsActive";
 import MenuIcon from "@material-ui/icons/Menu";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   appBar: {
-    backgroundColor: theme.palette.background.global,
-    color: theme.palette.text.global
+    backgroundColor: "#2e9cca",
+    color: "#fff"
   }
 }));
 
-const Navbar = ({ isTheme, setTheme }) => {
+const Navbar = () => {
   const classes = useStyles();
-  const [checked, setChecked] = useState(false);
-
-  const changeTheme = () => {
-    setTheme(!isTheme);
-    setChecked(!checked);
-  };
   return (
     <AppBar className={classes.appBar} position="fixed" elevation={0}>
       <Toolbar variant="dense">
@@ -30,13 +24,6 @@ const Navbar = ({ isTheme, setTheme }) => {
         </Link>
         <div style={{ flexGrow: 1 }} />
         <div>
-          <Switch
-            size="small"
-            checked={checked}
-            onChange={() => {
-              changeTheme();
-            }}
-          />
           <IconButton size="small" edge="start" color="inherit" aria-label="Notifications">
             <NotificationsActiveIcon />
           </IconButton>

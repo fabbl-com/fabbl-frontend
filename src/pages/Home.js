@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Button, Container, Grid, Typography, Link } from "@material-ui/core";
+import { Button, Container, Typography, Link } from "@material-ui/core";
 import lottie from "lottie-web";
 
 function Copyright() {
@@ -18,27 +18,27 @@ function Copyright() {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "100%",
+    height: "94vh",
     marginTop: theme.spacing(6),
-    backgroundColor: theme.palette.background.global,
-    color: theme.palette.background.global
+    backgroundColor: "#2e9cca",
+    color: "#fff"
   },
   animation: {
-    height: "15rem",
+    height: "16rem",
     marginTop: theme.spacing(0)
   },
   copyRight: {
-    /*
+    marginTop: theme.spacing(3),
+    width: "100%",
+    height: "2rem",
     position: "fixed",
     bottom: "0",
-    */
-    width: "100%"
+    left: "0"
   }
 }));
 
 const Home = () => {
   const classes = useStyles();
-
   const container = useRef(null);
 
   useEffect(() => {
@@ -47,27 +47,25 @@ const Home = () => {
       renderer: "svg",
       loop: true,
       autoplay: true,
-      animationData: require("../assets/animation/home.json")
+      animationData: require("../assets/animation/auth.json")
     });
   }, []);
 
   return (
     <Container className={classes.root} maxWidth="sm">
-      <Typography variant="h1" component="h2" color="textPrimary">
+      <Typography variant="h1" component="h2">
         Fabbl
       </Typography>
-      <Typography component="h1" variant="subtitle1" align="left" color="textPrimary">
+      <Typography component="h1" variant="subtitle1" align="left">
         The annonymous messaging app
       </Typography>
       <br />
-
-      <div className={classes.animation} ref={container}></div>
-
       <div>
-        <Typography variant="h3" align="left" color="textPrimary" gutterBottom>
+        <Typography variant="h3" align="left" gutterBottom>
           Welcome To Our Community
         </Typography>
-        <Typography variant="subtitle2" color="textPrimary" gutterBottom>
+        <div className={classes.animation} ref={container}></div>
+        <Typography variant="subtitle2" gutterBottom>
           Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur Lorem
           ipsum dolor sit amet, consectetur
         </Typography>

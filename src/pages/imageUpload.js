@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import {
   Container,
   Typography,
@@ -16,10 +16,11 @@ import AddAPhotofrom from "@material-ui/icons/AddAPhotoRounded";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import lottie from "lottie-web";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
-    height: "100%",
-    backgroundColor: "#a9f7e0",
+    height: "100vh",
+    backgroundColor: "#2e9cca",
+    color: "#fff",
     marginTop: "3rem"
   },
   authControll: {
@@ -37,13 +38,12 @@ const useStyles = makeStyles((theme) => ({
   },
   animation: {
     height: "15rem",
-    marginTop: theme.spacing(0)
+    marginTop: "0"
   }
 }));
 
 const ImageUpload = () => {
-  const theme = useTheme();
-  const classes = useStyles(theme);
+  const classes = useStyles();
   const [isUpload, setUpload] = useState(false);
 
   const container = useRef(null);
@@ -54,16 +54,14 @@ const ImageUpload = () => {
       renderer: "svg",
       loop: true,
       autoplay: true,
-      animationData: require("../assets/animation/home.json")
+      animationData: require("../assets/animation/auth.json")
     });
   }, []);
 
   return (
     <Container maxWidth="sm" className={classes.root} align="center">
       <div className={classes.animation} ref={container}></div>
-      <Typography variant="h5" color="textPrimary">
-        Upload Your avatar
-      </Typography>
+      <Typography variant="h5">Upload Your avatar</Typography>
       <br />
       <div>
         <Badge
@@ -87,10 +85,7 @@ const ImageUpload = () => {
           </Avatar>
         </Badge>
       </div>
-      <FormControlLabel
-        control={<Checkbox value="remember" color="primary" />}
-        label="Remember me for 30 days"
-      />
+      <FormControlLabel control={<Checkbox value="remember" />} label="Remember me for 30 days" />
       <Grid container direction="column" justifyContent="center" spacing={1}>
         <Grid item>
           <Button

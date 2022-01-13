@@ -16,9 +16,10 @@ import lottie from "lottie-web";
 import { FacebookIcon, GoogleIcon } from "../assets/icons/index";
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "100%",
-    backgroundColor: "#a9f7e0",
-    marginTop: "3rem"
+    height: "97vh",
+    backgroundColor: "#2e9cca",
+    marginTop: "3rem",
+    color: "#fff"
   },
   form: {
     width: "100%"
@@ -35,6 +36,9 @@ const useStyles = makeStyles((theme) => ({
     position: "fixed",
     bottom: "0",
     left: "0"
+  },
+  textfield: {
+    color: "#fff"
   }
 }));
 
@@ -51,7 +55,7 @@ const Auth = () => {
       renderer: "svg",
       loop: true,
       autoplay: true,
-      animationData: require("../assets/animation/home.json")
+      animationData: require("../assets/animation/auth.json")
     });
   }, []);
 
@@ -59,13 +63,31 @@ const Auth = () => {
     <Container maxWidth="sm" className={classes.root}>
       <div className={classes.animation} ref={container}></div>
 
-      <Typography variant="h5" align="center" color="textPrimary">
+      <Typography variant="h5" align="center">
         {isRegistered ? "Sign into your Account" : "Create an Account"}
       </Typography>
       <form className={classes.form}>
-        <TextField required fullWidth label="Email" type="email" margin="normal" />
+        <TextField
+          required
+          fullWidth
+          label="Email"
+          type="email"
+          margin="normal"
+          InputLabelProps={{
+            className: classes.textfield
+          }}
+        />
         {isRegistered || (
-          <TextField required fullWidth label="Username" type="text" margin="normal" />
+          <TextField
+            required
+            fullWidth
+            label="Username"
+            type="text"
+            margin="normal"
+            InputLabelProps={{
+              className: classes.textfield
+            }}
+          />
         )}
         <TextField
           required
@@ -74,6 +96,9 @@ const Auth = () => {
           label="Password"
           type="password"
           margin="normal"
+          InputLabelProps={{
+            className: classes.textfield
+          }}
         />
         {isRegistered && (
           <FormControlLabel
@@ -87,7 +112,7 @@ const Auth = () => {
           </Button>
         </div>
       </form>
-      <Typography variant="subtitle1" align="center" color="textPrimary" paragraph>
+      <Typography variant="subtitle1" align="center" paragraph>
         Or Login with using social media
       </Typography>
 
@@ -102,7 +127,7 @@ const Auth = () => {
 
       {isRegistered || (
         <Box align="center" m={2}>
-          <Circle fontSize="small" color="secondary" />
+          <Circle fontSize="small" color="primary" />
           <Circle fontSize="small" style={{ color: "#fff" }} />
           <Circle fontSize="small" style={{ color: "#fff" }} />
         </Box>
