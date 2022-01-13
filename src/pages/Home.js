@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Button, Container, Typography, Link } from "@material-ui/core";
 import lottie from "lottie-web";
-import animationData from "../assets/animation/auth.json";
+import animationData from "../assets/animation/home.json";
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">

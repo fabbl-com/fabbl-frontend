@@ -86,7 +86,10 @@ export const light = responsiveFontSizes(
       button: {
         textTransform: "inherit"
       },
-      divider: "#999"
+      divider: "#999",
+      action: {
+        focus: "#eee"
+      }
     },
     msg: {
       bg: {
@@ -151,7 +154,10 @@ export const dark = responsiveFontSizes(
       card: {
         default: "#25274d"
       },
-      divider: "#999"
+      divider: "#999",
+      action: {
+        focus: "#eee"
+      }
     },
     msg: {
       bg: {

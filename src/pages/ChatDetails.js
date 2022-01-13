@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   makeStyles,
   Avatar,
@@ -31,13 +31,30 @@ import {
 } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 import { PropTypes } from "prop-types";
+import io from "socket.io-client";
+const ENDPOINT = "localhost:4000";
 
 import { chatDetailsStyles } from "../assets/jss";
 
 const useStyles = makeStyles((theme) => chatDetailsStyles(theme));
 
+let socket;
 const ScrollDown = ({ children }) => {
   const theme = useTheme();
+
+  socket = io(ENDPOINT);
+
+  useEffect(() => {
+    socket.on("connection", () => {
+      console.log("connection");
+    });
+  }, []);
+
+  useEffect(() => {
+    socket.on("disconnection", () => {
+      console.log("connection");
+    });
+  }, []);
 
   const handleScrollDown = (e) => {
     const anchor = (e.target.ownerDocument || document).querySelector("#scroll-to-bottom");

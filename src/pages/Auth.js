@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
     left: "0"
   },
   textfield: {
-    color: "#fff"
+    color: "#fff !important"
   }
 }));
 
