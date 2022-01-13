@@ -13,9 +13,11 @@ import {
   Settings,
   ImageUpload,
   VerifyVoice,
-  Random
+  Random,
+  SecurityData
 } from "./pages";
 import { Navbar } from "./components";
+import PersonalData from "./pages/PersonalData";
 
 const App = () => {
   const [isTheme, setTheme] = React.useState(false);
@@ -47,6 +49,8 @@ const App = () => {
                 path="/settings"
                 component={() => <Settings isTheme={isTheme} setTheme={setTheme} />}
               />
+              <Route path="/edit/personal-data" component={PersonalData} />
+              <Route path="/edit/security-data" component={SecurityData} />
               <Route path="/auth" component={Auth} />
               <Route path="/image" component={ImageUpload} />
               <Route path="/verifyvoice" component={VerifyVoice} />

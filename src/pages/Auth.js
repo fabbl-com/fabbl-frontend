@@ -12,7 +12,7 @@ import {
 } from "@material-ui/core";
 import Circle from "@material-ui/icons/FiberManualRecord";
 import lottie from "lottie-web";
-
+import animationData from "../assets/animation/auth.json";
 import { FacebookIcon, GoogleIcon } from "../assets/icons/index";
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,7 +55,7 @@ const Auth = () => {
       renderer: "svg",
       loop: true,
       autoplay: true,
-      animationData: require("../assets/animation/auth.json")
+      animationData
     });
   }, []);
 

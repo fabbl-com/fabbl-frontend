@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Button, Container, Typography, Link } from "@material-ui/core";
 import lottie from "lottie-web";
-
+import animationData from "../assets/animation/auth.json";
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -47,7 +47,7 @@ const Home = () => {
       renderer: "svg",
       loop: true,
       autoplay: true,
-      animationData: require("../assets/animation/auth.json")
+      animationData
     });
   }, []);
 

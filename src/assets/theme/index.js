@@ -55,7 +55,8 @@ export const light = responsiveFontSizes(
         global: "#a9f7e0",
         hover: "#aaabb8",
         warning: "#f8f2ce",
-        error: "#ef006f"
+        error: "#ef006f",
+        disabled: "#D1D1D1"
       },
       primary: {
         main: "#1976d2"
@@ -129,7 +130,8 @@ export const dark = responsiveFontSizes(
         global: "#a9f7e0",
         hover: "#182628",
         warning: "#182628",
-        error: "#ef006f"
+        error: "#ef006f",
+        disabled: "#212121"
       },
       primary: {
         main: "#6749dc"
