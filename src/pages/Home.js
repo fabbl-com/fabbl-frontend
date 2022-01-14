@@ -71,12 +71,10 @@ const Home = () => {
         </Typography>
       </div>
       <br />
-
-      <Button variant="contained" color="secondary">
+      <Button variant="contained" color="secondary" component={Link} href="/auth">
         Get Started
       </Button>
 
-      <br />
       <div className={classes.copyRight} align="center">
         <Copyright />
       </div>

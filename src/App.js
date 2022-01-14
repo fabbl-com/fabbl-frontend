@@ -54,7 +54,10 @@ const App = () => {
               <Route path="/auth" component={Auth} />
               <Route path="/image" component={ImageUpload} />
               <Route path="/verifyvoice" component={VerifyVoice} />
-              <Route path="/random" component={Random} />
+              <Route
+                path="/random"
+                component={() => <Random isTheme={isTheme} setTheme={setTheme} />}
+              />
             </Switch>
           </Router>
         </ThemeProvider>
