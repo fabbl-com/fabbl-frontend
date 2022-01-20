@@ -4,20 +4,8 @@ import { CssBaseline } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/styles";
 import { createTheme } from "@material-ui/core/styles";
 import { dark, light } from "./assets/theme";
-import {
-  Chat,
-  ChatDetails,
-  Home,
-  Auth,
-  Profile,
-  Settings,
-  ImageUpload,
-  VerifyVoice,
-  Random,
-  SecurityData
-} from "./pages";
 import { Navbar } from "./components";
-import PersonalData from "./pages/PersonalData";
+import routes from "./router";
 
 const App = () => {
   const [isTheme, setTheme] = React.useState(false);
@@ -32,29 +20,14 @@ const App = () => {
             <CssBaseline />
             <Navbar isTheme={isTheme} setTheme={setTheme} />
             <Switch>
-              <Route path="/" exact component={Home} />
-              <Route
-                path="/chat"
-                component={() => <Chat isTheme={isTheme} setTheme={setTheme} />}
-              />
-              <Route
-                path="/chat-details"
-                component={() => <ChatDetails isTheme={isTheme} setTheme={setTheme} />}
-              />
-              <Route
-                path="/profile"
-                component={() => <Profile isTheme={isTheme} setTheme={setTheme} />}
-              />
-              <Route
-                path="/settings"
-                component={() => <Settings isTheme={isTheme} setTheme={setTheme} />}
-              />
-              <Route path="/edit/personal-data" component={PersonalData} />
-              <Route path="/edit/security-data" component={SecurityData} />
-              <Route path="/auth" component={Auth} />
-              <Route path="/image" component={ImageUpload} />
-              <Route path="/verifyvoice" component={VerifyVoice} />
-              <Route path="/random" component={Random} />
+              {routes.map((route, index) => (
+                <Route
+                  exact
+                  key={index}
+                  path={route.path}
+                  component={(isTheme, setTheme) => route.component(isTheme, setTheme)}
+                />
+              ))}
             </Switch>
           </Router>
         </ThemeProvider>
