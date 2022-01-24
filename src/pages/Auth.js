@@ -149,7 +149,7 @@ const Auth = () => {
         Or Login with using social media
       </Typography>
 
-      <Grid container direction="row" spacing={4} justify="center">
+      <Grid container direction="row" spacing={4} justifyContent="center">
         <Grid item>
           <GoogleIcon />
         </Grid>
