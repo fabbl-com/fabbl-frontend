@@ -5,6 +5,7 @@ import rootReducer from "./reducers";
 
 const initialState = {
   auth: {
+    loading: false,
     userId: localStorage.getItem("userId") ? JSON.parse(localStorage.getItem("userId")) : null,
     error: null
   }

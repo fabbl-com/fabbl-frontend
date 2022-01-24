@@ -6,21 +6,20 @@ import {
   USER_SIGNIN_FAIL,
   USER_SIGNIN_REQUEST,
   USER_SIGNIN_SUCCESS,
-  USER_SIGNOUT
+  USER_SIGNOUT,
+  SET_USER
 } from "../constants/userActionTypes";
 
 export const register = (userId) => async (dispatch) => {
   dispatch({ type: USER_REGISTER_REQUEST, payload: userId });
   try {
     const { data } = await Axios.post("/auth/register", userId);
-
     dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
-    dispatch({ type: USER_SIGNIN_SUCCESS, payload: data });
     localStorage.setItem("userId", JSON.stringify(data));
   } catch (error) {
     console.log(error.response);
     dispatch({
-      type: USER_SIGNIN_FAIL,
+      type: USER_REGISTER_FAIL,
       payload: {
         code: error.response.status,
         message:
@@ -53,4 +52,9 @@ export const signout = () => async (dispatch) => {
   localStorage.removeItem("userId");
   dispatch({ type: USER_SIGNOUT });
   document.location.href = "/signin";
+};
+
+export const setUser = (userId) => async (dispatch) => {
+  dispatch({ type: SET_USER, payload: userId });
+  localStorage.setItem("userId", JSON.stringify(userId));
 };

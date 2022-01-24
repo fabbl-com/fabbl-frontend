@@ -17,6 +17,7 @@ import { FacebookIcon, GoogleIcon } from "../assets/icons/index";
 import { register, login } from "../redux/actions/userActions";
 import { useDispatch, useSelector } from "react-redux";
 import { Alert } from "@material-ui/lab";
+import { Link } from "react-router-dom";
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "97vh",
@@ -151,10 +152,18 @@ const Auth = () => {
 
       <Grid container direction="row" spacing={4} justifyContent="center">
         <Grid item>
-          <GoogleIcon />
+          <form action="http://localhost:4000/auth/google">
+            <Button type="submit">
+              <GoogleIcon />
+            </Button>
+          </form>
         </Grid>
         <Grid item>
-          <FacebookIcon />
+          <form action="http://localhost:4000/auth/facebook">
+            <Button type="submit">
+              <FacebookIcon />
+            </Button>
+          </form>
         </Grid>
       </Grid>
 

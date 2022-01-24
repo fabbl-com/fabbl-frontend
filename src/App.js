@@ -25,9 +25,18 @@ const ENDPOINT = "http://localhost:4000";
 const App = () => {
   const [isTheme, setTheme] = useState(false);
   const [socket, setSocket] = useState(null);
+  const userId = JSON.parse(localStorage.getItem("userId"));
 
   useEffect(() => {
-    const newSocket = io(ENDPOINT);
+    console.log(userId);
+    io.connect("http://localhost", {
+      reconnection: true,
+      reconnectionDelay: 500,
+      reconnectionAttempts: 10
+    });
+    const newSocket = io({
+      query: { userId }
+    });
     setSocket(newSocket);
     return () => newSocket.close();
   }, [setSocket]);

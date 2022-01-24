@@ -2,7 +2,11 @@ import React, { useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Button, Container, Typography, Link } from "@material-ui/core";
 import lottie from "lottie-web";
+import queryString from "query-string";
 import animationData from "../assets/animation/home.json";
+import { useDispatch } from "react-redux";
+import { useHistory, useLocation } from "react-router-dom";
+import { setUser } from "../redux/actions/userActions";
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -40,6 +44,18 @@ const useStyles = makeStyles((theme) => ({
 const Home = () => {
   const classes = useStyles();
   const container = useRef(null);
+  const dispatch = useDispatch();
+  const location = useLocation();
+  const history = useHistory();
+
+  useEffect(() => {
+    var query = queryString.parse(location?.search);
+    console.log(query);
+    if (query.userId) {
+      dispatch(setUser(query.userId));
+    }
+    history.push("/");
+  }, []);
 
   useEffect(() => {
     lottie.loadAnimation({
