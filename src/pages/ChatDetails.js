@@ -31,30 +31,13 @@ import {
 } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 import { PropTypes } from "prop-types";
-import io from "socket.io-client";
-const ENDPOINT = "localhost:4000";
 
 import { chatDetailsStyles } from "../assets/jss";
 
 const useStyles = makeStyles((theme) => chatDetailsStyles(theme));
 
-let socket;
 const ScrollDown = ({ children }) => {
   const theme = useTheme();
-
-  socket = io(ENDPOINT);
-
-  useEffect(() => {
-    socket.on("connection", () => {
-      console.log("connection");
-    });
-  }, []);
-
-  useEffect(() => {
-    socket.on("disconnection", () => {
-      console.log("connection");
-    });
-  }, []);
 
   const handleScrollDown = (e) => {
     const anchor = (e.target.ownerDocument || document).querySelector("#scroll-to-bottom");
@@ -113,13 +96,50 @@ Message.propTypes = {
   align: PropTypes.string
 };
 
-const ChatDetails = ({ isTheme, setTheme }) => {
+const ChatDetails = ({ socket, isTheme, setTheme }) => {
+  if (!socket) return <div>Not Connected</div>;
+
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [msgs, setMsgs] = useState({});
+  const [msg, setMsg] = useState("");
   const theme = useTheme();
+
+  useEffect(() => {
+    const msgListener = (msg) => {
+      setMsgs((state) => {
+        const newMsgs = { ...state };
+        newMsgs[msg.id] = msg;
+        return newMsgs;
+      });
+    };
+
+    const delMsgListener = (msgID) => {
+      setMsgs((state) => {
+        const newMsgs = { ...state };
+        delete newMsgs[msgID];
+        return newMsgs;
+      });
+    };
+
+    socket.on("msg", msgListener);
+    socket.on("delMsg", delMsgListener);
+    socket.emit("getMsgs");
+
+    return () => {
+      socket.off("msg", msgListener);
+      socket.off("delMsg", delMsgListener);
+    };
+  }, [socket]);
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const sendMsg = (e) => {
+    e.preventDefault();
+    if (msg) socket.emit("msg", msg);
+    setMsg("");
   };
 
   const Actions = (
@@ -203,66 +223,25 @@ const ChatDetails = ({ isTheme, setTheme }) => {
                 <span>learn more</span>
               </Link>
             </Typography>
-            <Message align="left">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="right">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="left">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="right">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="left">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="right">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="left">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="right">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="left">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="right">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="left">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="right">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="right">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
+            {[...Object.values(msgs)]
+              .sort((a, b) => a.time - b.time)
+              .map((msg) => (
+                <div key={msg.id} title={`Sent at ${new Date(msg.time).toLocaleTimeString()}`}>
+                  <Message align="left">{`${msg.user.name} ${msg.value} ${new Date(
+                    msg.time
+                  ).toLocaleTimeString()}`}</Message>
+                </div>
+              ))}
             <Message align="right">Lorem</Message>
             <div className={classes.msgWrapper}>
-              <div className={classes.sendMessage}>
+              <form onSubmit={sendMsg} className={classes.sendMessage}>
                 <div component="form" className={classes.inputRoot}>
                   <InputBase
                     className={classes.input}
                     maxRows={3}
                     multiline
+                    onChange={(e) => setMsg(e.target.value)}
+                    value={msg}
                     placeholder="Write your message..."
                     variant="outlined"
                   />
@@ -273,10 +252,10 @@ const ChatDetails = ({ isTheme, setTheme }) => {
                     <InsertEmoticon />
                   </IconButton>
                 </div>
-                <IconButton color="primary" className={classes.iconButton2}>
+                <IconButton type="submit" color="primary" className={classes.iconButton2}>
                   <Send />
                 </IconButton>
-              </div>
+              </form>
             </div>
           </Container>
           <div id="scroll-to-bottom" />
@@ -293,7 +272,8 @@ const ChatDetails = ({ isTheme, setTheme }) => {
 
 ChatDetails.propTypes = {
   isTheme: PropTypes.bool.isRequired,
-  setTheme: PropTypes.func.isRequired
+  setTheme: PropTypes.func.isRequired,
+  socket: PropTypes.object
 };
 
 export default ChatDetails;
