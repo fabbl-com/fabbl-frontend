@@ -1,8 +1,8 @@
 import { combineReducers } from "redux";
 import userReducers from "./userReducers";
+import messageReducers from "./messageReducers";
 const rootReducer = combineReducers({
-  auth: userReducers.userSignin || userReducers.userRegister || userReducers.setUser,
-  messages: userReducers.getMessages
+  user: userReducers
 });
 
 export default rootReducer;

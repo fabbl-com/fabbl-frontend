@@ -5,68 +5,49 @@ import {
   USER_SIGNIN_FAIL,
   USER_SIGNIN_REQUEST,
   USER_SIGNIN_SUCCESS,
-  SET_USER,
-  GET_MESSAGES_REQUEST,
-  GET_MESSAGES_SUCCESS,
-  GET_MESSAGES_FAIL
+  SET_USER
 } from "../constants/userActionTypes";
 
-const userRegister = (state = {}, action) => {
+const initialState = {
+  error: {},
+  isAuth: false,
+  loading: false,
+  userInfo: {},
+  userId: localStorage.getItem("userId")
+};
+
+export default (state = initialState, action) => {
   switch (action.type) {
     case USER_REGISTER_REQUEST:
-      return { loading: true };
-    case USER_REGISTER_SUCCESS:
-      window.location = "/";
-      return { loading: false, userId: action.payload };
-    case USER_REGISTER_FAIL:
-      return { loading: false, error: action.payload };
-    default:
-      return state;
-  }
-};
-
-const userSignin = (state = {}, action) => {
-  switch (action.type) {
     case USER_SIGNIN_REQUEST:
-      return { loading: true };
+      return { ...state, loading: true };
+    case USER_REGISTER_SUCCESS:
     case USER_SIGNIN_SUCCESS:
-      window.location = "/";
-      return { loading: false, userId: action.payload };
+      localStorage.setItem("userId", action.payload.userId);
+      return {
+        ...state,
+        ...action.payload,
+        isAuth: true,
+        loading: false,
+        error: null
+      };
     case USER_SIGNIN_FAIL:
-      return { loading: false, error: action.payload };
-    default:
-      return state;
-  }
-};
-
-const setUser = (state = {}, action) => {
-  if (action.type === SET_USER) return { loading: false, userId: action.payload };
-  return state;
-};
-
-const getMessages = (state = {}, action) => {
-  switch (action.type) {
-    case GET_MESSAGES_REQUEST:
-      return { loading: true };
-    case GET_MESSAGES_SUCCESS:
+    case USER_REGISTER_FAIL:
+      localStorage.removeItem("userId");
+      return {
+        ...state,
+        userInfo: {},
+        isAuth: false,
+        loading: false,
+        error: action.payload
+      };
+    case SET_USER:
       return {
         ...state,
         loading: false,
-        success: action.payload.success,
-        messages: action.payload.messages
+        ...action.payload
       };
-    case GET_MESSAGES_FAIL:
-      return { loading: false, error: action.payload };
     default:
       return state;
   }
 };
-
-const userReducers = {
-  userRegister,
-  userSignin,
-  setUser,
-  getMessages
-};
-
-export default userReducers;
