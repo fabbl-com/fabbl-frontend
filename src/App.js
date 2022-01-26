@@ -19,27 +19,27 @@ import {
 } from "./pages";
 import { Navbar } from "./components";
 import io from "socket.io-client";
+const events = require("events");
 
 const ENDPOINT = "http://localhost:4000";
 
 const App = () => {
   const [isTheme, setTheme] = useState(false);
   const [socket, setSocket] = useState(null);
-  const userId = JSON.parse(localStorage.getItem("userId"));
+  const userId = localStorage.getItem("userId") ? JSON.parse(localStorage.getItem("userId")) : null;
+
+  const eventEmitter = new events.EventEmitter();
 
   useEffect(() => {
     console.log(userId);
-    io.connect("http://localhost", {
-      reconnection: true,
-      reconnectionDelay: 500,
-      reconnectionAttempts: 10
-    });
-    const newSocket = io({
-      query: { userId }
-    });
+    // io.connect(ENDPOINT, {
+    //   reconnection: true,
+    //   reconnectionDelay: 500,
+    //   reconnectionAttempts: 10
+    // });
+    const newSocket = io(ENDPOINT, { query: `userId=${userId}` });
     setSocket(newSocket);
-    return () => newSocket.close();
-  }, [setSocket]);
+  }, []);
 
   const appliedTheme = createTheme(isTheme ? dark : light);
 
@@ -51,11 +51,28 @@ const App = () => {
           <Navbar isTheme={isTheme} setTheme={setTheme} />
           <Switch>
             <Route path="/" exact component={Home} />
-            <Route path="/chat" component={() => <Chat isTheme={isTheme} setTheme={setTheme} />} />
+            <Route
+              path="/chat"
+              component={() => (
+                <Chat
+                  userId={userId}
+                  socket={socket}
+                  eventEmitter={eventEmitter}
+                  isTheme={isTheme}
+                  setTheme={setTheme}
+                />
+              )}
+            />
             <Route
               path="/chat-details"
               component={() => (
-                <ChatDetails socket={socket} isTheme={isTheme} setTheme={setTheme} />
+                <ChatDetails
+                  userId={userId}
+                  socket={socket}
+                  eventEmitter={eventEmitter}
+                  isTheme={isTheme}
+                  setTheme={setTheme}
+                />
               )}
             />
             <Route

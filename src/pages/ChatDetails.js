@@ -31,8 +31,12 @@ import {
 } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 import { PropTypes } from "prop-types";
+import queryString from "query-string";
 
 import { chatDetailsStyles } from "../assets/jss";
+import { receiveMessage, sendMessage } from "../utils/socket.io";
+import { connect, useDispatch, useSelector } from "react-redux";
+import { getMessages } from "../redux/actions/userActions";
 
 const useStyles = makeStyles((theme) => chatDetailsStyles(theme));
 
@@ -63,7 +67,7 @@ ScrollDown.propTypes = {
   children: PropTypes.element.isRequired
 };
 
-const Message = ({ children, ...props }) => {
+const Message = ({ time, children, ...props }) => {
   const classes = useStyles(props);
   const theme = useTheme();
 
@@ -72,11 +76,15 @@ const Message = ({ children, ...props }) => {
       <div>
         <div {...props}>
           <div
-            style={{ width: `${children.length <= 10 && "100px"}` }}
+            style={{ width: `${children && children.length <= 10 && "100px"}` }}
             className={classes.msgBubble}>
             <div>{children}</div>
             <Typography variant="caption" className={classes.timestamp}>
-              10:30 AM
+              {new Date(time).toLocaleString("en-US", {
+                hour: "numeric",
+                minute: "numeric",
+                hour12: true
+              })}
             </Typography>
           </div>
         </div>
@@ -93,53 +101,76 @@ const Message = ({ children, ...props }) => {
 
 Message.propTypes = {
   children: PropTypes.string.isRequired,
-  align: PropTypes.string
+  align: PropTypes.string,
+  time: PropTypes.instanceOf(Date)
 };
 
-const ChatDetails = ({ socket, isTheme, setTheme }) => {
-  if (!socket) return <div>Not Connected</div>;
-
+const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
-  const [msgs, setMsgs] = useState({});
-  const [msg, setMsg] = useState("");
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [text, setText] = useState("");
   const theme = useTheme();
+  const dispatch = useDispatch();
+
+  const messageArr = useSelector((state) => state.messages);
+  console.log(messageArr, "msgarra");
+
+  if (!socket) return <div>Loading...</div>;
 
   useEffect(() => {
-    const msgListener = (msg) => {
-      setMsgs((state) => {
-        const newMsgs = { ...state };
-        newMsgs[msg.id] = msg;
-        return newMsgs;
-      });
-    };
+    const query = queryString.parse(location?.search);
+    console.log(userId, "us");
+    setSelectedUserId(query.userId);
+  }, []);
 
-    const delMsgListener = (msgID) => {
-      setMsgs((state) => {
-        const newMsgs = { ...state };
-        delete newMsgs[msgID];
-        return newMsgs;
-      });
-    };
+  useEffect(() => {
+    receiveMessage(socket, eventEmitter);
+    eventEmitter.on("send-message-response", receiveMessageAndUpdate);
 
-    socket.on("msg", msgListener);
-    socket.on("delMsg", delMsgListener);
-    socket.emit("getMsgs");
+    // return () => eventEmitter.removeListener("send-message-response", receiveMessageAndUpdate);
+  }, [socket, eventEmitter]);
 
-    return () => {
-      socket.off("msg", msgListener);
-      socket.off("delMsg", delMsgListener);
-    };
-  }, [socket]);
+  // useEffect(() => {
+  //   if (userId && selectedUserId) {
+  //     dispatch(getMessages(userId, selectedUserId));
+  //   }
+  // }, [messageArr, userId]);
+
+  const receiveMessageAndUpdate = (message) => {
+    if (!selectedUserId && selectedUserId && selectedUserId === message.sender) {
+      setMessages((state) => [...state, message]);
+    }
+    // scroll down
+  };
+
+  const sendMessageAndUpdate = (e) => {
+    e.preventDefault();
+    console.log("clicked");
+    if (!text) alert("message is empty");
+    else if (!userId) alert("login");
+    else if (!selectedUserId) alert("select a user");
+    else {
+      try {
+        const message = {
+          sender: userId,
+          receiver: selectedUserId,
+          text: text.trim(),
+          createdAt: new Date()
+        };
+        sendMessage(socket, message);
+        setMessages((state) => [...state, message]);
+        setText("");
+        // scroll down
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
-  };
-
-  const sendMsg = (e) => {
-    e.preventDefault();
-    if (msg) socket.emit("msg", msg);
-    setMsg("");
   };
 
   const Actions = (
@@ -223,25 +254,27 @@ const ChatDetails = ({ socket, isTheme, setTheme }) => {
                 <span>learn more</span>
               </Link>
             </Typography>
-            {[...Object.values(msgs)]
-              .sort((a, b) => a.time - b.time)
-              .map((msg) => (
-                <div key={msg.id} title={`Sent at ${new Date(msg.time).toLocaleTimeString()}`}>
-                  <Message align="left">{`${msg.user.name} ${msg.value} ${new Date(
-                    msg.time
-                  ).toLocaleTimeString()}`}</Message>
+            {messages
+              .sort((a, b) => a.createdAt - b.createdAt)
+              .map((msg, index) => (
+                <div key={index}>
+                  <Message align={msg.sender === userId ? "left" : "right"} time={msg.createdAt}>
+                    {msg.text}
+                  </Message>
                 </div>
               ))}
-            <Message align="right">Lorem</Message>
+            <Message align="right" time={new Date()}>
+              Lorem
+            </Message>
             <div className={classes.msgWrapper}>
-              <form onSubmit={sendMsg} className={classes.sendMessage}>
+              <form onSubmit={sendMessageAndUpdate} className={classes.sendMessage}>
                 <div component="form" className={classes.inputRoot}>
                   <InputBase
                     className={classes.input}
                     maxRows={3}
                     multiline
-                    onChange={(e) => setMsg(e.target.value)}
-                    value={msg}
+                    onChange={(e) => setText(e.target.value)}
+                    value={text}
                     placeholder="Write your message..."
                     variant="outlined"
                   />
@@ -270,10 +303,16 @@ const ChatDetails = ({ socket, isTheme, setTheme }) => {
   );
 };
 
+const mapStateToProps = (state) => ({
+  isAuth: state.auth.isAuth
+});
+
 ChatDetails.propTypes = {
   isTheme: PropTypes.bool.isRequired,
   setTheme: PropTypes.func.isRequired,
-  socket: PropTypes.object
+  userId: PropTypes.string,
+  socket: PropTypes.object,
+  eventEmitter: PropTypes.object
 };
 
-export default ChatDetails;
+export default connect(mapStateToProps)(ChatDetails);

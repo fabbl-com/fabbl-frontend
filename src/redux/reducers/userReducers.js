@@ -5,7 +5,10 @@ import {
   USER_SIGNIN_FAIL,
   USER_SIGNIN_REQUEST,
   USER_SIGNIN_SUCCESS,
-  SET_USER
+  SET_USER,
+  GET_MESSAGES_REQUEST,
+  GET_MESSAGES_SUCCESS,
+  GET_MESSAGES_FAIL
 } from "../constants/userActionTypes";
 
 const userRegister = (state = {}, action) => {
@@ -41,10 +44,29 @@ const setUser = (state = {}, action) => {
   return state;
 };
 
+const getMessages = (state = {}, action) => {
+  switch (action.type) {
+    case GET_MESSAGES_REQUEST:
+      return { loading: true };
+    case GET_MESSAGES_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        success: action.payload.success,
+        messages: action.payload.messages
+      };
+    case GET_MESSAGES_FAIL:
+      return { loading: false, error: action.payload };
+    default:
+      return state;
+  }
+};
+
 const userReducers = {
   userRegister,
   userSignin,
-  setUser
+  setUser,
+  getMessages
 };
 
 export default userReducers;

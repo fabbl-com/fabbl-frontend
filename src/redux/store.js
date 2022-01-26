@@ -8,6 +8,11 @@ const initialState = {
     loading: false,
     userId: localStorage.getItem("userId") ? JSON.parse(localStorage.getItem("userId")) : null,
     error: null
+  },
+  messages: {
+    loading: false,
+    messages: [],
+    error: null
   }
 };
 
