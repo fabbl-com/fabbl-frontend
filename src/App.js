@@ -32,13 +32,11 @@ const App = () => {
 
   useEffect(() => {
     console.log(userId);
-    // io.connect(ENDPOINT, {
-    //   reconnection: true,
-    //   reconnectionDelay: 500,
-    //   reconnectionAttempts: 10
-    // });
-    const newSocket = io(ENDPOINT, { query: `userId=${userId}` });
-    setSocket(newSocket);
+    if (userId) {
+      const newSocket = io(ENDPOINT, { reconnectionDelayMax: 10000, query: `userId=${userId}` });
+      setSocket(newSocket);
+    }
+    // return () => newSocket.off();
   }, []);
 
   const appliedTheme = createTheme(isTheme ? dark : light);

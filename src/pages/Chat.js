@@ -112,6 +112,11 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   useEffect(() => {
     getChatList(socket, eventEmitter, userId);
     eventEmitter.on("chat-list-response", createChatListUsers);
+
+    return () => {
+      eventEmitter.removeListener("chat-list-response");
+      socket.off();
+    };
   }, [userId, socket, eventEmitter]);
 
   const createChatListUsers = (res) => {

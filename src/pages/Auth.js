@@ -66,7 +66,7 @@ const Auth = () => {
     });
   }, [animationData]);
 
-  const err = useSelector((state) => state.auth?.error);
+  const err = useSelector((state) => state.user?.error);
 
   useEffect(() => {
     err && setError(err);

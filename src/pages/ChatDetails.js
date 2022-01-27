@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   makeStyles,
   Avatar,
@@ -36,7 +36,7 @@ import queryString from "query-string";
 import { chatDetailsStyles } from "../assets/jss";
 import { receiveMessage, sendMessage } from "../utils/socket.io";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { getMessages } from "../redux/actions/userActions";
+import { getMessages } from "../redux/actions/messageActions";
 
 const useStyles = makeStyles((theme) => chatDetailsStyles(theme));
 
@@ -67,7 +67,7 @@ ScrollDown.propTypes = {
   children: PropTypes.element.isRequired
 };
 
-const Message = ({ time, children, ...props }) => {
+const Message = ({ time, isRead, children, ...props }) => {
   const classes = useStyles(props);
   const theme = useTheme();
 
@@ -88,9 +88,9 @@ const Message = ({ time, children, ...props }) => {
             </Typography>
           </div>
         </div>
-        {props.align === "right" && (
-          <Typography align="right" component="p" variant="caption">
-            seen
+        {props.align === "left" && (
+          <Typography align="left" component="p" variant="caption">
+            {isRead ? "seen" : "not seen"}
           </Typography>
         )}
         <div style={{ margin: theme.spacing(1, 0) }} />
@@ -102,52 +102,52 @@ const Message = ({ time, children, ...props }) => {
 Message.propTypes = {
   children: PropTypes.string.isRequired,
   align: PropTypes.string,
-  time: PropTypes.instanceOf(Date)
+  time: PropTypes.string,
+  isRead: PropTypes.bool
 };
 
 const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState("");
-  const [messages, setMessages] = useState([]);
+  const [msgs, setMsgs] = useState([]);
   const [text, setText] = useState("");
   const theme = useTheme();
   const dispatch = useDispatch();
-
-  const messageArr = useSelector((state) => state.messages);
-  console.log(messageArr, "msgarra");
+  const messagesEndRef = useRef();
 
   if (!socket) return <div>Loading...</div>;
+
+  const { messages, loading } = useSelector((state) => state.messages);
 
   useEffect(() => {
     const query = queryString.parse(location?.search);
     console.log(userId, "us");
     setSelectedUserId(query.userId);
+    dispatch(getMessages(userId, query.userId));
   }, []);
 
   useEffect(() => {
+    if (messages && messages.length > 0) setMsgs((state) => [...state, ...messages]);
+  }, [messages]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [msgs]);
+
+  useEffect(() => {
     receiveMessage(socket, eventEmitter);
-    eventEmitter.on("send-message-response", receiveMessageAndUpdate);
+    eventEmitter.on("send-message-response", (message) => {
+      setMsgs((state) => [...state, message]);
+      // scroll down
+      scrollToBottom();
+    });
 
-    // return () => eventEmitter.removeListener("send-message-response", receiveMessageAndUpdate);
+    return () => eventEmitter.removeListener("send-message-response");
   }, [socket, eventEmitter]);
-
-  // useEffect(() => {
-  //   if (userId && selectedUserId) {
-  //     dispatch(getMessages(userId, selectedUserId));
-  //   }
-  // }, [messageArr, userId]);
-
-  const receiveMessageAndUpdate = (message) => {
-    if (!selectedUserId && selectedUserId && selectedUserId === message.sender) {
-      setMessages((state) => [...state, message]);
-    }
-    // scroll down
-  };
 
   const sendMessageAndUpdate = (e) => {
     e.preventDefault();
-    console.log("clicked");
     if (!text) alert("message is empty");
     else if (!userId) alert("login");
     else if (!selectedUserId) alert("select a user");
@@ -160,12 +160,22 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
           createdAt: new Date()
         };
         sendMessage(socket, message);
-        setMessages((state) => [...state, message]);
+        setMsgs((state) => [...state, message]);
         setText("");
         // scroll down
+        scrollToBottom();
       } catch (error) {
         console.log(error);
       }
+    }
+  };
+
+  const scrollToBottom = () => {
+    if (messagesEndRef) {
+      messagesEndRef.current.addEventListener("DOMNodeInserted", (event) => {
+        const { currentTarget: target } = event;
+        target.scroll({ top: target.scrollHeight, behavior: "smooth" });
+      });
     }
   };
 
@@ -232,40 +242,53 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
             </Toolbar>
           </AppBar>
           <Container align="center" className={classes.msgContainer}>
-            <div className={classes.msgAction}>
-              <Button variant="text">BLOCK</Button>
-              <Divider orientation="vertical" flexItem />
-              <Button variant="text">ADD</Button>
+            <div
+              style={{
+                maxWidth: "100%",
+                height: "100vh",
+                overflowY: "scroll",
+                marginBottom: "0"
+              }}
+              ref={messagesEndRef}>
+              <div className={classes.msgAction}>
+                <Button variant="text">BLOCK</Button>
+                <Divider orientation="vertical" flexItem />
+                <Button variant="text">ADD</Button>
+              </div>
+              <Typography className={classes.timeSince} variant="body2">
+                11 December 2021
+              </Typography>
+              <Typography className={classes.encMsg} variant="body2">
+                <EnhancedEncryption className={classes.encIcon} />
+                Messages are end-to-end encrypted. No other user can read to them except you and{" "}
+                {"  "}
+                <Link to="/uuid">
+                  <span>uuid.</span>
+                </Link>
+                {"  "}
+                Click to
+                {"  "}
+                <Link to="/e2e">
+                  <span>learn more</span>
+                </Link>
+              </Typography>
+              {!loading ? (
+                msgs
+                  .sort((a, b) => a.createdAt - b.createdAt)
+                  .map((msg, index) => (
+                    <div key={index}>
+                      <Message
+                        align={msg.sender === userId ? "left" : "right"}
+                        time={msg.createdAt}
+                        isRead={msg.isRead}>
+                        {msg.text}
+                      </Message>
+                    </div>
+                  ))
+              ) : (
+                <div>Loading...</div>
+              )}
             </div>
-            <Typography className={classes.timeSince} variant="body2">
-              11 December 2021
-            </Typography>
-            <Typography className={classes.encMsg} variant="body2">
-              <EnhancedEncryption className={classes.encIcon} />
-              Messages are end-to-end encrypted. No other user can read to them except you and{" "}
-              {"  "}
-              <Link to="/uuid">
-                <span>uuid.</span>
-              </Link>
-              {"  "}
-              Click to
-              {"  "}
-              <Link to="/e2e">
-                <span>learn more</span>
-              </Link>
-            </Typography>
-            {messages
-              .sort((a, b) => a.createdAt - b.createdAt)
-              .map((msg, index) => (
-                <div key={index}>
-                  <Message align={msg.sender === userId ? "left" : "right"} time={msg.createdAt}>
-                    {msg.text}
-                  </Message>
-                </div>
-              ))}
-            <Message align="right" time={new Date()}>
-              Lorem
-            </Message>
             <div className={classes.msgWrapper}>
               <form onSubmit={sendMessageAndUpdate} className={classes.sendMessage}>
                 <div component="form" className={classes.inputRoot}>
@@ -304,7 +327,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
 };
 
 const mapStateToProps = (state) => ({
-  isAuth: state.auth.isAuth
+  isAuth: state.user.isAuth
 });
 
 ChatDetails.propTypes = {
