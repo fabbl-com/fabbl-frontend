@@ -19,6 +19,7 @@ import {
   MenuItem
 } from "@material-ui/core";
 import { withStyles } from "@material-ui/styles";
+import moment from "moment";
 import {
   AccountCircle,
   Brightness4,
@@ -31,7 +32,7 @@ import { Link, useHistory } from "react-router-dom";
 import { PropTypes } from "prop-types";
 
 import { chatStyles } from "../assets/jss";
-import { eventEmitter, getChatList } from "../utils/socket.io";
+import { getChatList } from "../utils/socket.io";
 
 const useStyles = makeStyles((theme) => chatStyles(theme));
 
@@ -111,34 +112,16 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
 
   useEffect(() => {
     getChatList(socket, eventEmitter, userId);
-    eventEmitter.on("chat-list-response", createChatListUsers);
+    eventEmitter.on("chat-list-response", (data) => {
+      setChatListUsers(data?.messages);
+    });
 
     return () => {
-      eventEmitter.removeListener("chat-list-response");
       socket.off();
     };
   }, [userId, socket, eventEmitter]);
 
-  const createChatListUsers = (res) => {
-    if (res.success) {
-      let users = chatListUsers;
-      if (res.singleUser) {
-        if (chatListUsers.length > 0) {
-          users = chatListUsers.filter((user) => user.id !== res.chatList[0].id);
-        }
-        users = [...users, ...res.chatList];
-      } else if (res.isDisconnected) {
-        const index = chatListUsers.findIndex((obj) => obj.id === res.userId);
-        if (index >= 0) users[index].online = false;
-      } else {
-        users = res.chatList;
-      }
-      console.log(users);
-      setChatListUsers(users);
-    } else {
-      alert(`Unable to load Chat list, Redirecting to Login.`);
-    }
-  };
+  console.log(chatListUsers);
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -220,51 +203,58 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
         </Toolbar>
       </AppBar>
       <Container className={classes.msgContainer}>
-        {Array.from(Array(10).keys()).map((el, i) => (
-          <Card key={i} className={classes.msgCard}>
-            <CardHeader
-              classes={{
-                root: classes.cardHeaderRoot,
-                content: classes.cardHeaderContent,
-                subheader: classes.cardHeaderSubheader
-              }}
-              avatar={
-                <ProfileBadge
-                  color="primary"
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right"
+        {chatListUsers
+          .sort((b, a) => new Date(a.createdAt) - new Date(b.createdAt))
+          .map((user, i) => (
+            <Link to={`/chat-details?userId=${user?.profile?.id}`} key={i}>
+              <Card className={classes.msgCard}>
+                <CardHeader
+                  classes={{
+                    root: classes.cardHeaderRoot,
+                    content: classes.cardHeaderContent,
+                    subheader: classes.cardHeaderSubheader
                   }}
-                  overlap="circular"
-                  variant="dot"
-                  invisible={false}>
-                  <Avatar aria-label="user" className={classes.avatar}>
-                    R
-                  </Avatar>
-                </ProfileBadge>
-              }
-              title={
-                <div className={classes.userTitle}>
-                  <Typography component="h1" variant="h6">
-                    Kabir
-                  </Typography>
-                  <Typography component="p" variant="caption">
-                    12:30pm
-                  </Typography>
-                </div>
-              }
-              subheader={
-                <div>
-                  <Typography component="p" variant="body2" className={classes.msg}>
-                    You can override the style of the component thanks to one of these customization
-                    points
-                  </Typography>
-                  <Badge className={classes.msgCount} color="primary" badgeContent={2} />
-                </div>
-              }
-            />
-          </Card>
-        ))}
+                  avatar={
+                    <ProfileBadge
+                      color="primary"
+                      anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "right"
+                      }}
+                      overlap="circular"
+                      variant="dot"
+                      invisible={!user.profile.online}>
+                      <Avatar aria-label="user" className={classes.avatar}>
+                        {user.profile.avatar}
+                      </Avatar>
+                    </ProfileBadge>
+                  }
+                  title={
+                    <div className={classes.userTitle}>
+                      <Typography component="h1" variant="h6">
+                        {user.profile.displayName.value}
+                      </Typography>
+                      <Typography component="p" variant="caption">
+                        {moment(user.createdAt).fromNow()}
+                      </Typography>
+                    </div>
+                  }
+                  subheader={
+                    <div>
+                      <Typography component="p" variant="body2" className={classes.msg}>
+                        {user.message}
+                      </Typography>
+                      <Badge
+                        className={classes.msgCount}
+                        color="primary"
+                        badgeContent={user.unreadCount}
+                      />
+                    </div>
+                  }
+                />
+              </Card>
+            </Link>
+          ))}
         <ScrollTop>
           <Fab color="secondary" size="small" aria-label="scroll back to top">
             <KeyboardArrowUp />

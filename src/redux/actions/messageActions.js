@@ -50,6 +50,6 @@ export const getAllMessages = (sender, receiver) => async (dispatch) => {
 };
 
 export const setUserMessages = (data) => async (dispatch) => {
-  console.log(data.messages);
+  console.log(data?.messages);
   dispatch({ type: SET_USER_MESSAGES, payload: data });
 };

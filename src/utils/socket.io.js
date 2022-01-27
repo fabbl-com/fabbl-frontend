@@ -1,6 +1,6 @@
 export const getChatList = (socket, eventEmitter, userId) => {
   console.log(userId);
-  socket.emit("chat-list", { userId });
+  socket.emit("chat-list", userId);
   socket.on("chat-list-response", (data) => {
     eventEmitter.emit("chat-list-response", data);
   });

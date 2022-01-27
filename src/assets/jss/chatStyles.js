@@ -45,7 +45,8 @@ const chatStyles = (theme) => ({
     borderRadius: theme.spacing(1),
     "& > div": {
       padding: theme.spacing(1)
-    }
+    },
+    margin: theme.spacing(0.5, 0)
   },
   cardHeaderRoot: {
     marginRight: theme.spacing(1)

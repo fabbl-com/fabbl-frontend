@@ -122,7 +122,6 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   console.log(loading);
   useEffect(() => {
     const query = queryString.parse(location?.search);
-    console.log(userId, "us");
     setSelectedUserId(query.userId);
     socket.emit("get-user-messages", { sender: userId, receiver: query.userId });
     socket.on("get-user-messages-response", (data) => {
