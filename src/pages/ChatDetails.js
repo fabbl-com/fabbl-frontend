@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   makeStyles,
   Avatar,
@@ -31,30 +31,17 @@ import {
 } from "@material-ui/icons";
 import { Link } from "react-router-dom";
 import { PropTypes } from "prop-types";
-import io from "socket.io-client";
-const ENDPOINT = "localhost:4000";
+import queryString from "query-string";
 
 import { chatDetailsStyles } from "../assets/jss";
+import { receiveMessage, sendMessage } from "../utils/socket.io";
+import { connect, useDispatch, useSelector } from "react-redux";
+import { getMessages } from "../redux/actions/messageActions";
 
 const useStyles = makeStyles((theme) => chatDetailsStyles(theme));
 
-let socket;
 const ScrollDown = ({ children }) => {
   const theme = useTheme();
-
-  socket = io(ENDPOINT);
-
-  useEffect(() => {
-    socket.on("connection", () => {
-      console.log("connection");
-    });
-  }, []);
-
-  useEffect(() => {
-    socket.on("disconnection", () => {
-      console.log("connection");
-    });
-  }, []);
 
   const handleScrollDown = (e) => {
     const anchor = (e.target.ownerDocument || document).querySelector("#scroll-to-bottom");
@@ -80,7 +67,7 @@ ScrollDown.propTypes = {
   children: PropTypes.element.isRequired
 };
 
-const Message = ({ children, ...props }) => {
+const Message = ({ time, isRead, children, ...props }) => {
   const classes = useStyles(props);
   const theme = useTheme();
 
@@ -89,17 +76,21 @@ const Message = ({ children, ...props }) => {
       <div>
         <div {...props}>
           <div
-            style={{ width: `${children.length <= 10 && "100px"}` }}
+            style={{ width: `${children && children.length <= 10 && "100px"}` }}
             className={classes.msgBubble}>
             <div>{children}</div>
             <Typography variant="caption" className={classes.timestamp}>
-              10:30 AM
+              {new Date(time).toLocaleString("en-US", {
+                hour: "numeric",
+                minute: "numeric",
+                hour12: true
+              })}
             </Typography>
           </div>
         </div>
-        {props.align === "right" && (
-          <Typography align="right" component="p" variant="caption">
-            seen
+        {props.align === "left" && (
+          <Typography align="left" component="p" variant="caption">
+            {isRead ? "seen" : "not seen"}
           </Typography>
         )}
         <div style={{ margin: theme.spacing(1, 0) }} />
@@ -110,13 +101,83 @@ const Message = ({ children, ...props }) => {
 
 Message.propTypes = {
   children: PropTypes.string.isRequired,
-  align: PropTypes.string
+  align: PropTypes.string,
+  time: PropTypes.string,
+  isRead: PropTypes.bool
 };
 
-const ChatDetails = ({ isTheme, setTheme }) => {
+const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const [msgs, setMsgs] = useState([]);
+  const [text, setText] = useState("");
   const theme = useTheme();
+  const dispatch = useDispatch();
+  const messagesEndRef = useRef();
+
+  if (!socket) return <div>Loading...</div>;
+
+  const { messages, loading } = useSelector((state) => state.messages);
+
+  useEffect(() => {
+    const query = queryString.parse(location?.search);
+    console.log(userId, "us");
+    setSelectedUserId(query.userId);
+    dispatch(getMessages(userId, query.userId));
+  }, []);
+
+  useEffect(() => {
+    if (messages && messages.length > 0) setMsgs((state) => [...state, ...messages]);
+  }, [messages]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [msgs]);
+
+  useEffect(() => {
+    receiveMessage(socket, eventEmitter);
+    eventEmitter.on("send-message-response", (message) => {
+      setMsgs((state) => [...state, message]);
+      // scroll down
+      scrollToBottom();
+    });
+
+    return () => eventEmitter.removeListener("send-message-response");
+  }, [socket, eventEmitter]);
+
+  const sendMessageAndUpdate = (e) => {
+    e.preventDefault();
+    if (!text) alert("message is empty");
+    else if (!userId) alert("login");
+    else if (!selectedUserId) alert("select a user");
+    else {
+      try {
+        const message = {
+          sender: userId,
+          receiver: selectedUserId,
+          text: text.trim(),
+          createdAt: new Date()
+        };
+        sendMessage(socket, message);
+        setMsgs((state) => [...state, message]);
+        setText("");
+        // scroll down
+        scrollToBottom();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  const scrollToBottom = () => {
+    if (messagesEndRef) {
+      messagesEndRef.current.addEventListener("DOMNodeInserted", (event) => {
+        const { currentTarget: target } = event;
+        target.scroll({ top: target.scrollHeight, behavior: "smooth" });
+      });
+    }
+  };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -181,88 +242,62 @@ const ChatDetails = ({ isTheme, setTheme }) => {
             </Toolbar>
           </AppBar>
           <Container align="center" className={classes.msgContainer}>
-            <div className={classes.msgAction}>
-              <Button variant="text">BLOCK</Button>
-              <Divider orientation="vertical" flexItem />
-              <Button variant="text">ADD</Button>
+            <div
+              style={{
+                maxWidth: "100%",
+                height: "100vh",
+                overflowY: "scroll",
+                marginBottom: "0"
+              }}
+              ref={messagesEndRef}>
+              <div className={classes.msgAction}>
+                <Button variant="text">BLOCK</Button>
+                <Divider orientation="vertical" flexItem />
+                <Button variant="text">ADD</Button>
+              </div>
+              <Typography className={classes.timeSince} variant="body2">
+                11 December 2021
+              </Typography>
+              <Typography className={classes.encMsg} variant="body2">
+                <EnhancedEncryption className={classes.encIcon} />
+                Messages are end-to-end encrypted. No other user can read to them except you and{" "}
+                {"  "}
+                <Link to="/uuid">
+                  <span>uuid.</span>
+                </Link>
+                {"  "}
+                Click to
+                {"  "}
+                <Link to="/e2e">
+                  <span>learn more</span>
+                </Link>
+              </Typography>
+              {!loading ? (
+                msgs
+                  .sort((a, b) => a.createdAt - b.createdAt)
+                  .map((msg, index) => (
+                    <div key={index}>
+                      <Message
+                        align={msg.sender === userId ? "left" : "right"}
+                        time={msg.createdAt}
+                        isRead={msg.isRead}>
+                        {msg.text}
+                      </Message>
+                    </div>
+                  ))
+              ) : (
+                <div>Loading...</div>
+              )}
             </div>
-            <Typography className={classes.timeSince} variant="body2">
-              11 December 2021
-            </Typography>
-            <Typography className={classes.encMsg} variant="body2">
-              <EnhancedEncryption className={classes.encIcon} />
-              Messages are end-to-end encrypted. No other user can read to them except you and{" "}
-              {"  "}
-              <Link to="/uuid">
-                <span>uuid.</span>
-              </Link>
-              {"  "}
-              Click to
-              {"  "}
-              <Link to="/e2e">
-                <span>learn more</span>
-              </Link>
-            </Typography>
-            <Message align="left">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="right">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="left">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="right">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="left">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="right">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="left">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="right">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="left">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="right">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="left">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="right">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="right">
-              Lorem ipsum dolor sit amet ff ddff consectetur adipisicing elit. Amet, itaque quaerat!
-              Et laudantium fesgeg esgeesgesg segg sges segsgseg
-            </Message>
-            <Message align="right">Lorem</Message>
             <div className={classes.msgWrapper}>
-              <div className={classes.sendMessage}>
+              <form onSubmit={sendMessageAndUpdate} className={classes.sendMessage}>
                 <div component="form" className={classes.inputRoot}>
                   <InputBase
                     className={classes.input}
                     maxRows={3}
                     multiline
+                    onChange={(e) => setText(e.target.value)}
+                    value={text}
                     placeholder="Write your message..."
                     variant="outlined"
                   />
@@ -273,10 +308,10 @@ const ChatDetails = ({ isTheme, setTheme }) => {
                     <InsertEmoticon />
                   </IconButton>
                 </div>
-                <IconButton color="primary" className={classes.iconButton2}>
+                <IconButton type="submit" color="primary" className={classes.iconButton2}>
                   <Send />
                 </IconButton>
-              </div>
+              </form>
             </div>
           </Container>
           <div id="scroll-to-bottom" />
@@ -291,9 +326,16 @@ const ChatDetails = ({ isTheme, setTheme }) => {
   );
 };
 
+const mapStateToProps = (state) => ({
+  isAuth: state.user.isAuth
+});
+
 ChatDetails.propTypes = {
   isTheme: PropTypes.bool.isRequired,
-  setTheme: PropTypes.func.isRequired
+  setTheme: PropTypes.func.isRequired,
+  userId: PropTypes.string,
+  socket: PropTypes.object,
+  eventEmitter: PropTypes.object
 };
 
-export default ChatDetails;
+export default connect(mapStateToProps)(ChatDetails);

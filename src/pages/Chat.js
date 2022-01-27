@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   makeStyles,
   Card,
@@ -27,10 +27,11 @@ import {
   MoreVert,
   Search
 } from "@material-ui/icons";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { PropTypes } from "prop-types";
 
 import { chatStyles } from "../assets/jss";
+import { eventEmitter, getChatList } from "../utils/socket.io";
 
 const useStyles = makeStyles((theme) => chatStyles(theme));
 
@@ -96,11 +97,48 @@ ScrollTop.propTypes = {
   window: PropTypes.func
 };
 
-const Chat = ({ isTheme, setTheme }) => {
+const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const classes = useStyles();
   const theme = useTheme();
   const [isSearchMode, setSearchMode] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [chatListUsers, setChatListUsers] = useState([]);
+  const history = useHistory();
+
+  if (!socket) {
+    return <div>Loading...</div>;
+  }
+
+  useEffect(() => {
+    getChatList(socket, eventEmitter, userId);
+    eventEmitter.on("chat-list-response", createChatListUsers);
+
+    return () => {
+      eventEmitter.removeListener("chat-list-response");
+      socket.off();
+    };
+  }, [userId, socket, eventEmitter]);
+
+  const createChatListUsers = (res) => {
+    if (res.success) {
+      let users = chatListUsers;
+      if (res.singleUser) {
+        if (chatListUsers.length > 0) {
+          users = chatListUsers.filter((user) => user.id !== res.chatList[0].id);
+        }
+        users = [...users, ...res.chatList];
+      } else if (res.isDisconnected) {
+        const index = chatListUsers.findIndex((obj) => obj.id === res.userId);
+        if (index >= 0) users[index].online = false;
+      } else {
+        users = res.chatList;
+      }
+      console.log(users);
+      setChatListUsers(users);
+    } else {
+      alert(`Unable to load Chat list, Redirecting to Login.`);
+    }
+  };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -239,7 +277,10 @@ const Chat = ({ isTheme, setTheme }) => {
 
 Chat.propTypes = {
   isTheme: PropTypes.bool.isRequired,
-  setTheme: PropTypes.func.isRequired
+  setTheme: PropTypes.func.isRequired,
+  userId: PropTypes.string,
+  socket: PropTypes.object,
+  eventEmitter: PropTypes.object
 };
 
 export default Chat;

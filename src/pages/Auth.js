@@ -14,6 +14,10 @@ import Circle from "@material-ui/icons/FiberManualRecord";
 import lottie from "lottie-web";
 import animationData from "../assets/animation/auth.json";
 import { FacebookIcon, GoogleIcon } from "../assets/icons/index";
+import { register, login } from "../redux/actions/userActions";
+import { useDispatch, useSelector } from "react-redux";
+import { Alert } from "@material-ui/lab";
+import { Link } from "react-router-dom";
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "97vh",
@@ -46,8 +50,11 @@ const Auth = () => {
   const theme = useTheme();
   const classes = useStyles(theme);
   const [isRegistered, setRegistered] = useState(false);
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
 
   const container = useRef(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     lottie.loadAnimation({
@@ -57,33 +64,58 @@ const Auth = () => {
       autoplay: true,
       animationData
     });
-  }, []);
+  }, [animationData]);
+
+  const err = useSelector((state) => state.user?.error);
+
+  useEffect(() => {
+    err && setError(err);
+    setTimeout(() => {
+      err && setError(null);
+    }, 3000);
+  }, [err]);
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+    console.log(user);
+    !isRegistered ? dispatch(register(user)) : dispatch(login(user));
+  };
 
   return (
     <Container maxWidth="sm" className={classes.root}>
+      {error &&
+        (error.code === 401 ? (
+          <Alert severity="error">Oops! Invalid credential. Please Try again</Alert>
+        ) : (
+          <Alert severity="error">Something went wrong. Please try agin</Alert>
+        ))}
       <div className={classes.animation} ref={container}></div>
 
       <Typography variant="h5" align="center">
         {isRegistered ? "Sign into your Account" : "Create an Account"}
       </Typography>
-      <form className={classes.form}>
+      <form onSubmit={handleRegister} className={classes.form}>
         <TextField
           required
           fullWidth
           label="Email"
           type="email"
+          vaule={user?.email}
+          onChange={(e) => setUser((state) => ({ ...state, email: e.target.value }))}
           margin="normal"
           InputLabelProps={{
             className: classes.textfield
           }}
         />
-        {isRegistered || (
+        {!isRegistered && (
           <TextField
             required
             fullWidth
-            label="Username"
+            label="displayName"
             type="text"
             margin="normal"
+            vaule={user?.displayName}
+            onChange={(e) => setUser((state) => ({ ...state, displayName: e.target.value }))}
             InputLabelProps={{
               className: classes.textfield
             }}
@@ -95,6 +127,8 @@ const Auth = () => {
           name="password"
           label="Password"
           type="password"
+          vaule={user?.password}
+          onChange={(e) => setUser((state) => ({ ...state, password: e.target.value }))}
           margin="normal"
           InputLabelProps={{
             className: classes.textfield
@@ -116,12 +150,20 @@ const Auth = () => {
         Or Login with using social media
       </Typography>
 
-      <Grid container direction="row" spacing={4} justify="center">
+      <Grid container direction="row" spacing={4} justifyContent="center">
         <Grid item>
-          <GoogleIcon />
+          <form action="http://localhost:4000/auth/google">
+            <Button type="submit">
+              <GoogleIcon />
+            </Button>
+          </form>
         </Grid>
         <Grid item>
-          <FacebookIcon />
+          <form action="http://localhost:4000/auth/facebook">
+            <Button type="submit">
+              <FacebookIcon />
+            </Button>
+          </form>
         </Grid>
       </Grid>
 

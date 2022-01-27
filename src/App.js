@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { CssBaseline } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/styles";
@@ -14,55 +14,83 @@ import {
   ImageUpload,
   VerifyVoice,
   Random,
-  SecurityData
+  SecurityData,
+  PersonalData
 } from "./pages";
 import { Navbar } from "./components";
-import PersonalData from "./pages/PersonalData";
+import io from "socket.io-client";
+const events = require("events");
+
+const ENDPOINT = "http://localhost:4000";
 
 const App = () => {
-  const [isTheme, setTheme] = React.useState(false);
+  const [isTheme, setTheme] = useState(false);
+  const [socket, setSocket] = useState(null);
+  const userId = localStorage.getItem("userId") ? JSON.parse(localStorage.getItem("userId")) : null;
+
+  const eventEmitter = new events.EventEmitter();
+
+  useEffect(() => {
+    console.log(userId);
+    if (userId) {
+      const newSocket = io(ENDPOINT, { reconnectionDelayMax: 10000, query: `userId=${userId}` });
+      setSocket(newSocket);
+    }
+    // return () => newSocket.off();
+  }, []);
 
   const appliedTheme = createTheme(isTheme ? dark : light);
 
   return (
-    <React.Fragment>
-      <Router>
-        <ThemeProvider theme={appliedTheme}>
-          <Router>
-            <CssBaseline />
-            <Navbar isTheme={isTheme} setTheme={setTheme} />
-            <Switch>
-              <Route path="/" exact component={Home} />
-              <Route
-                path="/chat"
-                component={() => <Chat isTheme={isTheme} setTheme={setTheme} />}
-              />
-              <Route
-                path="/chat-details"
-                component={() => <ChatDetails isTheme={isTheme} setTheme={setTheme} />}
-              />
-              <Route
-                path="/profile"
-                component={() => <Profile isTheme={isTheme} setTheme={setTheme} />}
-              />
-              <Route
-                path="/settings"
-                component={() => <Settings isTheme={isTheme} setTheme={setTheme} />}
-              />
-              <Route path="/edit/personal-data" component={PersonalData} />
-              <Route path="/edit/security-data" component={SecurityData} />
-              <Route path="/auth" component={Auth} />
-              <Route path="/image" component={ImageUpload} />
-              <Route path="/verifyvoice" component={VerifyVoice} />
-              <Route
-                path="/random"
-                component={() => <Random isTheme={isTheme} setTheme={setTheme} />}
-              />
-            </Switch>
-          </Router>
-        </ThemeProvider>
-      </Router>
-    </React.Fragment>
+    <Router>
+      <ThemeProvider theme={appliedTheme}>
+        <Router>
+          <CssBaseline />
+          <Navbar isTheme={isTheme} setTheme={setTheme} />
+          <Switch>
+            <Route path="/" exact component={Home} />
+            <Route
+              path="/chat"
+              component={() => (
+                <Chat
+                  userId={userId}
+                  socket={socket}
+                  eventEmitter={eventEmitter}
+                  isTheme={isTheme}
+                  setTheme={setTheme}
+                />
+              )}
+            />
+            <Route
+              path="/chat-details"
+              component={() => (
+                <ChatDetails
+                  userId={userId}
+                  socket={socket}
+                  eventEmitter={eventEmitter}
+                  isTheme={isTheme}
+                  setTheme={setTheme}
+                />
+              )}
+            />
+            <Route
+              path="/profile"
+              component={() => <Profile isTheme={isTheme} setTheme={setTheme} />}
+            />
+            <Route
+              path="/settings"
+              component={() => <Settings isTheme={isTheme} setTheme={setTheme} />}
+            />
+            <Route path="/edit/personal-data" component={PersonalData} />
+            <Route path="/edit/security-data" component={SecurityData} />
+            <Route path="/auth" component={Auth} />
+            <Route path="/image" component={ImageUpload} />
+            <Route path="/verifyvoice" component={VerifyVoice} />
+            <Route path="/random" component={Random} />
+          </Switch>
+        </Router>
+      </ThemeProvider>
+    </Router>
   );
 };
 
