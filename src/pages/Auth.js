@@ -51,7 +51,6 @@ const Auth = () => {
   const classes = useStyles(theme);
   const [isRegistered, setRegistered] = useState(false);
   const [user, setUser] = useState(null);
-  const [error, setError] = useState(null);
 
   const container = useRef(null);
   const dispatch = useDispatch();
@@ -68,13 +67,6 @@ const Auth = () => {
 
   const err = useSelector((state) => state.user?.error);
 
-  useEffect(() => {
-    err && setError(err);
-    setTimeout(() => {
-      err && setError(null);
-    }, 3000);
-  }, [err]);
-
   const handleRegister = (e) => {
     e.preventDefault();
     console.log(user);
@@ -83,8 +75,9 @@ const Auth = () => {
 
   return (
     <Container maxWidth="sm" className={classes.root}>
-      {error &&
-        (error.code === 401 ? (
+      {Object.keys(err).length !== 0 &&
+        err.constructor === Object &&
+        (err.code === 401 ? (
           <Alert severity="error">Oops! Invalid credential. Please Try again</Alert>
         ) : (
           <Alert severity="error">Something went wrong. Please try agin</Alert>
