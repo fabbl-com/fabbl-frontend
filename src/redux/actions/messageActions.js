@@ -6,7 +6,8 @@ import {
   GET_MESSAGES_FAIL,
   GET_ALL_MESSAGES_REQUEST,
   GET_ALL_MESSAGES_SUCCESS,
-  GET_ALL_MESSAGES_FAIL
+  GET_ALL_MESSAGES_FAIL,
+  SET_USER_MESSAGES
 } from "../constants/messageActionTypes";
 
 export const getMessages = (sender, receiver) => async (dispatch) => {
@@ -46,4 +47,9 @@ export const getAllMessages = (sender, receiver) => async (dispatch) => {
       }
     });
   }
+};
+
+export const setUserMessages = (data) => async (dispatch) => {
+  console.log(data.messages);
+  dispatch({ type: SET_USER_MESSAGES, payload: data });
 };

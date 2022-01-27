@@ -1,7 +1,8 @@
 import {
   GET_MESSAGES_REQUEST,
   GET_MESSAGES_SUCCESS,
-  GET_MESSAGES_FAIL
+  GET_MESSAGES_FAIL,
+  SET_USER_MESSAGES
 } from "../constants/messageActionTypes";
 
 const initialState = {
@@ -15,9 +16,10 @@ export default (state = initialState, action) => {
     case GET_MESSAGES_REQUEST:
       return { ...state, loading: true };
     case GET_MESSAGES_SUCCESS:
+    case SET_USER_MESSAGES:
       return {
         ...state,
-        ...action.payload.messages,
+        ...action.payload,
         loading: false,
         error: null
       };

@@ -36,7 +36,7 @@ import queryString from "query-string";
 import { chatDetailsStyles } from "../assets/jss";
 import { receiveMessage, sendMessage } from "../utils/socket.io";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { getMessages } from "../redux/actions/messageActions";
+import { setUserMessages } from "../redux/actions/messageActions";
 
 const useStyles = makeStyles((theme) => chatDetailsStyles(theme));
 
@@ -119,13 +119,17 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   if (!socket) return <div>Loading...</div>;
 
   const { messages, loading } = useSelector((state) => state.messages);
-
+  console.log(loading);
   useEffect(() => {
     const query = queryString.parse(location?.search);
     console.log(userId, "us");
     setSelectedUserId(query.userId);
-    dispatch(getMessages(userId, query.userId));
-  }, []);
+    socket.emit("get-user-messages", { sender: userId, receiver: query.userId });
+    socket.on("get-user-messages-response", (data) => {
+      console.log(data);
+      dispatch(setUserMessages(data.messages));
+    });
+  }, [socket]);
 
   useEffect(() => {
     if (messages && messages.length > 0) setMsgs((state) => [...state, ...messages]);
@@ -139,7 +143,6 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
     receiveMessage(socket, eventEmitter);
     eventEmitter.on("send-message-response", (message) => {
       setMsgs((state) => [...state, message]);
-      // scroll down
       scrollToBottom();
     });
 
