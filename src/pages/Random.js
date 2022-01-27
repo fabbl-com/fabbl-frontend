@@ -20,7 +20,7 @@ const Random = () => {
         />
       </div>
       <Avatar variant="rounded" className={classes.image} src={"https://bit.ly/3Ez2w7J"} />
-      <Typography variant="subtitle">Finding someone...…</Typography>
+      <Typography variant="subtitle1">Finding someone...…</Typography>
     </Container>
   );
 };
