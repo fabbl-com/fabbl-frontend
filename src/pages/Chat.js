@@ -30,6 +30,9 @@ import {
 } from "@material-ui/icons";
 import { Link, useHistory } from "react-router-dom";
 import { PropTypes } from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
+import { getChatListUsers } from "../redux/actions/messageActions";
+import { Alert } from "@material-ui/lab";
 
 import { chatStyles } from "../assets/jss";
 import { getChatList } from "../utils/socket.io";
@@ -103,25 +106,23 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const theme = useTheme();
   const [isSearchMode, setSearchMode] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [chatListUsers, setChatListUsers] = useState([]);
   const history = useHistory();
+  const dispatch = useDispatch();
 
-  if (!socket) {
-    return <div>Loading...</div>;
-  }
+  if (!socket) return <div>Loading...</div>;
+
+  const { chatListUsers, loading } = useSelector((state) => state.messages);
 
   useEffect(() => {
     getChatList(socket, eventEmitter, userId);
     eventEmitter.on("chat-list-response", (data) => {
-      setChatListUsers(data?.messages);
+      dispatch(getChatListUsers(data?.messages));
     });
 
     return () => {
       socket.off();
     };
   }, [userId, socket, eventEmitter]);
-
-  console.log(chatListUsers);
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -203,58 +204,62 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
         </Toolbar>
       </AppBar>
       <Container className={classes.msgContainer}>
-        {chatListUsers
-          .sort((b, a) => new Date(a.createdAt) - new Date(b.createdAt))
-          .map((user, i) => (
-            <Link to={`/chat-details?userId=${user?.profile?.id}`} key={i}>
-              <Card className={classes.msgCard}>
-                <CardHeader
-                  classes={{
-                    root: classes.cardHeaderRoot,
-                    content: classes.cardHeaderContent,
-                    subheader: classes.cardHeaderSubheader
-                  }}
-                  avatar={
-                    <ProfileBadge
-                      color="primary"
-                      anchorOrigin={{
-                        vertical: "bottom",
-                        horizontal: "right"
-                      }}
-                      overlap="circular"
-                      variant="dot"
-                      invisible={!user.profile.online}>
-                      <Avatar aria-label="user" className={classes.avatar}>
-                        {user.profile.avatar}
-                      </Avatar>
-                    </ProfileBadge>
-                  }
-                  title={
-                    <div className={classes.userTitle}>
-                      <Typography component="h1" variant="h6">
-                        {user.profile.displayName.value}
-                      </Typography>
-                      <Typography component="p" variant="caption">
-                        {moment(user.createdAt).fromNow()}
-                      </Typography>
-                    </div>
-                  }
-                  subheader={
-                    <div>
-                      <Typography component="p" variant="body2" className={classes.msg}>
-                        {user.message}
-                      </Typography>
-                      <Badge
-                        className={classes.msgCount}
+        {!loading ? (
+          chatListUsers
+            .sort((b, a) => new Date(a.createdAt) - new Date(b.createdAt))
+            .map((user, i) => (
+              <Link to={`/chat-details?userId=${user?.profile?.id}`} key={i}>
+                <Card className={classes.msgCard}>
+                  <CardHeader
+                    classes={{
+                      root: classes.cardHeaderRoot,
+                      content: classes.cardHeaderContent,
+                      subheader: classes.cardHeaderSubheader
+                    }}
+                    avatar={
+                      <ProfileBadge
                         color="primary"
-                        badgeContent={user.unreadCount}
-                      />
-                    </div>
-                  }
-                />
-              </Card>
-            </Link>
-          ))}
+                        anchorOrigin={{
+                          vertical: "bottom",
+                          horizontal: "right"
+                        }}
+                        overlap="circular"
+                        variant="dot"
+                        invisible={!user.profile.online}>
+                        <Avatar aria-label="user" className={classes.avatar}>
+                          {user.profile.avatar}
+                        </Avatar>
+                      </ProfileBadge>
+                    }
+                    title={
+                      <div className={classes.userTitle}>
+                        <Typography component="h1" variant="h6">
+                          {user.profile.displayName.value}
+                        </Typography>
+                        <Typography component="p" variant="caption">
+                          {moment(user.createdAt).fromNow()}
+                        </Typography>
+                      </div>
+                    }
+                    subheader={
+                      <div>
+                        <Typography component="p" variant="body2" className={classes.msg}>
+                          {user.message}
+                        </Typography>
+                        <Badge
+                          className={classes.msgCount}
+                          color="primary"
+                          badgeContent={user.unreadCount}
+                        />
+                      </div>
+                    }
+                  />
+                </Card>
+              </Link>
+            ))
+        ) : (
+          <Alert severity="error">Oops! Invalid credential. Please Try again</Alert>
+        )}
         <ScrollTop>
           <Fab color="secondary" size="small" aria-label="scroll back to top">
             <KeyboardArrowUp />

@@ -4,6 +4,9 @@ import {
   GET_MESSAGES_REQUEST,
   GET_MESSAGES_SUCCESS,
   GET_MESSAGES_FAIL,
+  GET_CHAT_LIST_USERS_REQUEST,
+  GET_CHAT_LIST_USERS_SUCCESS,
+  GET_CHAT_LIST_USERS_FAIL,
   GET_ALL_MESSAGES_REQUEST,
   GET_ALL_MESSAGES_SUCCESS,
   GET_ALL_MESSAGES_FAIL,
@@ -52,4 +55,14 @@ export const getAllMessages = (sender, receiver) => async (dispatch) => {
 export const setUserMessages = (data) => async (dispatch) => {
   console.log(data?.messages);
   dispatch({ type: SET_USER_MESSAGES, payload: data });
+};
+
+export const getChatListUsers = (data) => async (dispatch) => {
+  console.log(data);
+  dispatch({ type: GET_CHAT_LIST_USERS_REQUEST });
+  try {
+    dispatch({ type: GET_CHAT_LIST_USERS_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({ type: GET_CHAT_LIST_USERS_FAIL, payload: error.message });
+  }
 };
