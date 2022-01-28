@@ -10,7 +10,9 @@ import {
   GET_ALL_MESSAGES_REQUEST,
   GET_ALL_MESSAGES_SUCCESS,
   GET_ALL_MESSAGES_FAIL,
-  SET_USER_MESSAGES
+  SET_USER_MESSAGES_REQUEST,
+  SET_USER_MESSAGES_SUCCESS,
+  SET_USER_MESSAGES_FAIL
 } from "../constants/messageActionTypes";
 
 export const getMessages = (sender, receiver) => async (dispatch) => {
@@ -53,8 +55,13 @@ export const getAllMessages = (sender, receiver) => async (dispatch) => {
 };
 
 export const setUserMessages = (data) => async (dispatch) => {
-  console.log(data?.messages);
-  dispatch({ type: SET_USER_MESSAGES, payload: data });
+  console.log(data);
+  dispatch({ type: SET_USER_MESSAGES_REQUEST });
+  try {
+    dispatch({ type: SET_USER_MESSAGES_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({ type: SET_USER_MESSAGES_FAIL, payload: error.message });
+  }
 };
 
 export const getChatListUsers = (data) => async (dispatch) => {

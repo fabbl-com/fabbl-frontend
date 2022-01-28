@@ -126,6 +126,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
     socket.emit("get-user-messages", { sender: userId, receiver: query.userId });
     socket.on("get-user-messages-response", (data) => {
       console.log(data);
+      // dispatch()
       dispatch(setUserMessages(data.messages));
     });
   }, [socket]);
@@ -145,8 +146,8 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
       scrollToBottom();
     });
 
-    return () => eventEmitter.removeListener("send-message-response");
-  }, [socket, eventEmitter]);
+    // return () => eventEmitter.removeListener("send-message-response", () => {});
+  }, []);
 
   const sendMessageAndUpdate = (e) => {
     e.preventDefault();

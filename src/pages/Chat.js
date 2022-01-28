@@ -208,7 +208,7 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
           chatListUsers
             .sort((b, a) => new Date(a.createdAt) - new Date(b.createdAt))
             .map((user, i) => (
-              <Link to={`/chat-details?userId=${user?.profile?.id}`} key={i}>
+              <Link to={`/chat-details?userId=${user?.profile?._id}`} key={i}>
                 <Card className={classes.msgCard}>
                   <CardHeader
                     classes={{
@@ -227,7 +227,7 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                         variant="dot"
                         invisible={!user.profile.online}>
                         <Avatar aria-label="user" className={classes.avatar}>
-                          {user.profile.avatar}
+                          {"user.profile.avatar"}
                         </Avatar>
                       </ProfileBadge>
                     }
@@ -249,7 +249,7 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                         <Badge
                           className={classes.msgCount}
                           color="primary"
-                          badgeContent={user.unreadCount}
+                          badgeContent={user.unread}
                         />
                       </div>
                     }
