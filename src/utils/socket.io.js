@@ -23,3 +23,12 @@ export const exitChat = (socket, eventEmitter, userId) => {
     eventEmitter.emit("exit-chat-response", data);
   });
 };
+
+export const getRandomUsers = (socket, data) => {
+  socket.emit("get-random-users", {
+    userId: data.userId,
+    page: data.page,
+    limit: data.limit,
+    choices: data.choices
+  });
+};

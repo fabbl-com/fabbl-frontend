@@ -12,7 +12,10 @@ import {
   GET_ALL_MESSAGES_FAIL,
   SET_USER_MESSAGES_REQUEST,
   SET_USER_MESSAGES_SUCCESS,
-  SET_USER_MESSAGES_FAIL
+  SET_USER_MESSAGES_FAIL,
+  SET_RANDOM_USERS_REQUEST,
+  SET_RANDOM_USERS_SUCCESS,
+  SET_RANDOM_USERS_FAIL
 } from "../constants/messageActionTypes";
 
 export const getMessages = (sender, receiver) => async (dispatch) => {
@@ -71,5 +74,15 @@ export const getChatListUsers = (data) => async (dispatch) => {
     dispatch({ type: GET_CHAT_LIST_USERS_SUCCESS, payload: data });
   } catch (error) {
     dispatch({ type: GET_CHAT_LIST_USERS_FAIL, payload: error.message });
+  }
+};
+
+export const setRandomUsers = (data) => async (dispatch) => {
+  console.log(data);
+  dispatch({ type: SET_RANDOM_USERS_REQUEST });
+  try {
+    dispatch({ type: SET_RANDOM_USERS_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({ type: SET_RANDOM_USERS_FAIL, payload: error.message });
   }
 };
