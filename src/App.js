@@ -15,7 +15,8 @@ import {
   VerifyVoice,
   Random,
   SecurityData,
-  PersonalData
+  PersonalData,
+  ResultCard
 } from "./pages";
 import { Navbar } from "./components";
 import io from "socket.io-client";
@@ -87,6 +88,10 @@ const App = () => {
             <Route path="/image" component={ImageUpload} />
             <Route path="/verifyvoice" component={VerifyVoice} />
             <Route path="/random" component={Random} />
+            <Route
+              path="/result"
+              component={() => <ResultCard isTheme={isTheme} setTheme={setTheme} />}
+            />
           </Switch>
         </Router>
       </ThemeProvider>

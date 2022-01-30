@@ -1,10 +1,10 @@
-import Image from "../animation/random.png";
+import Image from "../animation/random.svg";
 const randomStyles = (theme) => ({
   root: {
     marginTop: theme.spacing(7),
     height: "94vh",
     background: `url(${Image})  no-repeat fixed center `,
-    backgroundSize: "150vw 150vh"
+    backgroundSize: "200vw 200vh"
   },
   searchControl: {
     display: "flex",

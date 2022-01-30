@@ -9,6 +9,7 @@ import Profile from "./Profile";
 import Settings from "./Settings";
 import PersonalData from "./PersonalData";
 import SecurityData from "./SecurityData";
+import ResultCard from "./ResultCard";
 
 export {
   Chat,
@@ -21,5 +22,6 @@ export {
   ImageUpload,
   VerifyVoice,
   SecurityData,
-  Random
+  Random,
+  ResultCard
 };
