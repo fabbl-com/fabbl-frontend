@@ -17,9 +17,11 @@ const Tags = ({ tags, color }) => {
     <Button
       disableRipple
       variant="text"
-      style={{
-        backgroundColor: "#eee"
-      }}
+      style={
+        {
+          // backgroundColor: "#eee"
+        }
+      }
       size="small"
       className={classes.tags}
       key={index}>

@@ -14,8 +14,8 @@ const randomStyles = (theme) => ({
   image: {
     marginTop: "20vh",
     marginBottom: "2vh",
-    height: "8rem",
-    width: "8rem"
+    height: "9rem",
+    width: "9rem"
   }
 });
 
