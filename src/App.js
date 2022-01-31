@@ -87,10 +87,17 @@ const App = () => {
             <Route path="/auth" component={Auth} />
             <Route path="/image" component={ImageUpload} />
             <Route path="/verifyvoice" component={VerifyVoice} />
-            <Route path="/random" component={Random} />
+
             <Route
               path="/result"
               component={() => <ResultCard isTheme={isTheme} setTheme={setTheme} />}
+            />
+
+            <Route
+              path="/random"
+              component={() => (
+                <Random userId={userId} socket={socket} eventEmitter={eventEmitter} />
+              )}
             />
           </Switch>
         </Router>

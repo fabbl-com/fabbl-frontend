@@ -1,6 +1,6 @@
 export const getChatList = (socket, eventEmitter, userId) => {
   console.log(userId);
-  socket.emit("chat-list", { userId });
+  socket.emit("chat-list", userId);
   socket.on("chat-list-response", (data) => {
     eventEmitter.emit("chat-list-response", data);
   });
@@ -21,5 +21,14 @@ export const exitChat = (socket, eventEmitter, userId) => {
   socket.emit("exit-chat", userId);
   socket.on("exit-chat-response", (data) => {
     eventEmitter.emit("exit-chat-response", data);
+  });
+};
+
+export const getRandomUsers = (socket, data) => {
+  socket.emit("get-random-users", {
+    userId: data.userId,
+    page: data.page,
+    limit: data.limit,
+    choices: data.choices
   });
 };
