@@ -16,7 +16,8 @@ import {
   Random,
   SecurityData,
   PersonalData,
-  ResultCard
+  ResultCard,
+  VerifyEmail
 } from "./pages";
 import { Navbar } from "./components";
 import io from "socket.io-client";
@@ -99,6 +100,7 @@ const App = () => {
                 <Random userId={userId} socket={socket} eventEmitter={eventEmitter} />
               )}
             />
+            <Route path="/user/verify-email" component={VerifyEmail} />
           </Switch>
         </Router>
       </ThemeProvider>

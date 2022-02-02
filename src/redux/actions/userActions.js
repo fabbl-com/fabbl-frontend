@@ -8,7 +8,10 @@ import {
   USER_SIGNIN_REQUEST,
   USER_SIGNIN_SUCCESS,
   USER_SIGNOUT,
-  SET_USER
+  SET_USER,
+  EMAIL_VERIFY_REQUEST,
+  EMAIL_VERIFY_SUCCESS,
+  EMAIL_VERIFY_FAIL
 } from "../constants/userActionTypes";
 
 export const register = (userId) => async (dispatch) => {
@@ -58,4 +61,23 @@ export const signout = () => async (dispatch) => {
 export const setUser = (userId) => async (dispatch) => {
   dispatch({ type: SET_USER, payload: userId });
   localStorage.setItem("userId", JSON.stringify(userId));
+};
+
+export const verifyEmail = (token) => async (dispatch) => {
+  dispatch({ type: EMAIL_VERIFY_REQUEST });
+  try {
+    const { data } = await Axios.get(`/user/verify-email/${token}`);
+    console.log(data);
+    dispatch({ type: EMAIL_VERIFY_SUCCESS, payload: data });
+  } catch (error) {
+    console.log(error);
+    dispatch({
+      type: EMAIL_VERIFY_FAIL,
+      payload: {
+        code: error.response.status,
+        message:
+          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+      }
+    });
+  }
 };

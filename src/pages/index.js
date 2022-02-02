@@ -10,6 +10,7 @@ import Settings from "./Settings";
 import PersonalData from "./PersonalData";
 import SecurityData from "./SecurityData";
 import ResultCard from "./ResultCard";
+import VerifyEmail from "./VerifyEmail";
 
 export {
   Chat,
@@ -23,5 +24,6 @@ export {
   VerifyVoice,
   SecurityData,
   Random,
-  ResultCard
+  ResultCard,
+  VerifyEmail
 };

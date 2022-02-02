@@ -8,7 +8,10 @@ import {
   SET_USER,
   GET_ALL_USERS_REQUEST,
   GET_ALL_USERS_SUCCESS,
-  GET_ALL_USERS_FAIL
+  GET_ALL_USERS_FAIL,
+  EMAIL_VERIFY_REQUEST,
+  EMAIL_VERIFY_SUCCESS,
+  EMAIL_VERIFY_FAIL
 } from "../constants/userActionTypes";
 
 const initialState = {
@@ -16,7 +19,8 @@ const initialState = {
   isAuth: false,
   loading: false,
   userInfo: {},
-  userId: localStorage.getItem("userId")
+  isEmailVerified: false,
+  userId: JSON.parse(localStorage.getItem("userId"))
 };
 
 export default (state = initialState, action) => {
@@ -24,6 +28,7 @@ export default (state = initialState, action) => {
     case USER_REGISTER_REQUEST:
     case USER_SIGNIN_REQUEST:
     case GET_ALL_USERS_REQUEST:
+    case EMAIL_VERIFY_REQUEST:
       return { ...state, loading: true };
     case USER_REGISTER_SUCCESS:
     case USER_SIGNIN_SUCCESS:
@@ -35,6 +40,14 @@ export default (state = initialState, action) => {
         loading: false,
         error: null
       };
+    case EMAIL_VERIFY_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        isEmailVerified: true,
+        ...action.payload,
+        error: null
+      };
     case USER_SIGNIN_FAIL:
     case USER_REGISTER_FAIL:
       localStorage.removeItem("userId");
@@ -42,6 +55,13 @@ export default (state = initialState, action) => {
         ...state,
         userInfo: {},
         isAuth: false,
+        loading: false,
+        error: action.payload
+      };
+    case EMAIL_VERIFY_FAIL:
+      return {
+        ...state,
+        isEMailVerified: false,
         loading: false,
         error: action.payload
       };
