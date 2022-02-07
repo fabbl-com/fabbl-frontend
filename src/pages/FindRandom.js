@@ -3,9 +3,10 @@ import { connect, useDispatch, useSelector } from "react-redux";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { Container, Avatar, Typography, IconButton, Button } from "@material-ui/core";
 import { randomStyles } from "../assets/jss/index";
-import { getRandomUsers } from "../utils/socket.io";
+import { getRandomUsers, like, getLikes } from "../utils/socket.io";
 import { PropTypes } from "prop-types";
 import { setRandomUsers } from "../redux/actions/messageActions";
+import { setLikes } from "../redux/actions/userActions";
 import lottie from "lottie-web";
 import profileSearching from "../assets/animation/profileSearching.json";
 import matching from "../assets/animation/matching.json";
@@ -60,6 +61,13 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
     });
   }, [page]);
 
+  useEffect(() => {
+    getLikes(socket, eventEmitter);
+    eventEmitter.on("like-response", (data) => {
+      dispatch(setLikes(data.likes));
+    });
+  }, [eventEmitter]);
+
   const [currentIndex, setCurrentIndex] = useState(SIZE - 1);
   const currentIndexRef = useRef(currentIndex);
 
@@ -79,9 +87,12 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
   const canGoBack = currentIndex < SIZE - 1;
 
   const canSwipe = currentIndex >= 0;
-  const swiped = (direction, nameToDelete, index) => {
-    console.log(direction, nameToDelete, index);
+  const swiped = (direction, id, index) => {
+    console.log(direction, id, index);
     // send to likes Array
+    if (direction === "right") {
+      like(socket, { senderId: userId, receiverId: id });
+    }
     updateCurrentIndex(index - 1);
   };
 
@@ -133,7 +144,7 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
                 ref={childRefs[i]}
                 className={classes.profileCard}
                 preventSwipe={["up", "down"]}
-                onSwipe={(dir) => swiped(dir, user.profile.displayName.value, i)}
+                onSwipe={(dir) => swiped(dir, user.profile._id, i)}
                 onCardLeftScreen={() => outOfFrame(user.profile.displayName.value, i)}>
                 <ProfileCard
                   displayName={user.profile.displayName}
@@ -160,13 +171,13 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
             <Button
               disabled={!canSwipe}
               className={classNames(classes.btn, classes.btn_close)}
-              onClick={() => swipe("right")}>
+              onClick={() => swipe("left")}>
               <Close />
             </Button>
             <Button
               disabled={!canSwipe}
               className={classNames(classes.btn, classes.btn_like)}
-              onClick={() => swipe("left")}>
+              onClick={() => swipe("right")}>
               <Favorite className={classes.like} />
             </Button>
           </div>

@@ -11,7 +11,10 @@ import {
   SET_USER,
   EMAIL_VERIFY_REQUEST,
   EMAIL_VERIFY_SUCCESS,
-  EMAIL_VERIFY_FAIL
+  EMAIL_VERIFY_FAIL,
+  SET_LIKES_REQUEST,
+  SET_LIKES_SUCCESS,
+  SET_LIKES_FAIL
 } from "../constants/userActionTypes";
 
 export const register = (userId) => async (dispatch) => {
@@ -78,5 +81,15 @@ export const verifyEmail = (token) => async (dispatch) => {
           error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
       }
     });
+  }
+};
+
+export const setLikes = (data) => async (dispatch) => {
+  console.log(data);
+  dispatch({ type: SET_LIKES_REQUEST });
+  try {
+    dispatch({ type: SET_LIKES_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({ type: SET_LIKES_FAIL, payload: error.message });
   }
 };
