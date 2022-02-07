@@ -19,7 +19,6 @@ export const register = (userId) => async (dispatch) => {
   try {
     const { data } = await Axios.post("/auth/register", userId);
     dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
-    localStorage.setItem("userId", JSON.stringify(data));
   } catch (error) {
     console.log(error.response);
     dispatch({
@@ -60,7 +59,7 @@ export const signout = () => async (dispatch) => {
 
 export const setUser = (userId) => async (dispatch) => {
   dispatch({ type: SET_USER, payload: userId });
-  localStorage.setItem("userId", JSON.stringify(userId));
+  localStorage.setItem("userId", userId);
 };
 
 export const verifyEmail = (token) => async (dispatch) => {

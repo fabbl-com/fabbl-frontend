@@ -20,7 +20,7 @@ const initialState = {
   loading: false,
   userInfo: {},
   isEmailVerified: false,
-  userId: JSON.parse(localStorage.getItem("userId"))
+  userId: localStorage.getItem("userId")
 };
 
 export default (state = initialState, action) => {
@@ -32,7 +32,7 @@ export default (state = initialState, action) => {
       return { ...state, loading: true };
     case USER_REGISTER_SUCCESS:
     case USER_SIGNIN_SUCCESS:
-      localStorage.setItem("userId", JSON.stringify(action.payload.userId));
+      localStorage.setItem("userId", action.payload.userId);
       return {
         ...state,
         ...action.payload,
@@ -69,7 +69,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        ...action.payload
+        userId: action.payload
       };
     case GET_ALL_USERS_SUCCESS:
       return {

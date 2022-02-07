@@ -1,3 +1,5 @@
 import Navbar from "./Navbar";
+import ProfileCard from "./ProfileCard";
+import Tags from "./Tags";
 
-export { Navbar };
+export { Navbar, ProfileCard, Tags };

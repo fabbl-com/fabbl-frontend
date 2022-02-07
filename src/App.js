@@ -13,7 +13,7 @@ import {
   Settings,
   ImageUpload,
   VerifyVoice,
-  Random,
+  FindRandom,
   SecurityData,
   PersonalData,
   ResultCard,
@@ -28,7 +28,7 @@ const ENDPOINT = "http://localhost:4000";
 const App = () => {
   const [isTheme, setTheme] = useState(false);
   const [socket, setSocket] = useState(null);
-  const userId = localStorage.getItem("userId") ? JSON.parse(localStorage.getItem("userId")) : null;
+  const userId = localStorage.getItem("userId") || null;
 
   const eventEmitter = new events.EventEmitter();
 
@@ -88,16 +88,10 @@ const App = () => {
             <Route path="/auth" component={Auth} />
             <Route path="/image" component={ImageUpload} />
             <Route path="/verifyvoice" component={VerifyVoice} />
-
             <Route
-              path="/result"
-              component={() => <ResultCard isTheme={isTheme} setTheme={setTheme} />}
-            />
-
-            <Route
-              path="/random"
+              path="/find"
               component={() => (
-                <Random userId={userId} socket={socket} eventEmitter={eventEmitter} />
+                <FindRandom userId={userId} socket={socket} eventEmitter={eventEmitter} />
               )}
             />
             <Route path="/user/verify-email" component={VerifyEmail} />
