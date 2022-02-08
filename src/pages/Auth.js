@@ -21,7 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { Alert } from "@material-ui/lab";
-import { Link } from "react-router-dom";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: "#2e9cca",
@@ -75,8 +75,7 @@ const Auth = () => {
 
   return (
     <Container maxWidth="sm" className={classes.root}>
-      {Object.keys(err).length !== 0 &&
-        err.constructor === Object &&
+      {err &&
         (err.code === 401 ? (
           <Alert severity="error">Oops! Invalid credential. Please Try again</Alert>
         ) : (
