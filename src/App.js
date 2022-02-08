@@ -16,8 +16,8 @@ import {
   FindRandom,
   SecurityData,
   PersonalData,
-  ResultCard,
-  VerifyEmail
+  VerifyEmail,
+  ResetPassword
 } from "./pages";
 import { Navbar } from "./components";
 import io from "socket.io-client";
@@ -95,6 +95,10 @@ const App = () => {
               )}
             />
             <Route path="/user/verify-email" component={VerifyEmail} />
+            <Route
+              path="/user/reset-password"
+              component={() => <ResetPassword userId={userId} />}
+            />
           </Switch>
         </Router>
       </ThemeProvider>

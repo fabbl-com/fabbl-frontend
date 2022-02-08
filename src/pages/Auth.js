@@ -17,7 +17,7 @@ import { FacebookIcon, GoogleIcon } from "../assets/icons/index";
 import { register, login } from "../redux/actions/userActions";
 import { useDispatch, useSelector } from "react-redux";
 import { Alert } from "@material-ui/lab";
-import { Link } from "react-router-dom";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     height: "97vh",
@@ -75,8 +75,7 @@ const Auth = () => {
 
   return (
     <Container maxWidth="sm" className={classes.root}>
-      {Object.keys(err).length !== 0 &&
-        err.constructor === Object &&
+      {err &&
         (err.code === 401 ? (
           <Alert severity="error">Oops! Invalid credential. Please Try again</Alert>
         ) : (

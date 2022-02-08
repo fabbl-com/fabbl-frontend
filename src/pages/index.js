@@ -10,6 +10,7 @@ import Settings from "./Settings";
 import PersonalData from "./PersonalData";
 import SecurityData from "./SecurityData";
 import VerifyEmail from "./VerifyEmail";
+import ResetPassword from "./ResetPassword";
 
 export {
   Chat,
@@ -23,5 +24,6 @@ export {
   VerifyVoice,
   SecurityData,
   FindRandom,
-  VerifyEmail
+  VerifyEmail,
+  ResetPassword
 };

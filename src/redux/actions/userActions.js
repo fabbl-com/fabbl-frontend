@@ -14,7 +14,10 @@ import {
   EMAIL_VERIFY_FAIL,
   SET_LIKES_REQUEST,
   SET_LIKES_SUCCESS,
-  SET_LIKES_FAIL
+  SET_LIKES_FAIL,
+  RESET_PASSWORD_REQUEST,
+  RESET_PASSWORD_SUCCESS,
+  RESET_PASSWORD_FAIL
 } from "../constants/userActionTypes";
 
 export const register = (userId) => async (dispatch) => {
@@ -93,3 +96,25 @@ export const setLikes = (data) => async (dispatch) => {
     dispatch({ type: SET_LIKES_FAIL, payload: error.message });
   }
 };
+
+export const resetPassword =
+  ({ userId, password }) =>
+  async (dispatch) => {
+    dispatch({ type: RESET_PASSWORD_REQUEST });
+    try {
+      const { data } = await Axios.post(`/user/update-password/${userId}`, {
+        newPassword: password
+      });
+      dispatch({ type: RESET_PASSWORD_SUCCESS, payload: data });
+    } catch (error) {
+      console.log(error);
+      dispatch({
+        type: RESET_PASSWORD_FAIL,
+        payload: {
+          code: error.response.status,
+          message:
+            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+        }
+      });
+    }
+  };
