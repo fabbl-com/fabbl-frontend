@@ -8,14 +8,25 @@ import {
   SET_USER,
   GET_ALL_USERS_REQUEST,
   GET_ALL_USERS_SUCCESS,
-  GET_ALL_USERS_FAIL
+  GET_ALL_USERS_FAIL,
+  EMAIL_VERIFY_REQUEST,
+  EMAIL_VERIFY_SUCCESS,
+  EMAIL_VERIFY_FAIL,
+  SET_LIKES_REQUEST,
+  SET_LIKES_SUCCESS,
+  SET_LIKES_FAIL,
+  RESET_PASSWORD_REQUEST,
+  RESET_PASSWORD_SUCCESS,
+  RESET_PASSWORD_FAIL
 } from "../constants/userActionTypes";
 
 const initialState = {
-  error: {},
+  error: null,
   isAuth: false,
   loading: false,
-  userInfo: {},
+  likes: [],
+  userInfo: null,
+  isEmailVerified: false,
   userId: localStorage.getItem("userId")
 };
 
@@ -24,10 +35,13 @@ export default (state = initialState, action) => {
     case USER_REGISTER_REQUEST:
     case USER_SIGNIN_REQUEST:
     case GET_ALL_USERS_REQUEST:
+    case EMAIL_VERIFY_REQUEST:
+    case SET_LIKES_REQUEST:
+    case RESET_PASSWORD_REQUEST:
       return { ...state, loading: true };
     case USER_REGISTER_SUCCESS:
     case USER_SIGNIN_SUCCESS:
-      localStorage.setItem("userId", JSON.stringify(action.payload.userId));
+      localStorage.setItem("userId", action.payload.userId);
       return {
         ...state,
         ...action.payload,
@@ -35,13 +49,44 @@ export default (state = initialState, action) => {
         loading: false,
         error: null
       };
+    case EMAIL_VERIFY_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        isEmailVerified: true,
+        ...action.payload,
+        error: null
+      };
+    case RESET_PASSWORD_SUCCESS:
+    case SET_LIKES_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        error: null,
+        ...action.payload
+      };
     case USER_SIGNIN_FAIL:
     case USER_REGISTER_FAIL:
       localStorage.removeItem("userId");
       return {
         ...state,
-        userInfo: {},
+        userInfo: null,
         isAuth: false,
+        loading: false,
+        error: action.payload
+      };
+    case EMAIL_VERIFY_FAIL:
+      return {
+        ...state,
+        isEmailVerified: false,
+        loading: false,
+        error: action.payload
+      };
+    case RESET_PASSWORD_FAIL:
+    case GET_ALL_USERS_FAIL:
+    case SET_LIKES_FAIL:
+      return {
+        ...state,
         loading: false,
         error: action.payload
       };
@@ -49,19 +94,13 @@ export default (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        ...action.payload
+        userId: action.payload
       };
     case GET_ALL_USERS_SUCCESS:
       return {
         ...state,
         loading: false,
         messagedUsers: [...action.payload]
-      };
-    case GET_ALL_USERS_FAIL:
-      return {
-        ...state,
-        loading: false,
-        error: action.payload
       };
     default:
       return state;

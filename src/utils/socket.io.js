@@ -32,3 +32,13 @@ export const getRandomUsers = (socket, data) => {
     choices: data.choices
   });
 };
+
+export const like = (socket, data) => {
+  socket.emit("like", data);
+};
+
+export const getLikes = (socket, eventEmitter) => {
+  socket.on("like-response", (data) => {
+    eventEmitter.emit("like-response", data);
+  });
+};

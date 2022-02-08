@@ -8,7 +8,16 @@ import {
   USER_SIGNIN_REQUEST,
   USER_SIGNIN_SUCCESS,
   USER_SIGNOUT,
-  SET_USER
+  SET_USER,
+  EMAIL_VERIFY_REQUEST,
+  EMAIL_VERIFY_SUCCESS,
+  EMAIL_VERIFY_FAIL,
+  SET_LIKES_REQUEST,
+  SET_LIKES_SUCCESS,
+  SET_LIKES_FAIL,
+  RESET_PASSWORD_REQUEST,
+  RESET_PASSWORD_SUCCESS,
+  RESET_PASSWORD_FAIL
 } from "../constants/userActionTypes";
 
 export const register = (userId) => async (dispatch) => {
@@ -16,7 +25,6 @@ export const register = (userId) => async (dispatch) => {
   try {
     const { data } = await Axios.post("/auth/register", userId);
     dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
-    localStorage.setItem("userId", JSON.stringify(data));
   } catch (error) {
     console.log(error.response);
     dispatch({
@@ -57,5 +65,56 @@ export const signout = () => async (dispatch) => {
 
 export const setUser = (userId) => async (dispatch) => {
   dispatch({ type: SET_USER, payload: userId });
-  localStorage.setItem("userId", JSON.stringify(userId));
+  localStorage.setItem("userId", userId);
 };
+
+export const verifyEmail = (token) => async (dispatch) => {
+  dispatch({ type: EMAIL_VERIFY_REQUEST });
+  try {
+    const { data } = await Axios.get(`/user/verify-email/${token}`);
+    console.log(data);
+    dispatch({ type: EMAIL_VERIFY_SUCCESS, payload: data });
+  } catch (error) {
+    console.log(error);
+    dispatch({
+      type: EMAIL_VERIFY_FAIL,
+      payload: {
+        code: error.response.status,
+        message:
+          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+      }
+    });
+  }
+};
+
+export const setLikes = (data) => async (dispatch) => {
+  console.log(data);
+  dispatch({ type: SET_LIKES_REQUEST });
+  try {
+    dispatch({ type: SET_LIKES_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({ type: SET_LIKES_FAIL, payload: error.message });
+  }
+};
+
+export const resetPassword =
+  ({ userId, password }) =>
+  async (dispatch) => {
+    dispatch({ type: RESET_PASSWORD_REQUEST });
+    try {
+      const { data } = await Axios.post(`/user/update-password/${userId}`, {
+        newPassword: password
+      });
+      dispatch({ type: RESET_PASSWORD_SUCCESS, payload: data });
+    } catch (error) {
+      console.log(error);
+      dispatch({
+        type: RESET_PASSWORD_FAIL,
+        payload: {
+          code: error.response.status,
+          message:
+            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+        }
+      });
+    }
+  };

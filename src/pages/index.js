@@ -4,12 +4,13 @@ import Home from "./Home";
 import Auth from "./Auth";
 import ImageUpload from "./imageUpload";
 import VerifyVoice from "./VerifyVoice";
-import Random from "./Random";
+import FindRandom from "./FindRandom";
 import Profile from "./Profile";
 import Settings from "./Settings";
 import PersonalData from "./PersonalData";
 import SecurityData from "./SecurityData";
-import ResultCard from "./ResultCard";
+import VerifyEmail from "./VerifyEmail";
+import ResetPassword from "./ResetPassword";
 
 export {
   Chat,
@@ -22,6 +23,7 @@ export {
   ImageUpload,
   VerifyVoice,
   SecurityData,
-  Random,
-  ResultCard
+  FindRandom,
+  VerifyEmail,
+  ResetPassword
 };
