@@ -9,13 +9,14 @@ import {
   Button,
   Grid,
   Avatar,
-  Badge
+  Badge,
+  IconButton
 } from "@material-ui/core";
 import Circle from "@material-ui/icons/FiberManualRecord";
 import AddAPhotofrom from "@material-ui/icons/AddAPhotoRounded";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import lottie from "lottie-web";
-
+import { Link } from "react-router-dom";
 const useStyles = makeStyles(() => ({
   root: {
     height: "100vh",
@@ -71,7 +72,14 @@ const ImageUpload = () => {
             horizontal: "right"
           }}
           badgeContent={
-            isUpload || <AddAPhotofrom style={{ fontSize: "2.5rem", color: "#4D38A2" }} />
+            <>
+              <input accept="image/*" style={{ display: "none" }} id="upload-avatar" type="file" />
+              <label htmlFor="upload-avatar">
+                <IconButton aria-label="upload avatar" component="span">
+                  {isUpload || <AddAPhotofrom style={{ fontSize: "2.5rem", color: "#4D38A2" }} />}
+                </IconButton>
+              </label>
+            </>
           }>
           <Avatar
             variant="rounded"
@@ -105,9 +113,15 @@ const ImageUpload = () => {
       </Grid>
 
       <Box align="center" m={2}>
-        <Circle fontSize="small" style={{ color: "#fff" }} />
-        <Circle fontSize="small" color="primary" />
-        <Circle fontSize="small" style={{ color: "#fff" }} />
+        <Link to="/auth">
+          <Circle fontSize="small" style={{ color: "#fff" }} />
+        </Link>
+        <Link to="/image">
+          <Circle fontSize="small" color="primary" />
+        </Link>
+        <Link to="/verifyvoice">
+          <Circle fontSize="small" style={{ color: "#fff" }} />
+        </Link>
       </Box>
 
       <div className={classes.authControll}>

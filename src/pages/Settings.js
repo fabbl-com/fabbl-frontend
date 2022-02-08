@@ -9,7 +9,9 @@ import {
   Switch,
   FormControl,
   Select,
-  MenuItem
+  MenuItem,
+  Button,
+  Box
 } from "@material-ui/core";
 import {
   KeyboardBackspace,
@@ -176,6 +178,11 @@ const Settings = ({ isTheme, setTheme }) => {
           </div>
         </div>
       </div>
+      <Box align="center" mb={2} mt={1}>
+        <Button variant="contained" color="secondary">
+          Update Profile
+        </Button>
+      </Box>
     </Container>
   );
 };

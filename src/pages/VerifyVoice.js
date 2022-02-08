@@ -14,14 +14,15 @@ import {
 import Circle from "@material-ui/icons/FiberManualRecord";
 import MicIcon from "@material-ui/icons/Mic";
 import lottie from "lottie-web";
-
+import { Link } from "react-router-dom";
 import animationData from "../assets/animation/auth.json";
-
+import recordAnimationData from "../assets/animation/recordAnimation.json";
+import sentence from "../utils/randomSentence";
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "110vh",
     backgroundColor: "#2e9cca",
-    color: "#fff"
+    color: "#fff",
+    marginBottom: "2.2rem"
   },
   authControll: {
     backgroundColor: "#fff",
@@ -60,6 +61,9 @@ const useStyles = makeStyles((theme) => ({
   animation: {
     height: "15rem",
     marginTop: theme.spacing(0)
+  },
+  recordAnimation: {
+    height: "6rem"
   }
 }));
 
@@ -67,6 +71,7 @@ const VoiceUpload = () => {
   const theme = useTheme();
   const classes = useStyles(theme);
   const [Gender, setGender] = useState("");
+  const [isRecording, setRecording] = useState(false);
 
   const container = useRef(null);
 
@@ -77,6 +82,18 @@ const VoiceUpload = () => {
       loop: true,
       autoplay: true,
       animationData
+    });
+  }, []);
+
+  const box = useRef(null);
+
+  useEffect(() => {
+    lottie.loadAnimation({
+      container: container.current,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+      recordAnimationData
     });
   }, []);
 
@@ -109,17 +126,22 @@ const VoiceUpload = () => {
           </FormControl>
         </Grid>
       </Grid>
+
       <Typography variant="h5" align="center">
         Speak the lines
       </Typography>
       <Box align="center" className={classes.lines}>
         <Typography variant="body1" align="left">
-          The quick, brown fox jumps over a lazy dog. DJs flock by when MTV ax quiz prog. Junk MTV
+          {sentence()}
         </Typography>
       </Box>
-      <div className={classes.mic}>
-        <MicIcon style={{ fontSize: "3rem", color: "#D31D71" }} />
-      </div>
+      <Button className={classes.mic} onClick={() => setRecording(!isRecording)}>
+        {isRecording ? (
+          <div className={classes.recordAnimation} ref={box}></div>
+        ) : (
+          <MicIcon style={{ fontSize: "3rem", color: "#D31D71" }} />
+        )}
+      </Button>
       <Typography variant="subtitle1" align="center">
         {" "}
         Tap to record{" "}
@@ -128,9 +150,15 @@ const VoiceUpload = () => {
         Verify
       </Button>
       <Box align="center" m={2}>
-        <Circle fontSize="small" style={{ color: "#fff" }} />
-        <Circle fontSize="small" style={{ color: "#fff" }} />
-        <Circle fontSize="small" color="primary" />
+        <Link to="/auth">
+          <Circle fontSize="small" style={{ color: "#fff" }} />
+        </Link>
+        <Link to="/image">
+          <Circle fontSize="small" style={{ color: "#fff" }} />
+        </Link>
+        <Link to="/verifyvoice">
+          <Circle fontSize="small" color="primary" />
+        </Link>
       </Box>
 
       <div className={classes.authControll}>

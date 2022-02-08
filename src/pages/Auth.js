@@ -8,7 +8,9 @@ import {
   FormControlLabel,
   Checkbox,
   Box,
-  Grid
+  Grid,
+  InputAdornment,
+  IconButton
 } from "@material-ui/core";
 import Circle from "@material-ui/icons/FiberManualRecord";
 import lottie from "lottie-web";
@@ -16,22 +18,19 @@ import animationData from "../assets/animation/auth.json";
 import { FacebookIcon, GoogleIcon } from "../assets/icons/index";
 import { register, login } from "../redux/actions/userActions";
 import { useDispatch, useSelector } from "react-redux";
+import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { Alert } from "@material-ui/lab";
 import { Link } from "react-router-dom";
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "97vh",
     backgroundColor: "#2e9cca",
     marginTop: "3rem",
+    marginBottom: "2.2rem",
     color: "#fff"
   },
   form: {
     width: "100%"
-  },
-  submit: {
-    margin: theme.spacing(2, 0, 2),
-    width: "8rem",
-    backgroundColor: "#d31d71"
   },
   authControll: {
     backgroundColor: "#fff",
@@ -51,7 +50,8 @@ const Auth = () => {
   const classes = useStyles(theme);
   const [isRegistered, setRegistered] = useState(false);
   const [user, setUser] = useState(null);
-
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const container = useRef(null);
   const dispatch = useDispatch();
 
@@ -119,42 +119,86 @@ const Auth = () => {
           fullWidth
           name="password"
           label="Password"
-          type="password"
+          type={showPassword ? "text" : "password"}
           vaule={user?.password}
           onChange={(e) => setUser((state) => ({ ...state, password: e.target.value }))}
           margin="normal"
           InputLabelProps={{
             className: classes.textfield
           }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  color="secondary"
+                  aria-label="toggle password visibility"
+                  onClick={() => {
+                    setShowPassword(!showPassword);
+                  }}>
+                  {showPassword ? <Visibility /> : <VisibilityOff />}
+                </IconButton>
+              </InputAdornment>
+            )
+          }}
         />
+
         {isRegistered && (
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me for 30 days"
-          />
+          <Box display="flex" justifyContent="space-between">
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={rememberMe}
+                  name="RememberMe"
+                  value={user?.RememberMe}
+                  color="primary"
+                />
+              }
+              onChange={(e) => {
+                setRememberMe(!rememberMe);
+                setUser((state) => ({ ...state, rememberMe: e.target.checked }));
+              }}
+              label="Remember me"
+            />
+            <Box mt={2}>
+              <Link to="/">Forgot your password</Link>
+            </Box>
+          </Box>
         )}
+
         <div align="center">
-          <Button type="submit" variant="contained" className={classes.submit}>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            style={{ backgroundColor: "#ef006f" }}>
             {!isRegistered ? "Register" : "Login"}
           </Button>
         </div>
       </form>
       <Typography variant="subtitle1" align="center" paragraph>
-        Or Login with using social media
+        ------ Or--------
       </Typography>
 
-      <Grid container direction="row" spacing={4} justifyContent="center">
+      <Grid container direction="column" spacing={1} justifyContent="center">
         <Grid item>
           <form action="http://localhost:4000/auth/google">
-            <Button type="submit">
-              <GoogleIcon />
+            <Button
+              type="submit"
+              fullWidth
+              startIcon={<GoogleIcon />}
+              style={{ backgroundColor: "#FF5403" }}>
+              {"  "} Login with Google
             </Button>
           </form>
         </Grid>
         <Grid item>
           <form action="http://localhost:4000/auth/facebook">
-            <Button type="submit">
-              <FacebookIcon />
+            <Button
+              type="submit"
+              fullWidth
+              startIcon={<FacebookIcon />}
+              style={{ backgroundColor: "#7900FF" }}>
+              {"  "} Login with Facebook
             </Button>
           </form>
         </Grid>

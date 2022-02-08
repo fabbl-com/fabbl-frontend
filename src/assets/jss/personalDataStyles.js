@@ -49,11 +49,12 @@ const chatStyles = (theme) => ({
   radioGroup: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
     width: "100%"
   },
   button: {
     borderColor: theme.palette.text.secondary,
+    margin: theme.spacing(1),
     "&.Mui-disabled": {
       backgroundColor: theme.palette.background.disabled,
       color: theme.palette.text.primary
