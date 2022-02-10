@@ -226,7 +226,10 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                         overlap="circular"
                         variant="dot"
                         invisible={!user.profile.online}>
-                        <Avatar aria-label="user" className={classes.avatar}>
+                        <Avatar
+                          aria-label="user"
+                          src={user.profile.avatar.value}
+                          className={classes.avatar}>
                           {"user.profile.avatar"}
                         </Avatar>
                       </ProfileBadge>

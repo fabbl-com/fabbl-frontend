@@ -53,7 +53,7 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
       userId,
       page,
       limit: 10,
-      choices: { gender: "female", day: 1 }
+      choices: { day: 1 }
     };
     getRandomUsers(socket, data);
     socket.on("get-random-users-response", (data) => {
@@ -138,28 +138,30 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
       ) : (
         <div className={classes.cardContainer}>
           <div className={classes.profileCardContainer}>
-            {randomUsers.map((user, i) => (
-              <TinderCard
-                key={i}
-                ref={childRefs[i]}
-                className={classes.profileCard}
-                preventSwipe={["up", "down"]}
-                onSwipe={(dir) => swiped(dir, user.profile._id, i)}
-                onCardLeftScreen={() => outOfFrame(user.profile.displayName.value, i)}>
-                <ProfileCard
-                  displayName={user.profile.displayName}
-                  avatar={user.profile.avatar}
-                  headline={user.profile.headline}
-                  gender={user.profile.gender}
-                  city={user.profile.city}
-                  country={user.profile.country}
-                  relationshipStatus={user.profile.relationshipStatus}
-                  dob={user.profile.dob}
-                  isProfileVerified={user.profile.isProfileVerified}
-                  hobby={user.profile.hobby}
-                />
-              </TinderCard>
-            ))}
+            {randomUsers
+              .sort((a, b) => a.score - b.score)
+              .map((user, i) => (
+                <TinderCard
+                  key={i}
+                  ref={childRefs[i]}
+                  className={classes.profileCard}
+                  preventSwipe={["up", "down"]}
+                  onSwipe={(dir) => swiped(dir, user.profile._id, i)}
+                  onCardLeftScreen={() => outOfFrame(user.profile.displayName.value, i)}>
+                  <ProfileCard
+                    displayName={user.profile.displayName}
+                    avatar={user.profile.avatar}
+                    headline={user.profile.headline}
+                    gender={user.profile.gender}
+                    city={user.profile.city}
+                    country={user.profile.country}
+                    relationshipStatus={user.profile.relationshipStatus}
+                    dob={user.profile.dob}
+                    isProfileVerified={user.profile.isProfileVerified}
+                    hobby={user.profile.hobby}
+                  />
+                </TinderCard>
+              ))}
           </div>
           <div className={classes.action}>
             <Button
