@@ -29,6 +29,7 @@ import {
   InsertEmoticon,
   Gif
 } from "@material-ui/icons";
+import { Skeleton } from "@material-ui/lab";
 import { Link } from "react-router-dom";
 import { PropTypes } from "prop-types";
 import queryString from "query-string";
@@ -140,7 +141,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   }, [msgs]);
 
   useEffect(() => {
-    receiveMessage(socket, eventEmitter);
+    receiveMessage(dispatch, socket, eventEmitter);
     eventEmitter.on("send-message-response", (message) => {
       setMsgs((state) => [...state, message]);
       scrollToBottom();
@@ -275,22 +276,31 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                   <span>learn more</span>
                 </Link>
               </Typography>
-              {!loading ? (
-                msgs
-                  .sort((a, b) => a.createdAt - b.createdAt)
-                  .map((msg, index) => (
-                    <div key={index}>
-                      <Message
-                        align={msg.sender === userId ? "left" : "right"}
-                        time={msg.createdAt}
-                        isRead={msg.isRead}>
-                        {msg.text}
-                      </Message>
+              {!loading
+                ? msgs
+                    .sort((a, b) => a.createdAt - b.createdAt)
+                    .map((msg, index) => (
+                      <div key={index}>
+                        <Message
+                          align={msg.sender === userId ? "left" : "right"}
+                          time={msg.createdAt}
+                          isRead={msg.isRead}>
+                          {msg.text}
+                        </Message>
+                      </div>
+                    ))
+                : [...new Array(9)].map((_, i) => (
+                    <div
+                      key={i}
+                      style={{ display: "flex", width: "100%", flexDirection: "column" }}>
+                      <Skeleton
+                        height={60}
+                        style={{ alignSelf: i % 2 == 0 ? "start" : "end", borderRadius: "1ch" }}
+                        width="50%"
+                        animation="wave"
+                      />
                     </div>
-                  ))
-              ) : (
-                <div>Loading...</div>
-              )}
+                  ))}
             </div>
             <div className={classes.msgWrapper}>
               <form onSubmit={sendMessageAndUpdate} className={classes.sendMessage}>
