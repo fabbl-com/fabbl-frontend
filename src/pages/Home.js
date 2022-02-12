@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Button, Container, Typography, Link } from "@material-ui/core";
+import { Button, Container, Typography } from "@material-ui/core";
 import lottie from "lottie-web";
 import queryString from "query-string";
 import animationData from "../assets/animation/home.json";
 import { useDispatch } from "react-redux";
-import { useHistory, useLocation } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import { setUser } from "../redux/actions/userActions";
 function Copyright() {
   return (
@@ -87,9 +87,11 @@ const Home = () => {
         </Typography>
       </div>
       <br />
-      <Button variant="contained" color="secondary" component={Link} href="/auth">
-        Get Started
-      </Button>
+      <Link to="/find">
+        <Button variant="contained" color="secondary">
+          Get Started
+        </Button>
+      </Link>
 
       <div className={classes.copyRight} align="center">
         <Copyright />
