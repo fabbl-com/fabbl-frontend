@@ -69,7 +69,6 @@ export const setUserMessages = (data) => async (dispatch) => {
 
 export const getChatListUsers = (data) => async (dispatch) => {
   console.log(data);
-  dispatch({ type: GET_CHAT_LIST_USERS_REQUEST });
   try {
     dispatch({ type: GET_CHAT_LIST_USERS_SUCCESS, payload: data });
   } catch (error) {

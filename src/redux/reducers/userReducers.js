@@ -17,13 +17,17 @@ import {
   SET_LIKES_FAIL,
   RESET_PASSWORD_REQUEST,
   RESET_PASSWORD_SUCCESS,
-  RESET_PASSWORD_FAIL
+  RESET_PASSWORD_FAIL,
+  CHECK_AUTH_SUCCESS,
+  CHECK_AUTH_FAIL,
+  CHECK_AUTH_REQUEST
 } from "../constants/userActionTypes";
 
 const initialState = {
   error: null,
   isAuth: false,
   loading: false,
+  authChecking: true,
   likes: [],
   userInfo: null,
   isEmailVerified: false,
@@ -38,6 +42,7 @@ export default (state = initialState, action) => {
     case EMAIL_VERIFY_REQUEST:
     case SET_LIKES_REQUEST:
     case RESET_PASSWORD_REQUEST:
+    case CHECK_AUTH_REQUEST:
       return { ...state, loading: true };
     case USER_REGISTER_SUCCESS:
     case USER_SIGNIN_SUCCESS:
@@ -65,6 +70,12 @@ export default (state = initialState, action) => {
         error: null,
         ...action.payload
       };
+    case CHECK_AUTH_SUCCESS:
+      return {
+        ...state,
+        isAuth: true,
+        authChecking: false
+      };
     case USER_SIGNIN_FAIL:
     case USER_REGISTER_FAIL:
       localStorage.removeItem("userId");
@@ -89,6 +100,12 @@ export default (state = initialState, action) => {
         ...state,
         loading: false,
         error: action.payload
+      };
+    case CHECK_AUTH_FAIL:
+      return {
+        ...state,
+        isAuth: false,
+        authChecking: false
       };
     case SET_USER:
       return {

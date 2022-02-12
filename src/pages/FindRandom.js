@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { Container, Avatar, Typography, IconButton, Button } from "@material-ui/core";
 import { randomStyles } from "../assets/jss/index";
@@ -21,6 +22,7 @@ const SIZE = 10;
 
 const FindRandom = ({ userId, socket, eventEmitter }) => {
   const theme = useTheme();
+  const history = useHistory();
   const classes = useStyles(theme);
   const dispatch = useDispatch();
   const container1 = useRef(null);
@@ -28,6 +30,8 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
   const [page, setPage] = useState(1);
 
   if (!socket) return <div style={{ marginTop: "3rem" }}>Loading...</div>;
+
+  console.log(history);
 
   const { loading, error, randomUsers } = useSelector((state) => state.messages);
 
@@ -59,14 +63,25 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
     socket.on("get-random-users-response", (data) => {
       dispatch(setRandomUsers(data.users));
     });
+
+    return () => {
+      socket.off();
+    };
   }, [page]);
 
   useEffect(() => {
     getLikes(socket, eventEmitter);
-    eventEmitter.on("like-response", (data) => {
-      dispatch(setLikes(data.likes));
-    });
+    eventEmitter.on("like-response", likeResponseListener);
+
+    return () => {
+      socket.off();
+      eventEmitter.removeListener("like-response", likeResponseListener);
+    };
   }, [eventEmitter]);
+
+  const likeResponseListener = (data) => {
+    dispatch(setLikes(data.likes));
+  };
 
   const [currentIndex, setCurrentIndex] = useState(SIZE - 1);
   const currentIndexRef = useRef(currentIndex);
@@ -116,7 +131,7 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
   return (
     <Container maxWidth="sm" className={classes.root} align="center">
       <div className={classes.searchControl}>
-        <IconButton>
+        <IconButton onClick={() => history.goBack()}>
           <ArrowBack fontSize="small" />
         </IconButton>
       </div>

@@ -120,14 +120,11 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   if (!socket) return <div>Loading...</div>;
 
   const { messages, loading } = useSelector((state) => state.messages);
-  console.log(loading);
   useEffect(() => {
     const query = queryString.parse(location?.search);
     setSelectedUserId(query.userId);
     socket.emit("get-user-messages", { sender: userId, receiver: query.userId });
     socket.on("get-user-messages-response", (data) => {
-      console.log(data);
-      // dispatch()
       dispatch(setUserMessages(data.messages));
     });
   }, [socket]);

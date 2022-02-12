@@ -17,7 +17,10 @@ import {
   SET_LIKES_FAIL,
   RESET_PASSWORD_REQUEST,
   RESET_PASSWORD_SUCCESS,
-  RESET_PASSWORD_FAIL
+  RESET_PASSWORD_FAIL,
+  CHECK_AUTH_REQUEST,
+  CHECK_AUTH_SUCCESS,
+  CHECK_AUTH_FAIL
 } from "../constants/userActionTypes";
 
 export const register = (userId) => async (dispatch) => {
@@ -118,3 +121,15 @@ export const resetPassword =
       });
     }
   };
+
+export const checkAuth = () => async (dispatch) => {
+  dispatch({ type: CHECK_AUTH_REQUEST });
+  try {
+    const { data } = await Axios.get("/auth/check");
+    console.log(data);
+    dispatch({ type: CHECK_AUTH_SUCCESS });
+  } catch (error) {
+    console.log(error.response);
+    dispatch({ type: CHECK_AUTH_FAIL });
+  }
+};
