@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { Container, Avatar, Typography, IconButton, Button } from "@material-ui/core";
 import { randomStyles } from "../assets/jss/index";
-import { getRandomUsers, like, getLikes } from "../utils/socket.io";
+import { getRandomUsers, like, getLikes, view } from "../utils/socket.io";
 import { PropTypes } from "prop-types";
 import { setRandomUsers } from "../redux/actions/messageActions";
 import { setLikes } from "../redux/actions/userActions";
@@ -31,7 +31,7 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
 
   if (!socket) return <div style={{ marginTop: "3rem" }}>Loading...</div>;
 
-  console.log(history);
+  // console.log(history);
 
   const { loading, error, randomUsers } = useSelector((state) => state.messages);
 
@@ -108,6 +108,7 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
     if (direction === "right") {
       like(socket, { senderId: userId, receiverId: id });
     }
+    view(socket, { senderId: userId, receiverId: id });
     updateCurrentIndex(index - 1);
   };
 

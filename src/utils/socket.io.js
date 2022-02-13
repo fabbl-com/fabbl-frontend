@@ -44,6 +44,10 @@ export const like = (socket, data) => {
   socket.emit("like", data);
 };
 
+export const view = (socket, data) => {
+  socket.emit("view", data);
+};
+
 export const getLikes = (socket, eventEmitter) => {
   socket.on("like-response", (data) => {
     eventEmitter.emit("like-response", data);
