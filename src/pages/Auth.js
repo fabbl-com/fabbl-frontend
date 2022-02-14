@@ -21,13 +21,14 @@ import { useDispatch, useSelector } from "react-redux";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { Alert } from "@material-ui/lab";
-
+import { Link } from "react-router-dom";
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: "#2e9cca",
     marginTop: "3rem",
     marginBottom: "2.2rem",
-    color: "#fff"
+    color: "#fff",
+    minHeight: "100vh"
   },
   form: {
     width: "100%"

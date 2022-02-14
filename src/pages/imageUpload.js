@@ -16,10 +16,13 @@ import Circle from "@material-ui/icons/FiberManualRecord";
 import AddAPhotofrom from "@material-ui/icons/AddAPhotoRounded";
 import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import lottie from "lottie-web";
+import { uploadAvatar } from "../redux/actions/userActions";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { Alert } from "@material-ui/lab";
 const useStyles = makeStyles(() => ({
   root: {
-    height: "100vh",
+    minHeight: "100vh",
     backgroundColor: "#2e9cca",
     color: "#fff",
     marginTop: "3rem"
@@ -46,7 +49,10 @@ const useStyles = makeStyles(() => ({
 const ImageUpload = () => {
   const classes = useStyles();
   const [isUpload, setUpload] = useState(false);
-
+  const [user, setUser] = useState(null);
+  const [rememberMe, setRememberMe] = useState(true);
+  const [image, setImage] = useState(null);
+  const dispatch = useDispatch();
   const container = useRef(null);
 
   useEffect(() => {
@@ -57,61 +63,104 @@ const ImageUpload = () => {
       autoplay: true,
       animationData: require("../assets/animation/auth.json")
     });
+
+    return () => container.stop();
   }, []);
 
+  const err = useSelector((state) => state.user?.error);
+
+  const handleUpload = (e) => {
+    e.preventDefault();
+    console.log(user.data);
+    if (user.data) dispatch(uploadAvatar(user.data));
+  };
+  const handleChange = (e) => {
+    e.preventDefault();
+    const newImage = e?.target?.files?.[0];
+    if (newImage) {
+      setImage(URL.createObjectURL(newImage));
+      setUser((state) => ({ ...state, data: newImage }));
+    }
+  };
   return (
     <Container maxWidth="sm" className={classes.root} align="center">
       <div className={classes.animation} ref={container}></div>
       <Typography variant="h5">Upload Your avatar</Typography>
       <br />
-      <div>
-        <Badge
-          overlap="circular"
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "right"
-          }}
-          badgeContent={
-            <>
-              <input accept="image/*" style={{ display: "none" }} id="upload-avatar" type="file" />
-              <label htmlFor="upload-avatar">
-                <IconButton aria-label="upload avatar" component="span">
-                  {isUpload || <AddAPhotofrom style={{ fontSize: "2.5rem", color: "#4D38A2" }} />}
-                </IconButton>
-              </label>
-            </>
-          }>
-          <Avatar
-            variant="rounded"
-            className={classes.image}
-            src={isUpload ? "https://bit.ly/3Ez2w7J" : ""}>
-            {isUpload || (
-              <AccountBoxIcon
-                style={{ fontSize: "12rem", backgroundColor: "#fff", color: "#888181" }}
-              />
-            )}
-          </Avatar>
-        </Badge>
-      </div>
-      <FormControlLabel control={<Checkbox value="remember" />} label="Remember me for 30 days" />
-      <Grid container direction="column" justifyContent="center" spacing={1}>
-        <Grid item>
-          <Button
-            type="submit"
-            variant="contained"
-            onClick={() => {
-              setUpload(!isUpload);
-            }}>
-            {isUpload ? "Next" : "Upload"}
-          </Button>
-        </Grid>
-        {isUpload || (
-          <Grid item>
-            <Button>Skip</Button>
-          </Grid>
-        )}
-      </Grid>
+      <form onSubmit={handleUpload}>
+        <div>
+          <Badge
+            overlap="circular"
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right"
+            }}
+            badgeContent={
+              <>
+                <input
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  id="upload-avatar"
+                  type="file"
+                  // value={user?.data}
+                  onChange={handleChange}
+                />
+                <label htmlFor="upload-avatar">
+                  <IconButton aria-label="upload avatar" component="span">
+                    {isUpload || <AddAPhotofrom style={{ fontSize: "2.5rem", color: "#4D38A2" }} />}
+                  </IconButton>
+                </label>
+              </>
+            }>
+            <Avatar
+              variant="rounded"
+              className={classes.image}
+              src={
+                image ||
+                "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHw%3D&w=1000&q=80"
+              }>
+              {isUpload || (
+                <AccountBoxIcon
+                  style={{ fontSize: "12rem", backgroundColor: "#fff", color: "#888181" }}
+                />
+              )}
+            </Avatar>
+          </Badge>
+        </div>
 
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={rememberMe}
+              name="RememberMe"
+              value={user?.RememberMe}
+              color="primary"
+            />
+          }
+          onChange={(e) => {
+            setRememberMe(!rememberMe);
+            setUser((state) => ({ ...state, rememberMe: e.target.checked }));
+          }}
+          label="Remember me"
+        />
+        <Grid container direction="column" justifyContent="center" spacing={1}>
+          <Grid item>
+            <Button
+              type="submit"
+              variant="contained"
+              onClick={() => {
+                setUpload(!isUpload);
+              }}>
+              {isUpload ? "Next" : "Upload"}
+            </Button>
+          </Grid>
+          {isUpload || (
+            <Grid item>
+              <Button>Skip</Button>
+            </Grid>
+          )}
+        </Grid>
+      </form>
       <Box align="center" m={2}>
         <Link to="/auth">
           <Circle fontSize="small" style={{ color: "#fff" }} />

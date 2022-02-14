@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   makeStyles,
   Avatar,
@@ -36,6 +36,13 @@ const useStyles = makeStyles((theme) => settingsStyles(theme));
 
 const Settings = ({ isTheme, setTheme }) => {
   const classes = useStyles();
+  const [profilePref, setProfilePref] = useState(null);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(profilePref);
+    //dispatch(register(profilePref));
+  };
 
   return (
     <Container className={classes.root}>
