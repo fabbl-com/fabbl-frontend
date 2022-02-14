@@ -15,7 +15,8 @@ import {
   MenuItem,
   Paper,
   Button,
-  Divider
+  Divider,
+  Badge
 } from "@material-ui/core";
 import {
   Brightness4,
@@ -38,6 +39,8 @@ import { chatDetailsStyles } from "../assets/jss";
 import { receiveMessage, sendMessage } from "../utils/socket.io";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { setUserMessages } from "../redux/actions/messageActions";
+import { withStyles } from "@material-ui/styles";
+import { ProfileBadge } from "../components";
 
 const useStyles = makeStyles((theme) => chatDetailsStyles(theme));
 
@@ -119,13 +122,13 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
 
   if (!socket) return <div>Loading...</div>;
 
-  const { messages, loading } = useSelector((state) => state.messages);
+  const { messages, loading, receiver } = useSelector((state) => state.messages);
   useEffect(() => {
     const query = queryString.parse(location?.search);
     setSelectedUserId(query.userId);
     socket.emit("get-user-messages", { sender: userId, receiver: query.userId });
     socket.on("get-user-messages-response", (data) => {
-      dispatch(setUserMessages(data.messages));
+      dispatch(setUserMessages(data));
     });
   }, [socket]);
 
@@ -221,13 +224,31 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                 </IconButton>
               </Link>
               <div className={classes.avatar}>
-                <Avatar />
+                {/* <Avatar src={receiver?.avatar?.value} /> */}
+                <ProfileBadge
+                  color="primary"
+                  anchorOrigin={{
+                    vertical: "bottom",
+                    horizontal: "right"
+                  }}
+                  overlap="circular"
+                  variant="dot"
+                  invisible={!receiver?.online}>
+                  <Avatar
+                    aria-label="user"
+                    src={receiver?.avatar?.value}
+                    className={classes.avatar}>
+                    {receiver?.displayName?.value}
+                  </Avatar>
+                </ProfileBadge>
                 <div className={classes.username}>
                   <Typography align="left" component="h1" variant="h6">
-                    Dora
+                    {receiver?.displayName?.value}
                   </Typography>
                   <Typography component="h1" variant="caption">
-                    Last active 12:34 AM
+                    {receiver?.online
+                      ? "Active Now"
+                      : `Last active: ${new Date(receiver?.lastLogin).toLocaleTimeString()}`}
                   </Typography>
                 </div>
               </div>

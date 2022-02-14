@@ -29,7 +29,8 @@ const chatStyles = (theme) => ({
     padding: theme.spacing(0, 1)
   },
   avatar: {
-    display: "flex"
+    display: "flex",
+    alignItems: "center"
   },
   username: {
     marginLeft: theme.spacing(1)
