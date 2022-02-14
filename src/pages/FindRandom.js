@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { Container, Avatar, Typography, IconButton, Button } from "@material-ui/core";
 import { randomStyles } from "../assets/jss/index";
-import { getRandomUsers, like, getLikes } from "../utils/socket.io";
+import { getRandomUsers, like, getLikes, view } from "../utils/socket.io";
 import { PropTypes } from "prop-types";
 import { setRandomUsers } from "../redux/actions/messageActions";
 import { setLikes } from "../redux/actions/userActions";
@@ -21,6 +22,7 @@ const SIZE = 10;
 
 const FindRandom = ({ userId, socket, eventEmitter }) => {
   const theme = useTheme();
+  const history = useHistory();
   const classes = useStyles(theme);
   const dispatch = useDispatch();
   const container1 = useRef(null);
@@ -28,6 +30,8 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
   const [page, setPage] = useState(1);
 
   if (!socket) return <div style={{ marginTop: "3rem" }}>Loading...</div>;
+
+  // console.log(history);
 
   const { loading, error, randomUsers } = useSelector((state) => state.messages);
 
@@ -53,20 +57,31 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
       userId,
       page,
       limit: 10,
-      choices: { gender: "female", day: 1 }
+      choices: { day: 1 }
     };
     getRandomUsers(socket, data);
     socket.on("get-random-users-response", (data) => {
       dispatch(setRandomUsers(data.users));
     });
+
+    return () => {
+      socket.off();
+    };
   }, [page]);
 
   useEffect(() => {
     getLikes(socket, eventEmitter);
-    eventEmitter.on("like-response", (data) => {
-      dispatch(setLikes(data.likes));
-    });
+    eventEmitter.on("like-response", likeResponseListener);
+
+    return () => {
+      socket.off();
+      eventEmitter.removeListener("like-response", likeResponseListener);
+    };
   }, [eventEmitter]);
+
+  const likeResponseListener = (data) => {
+    dispatch(setLikes(data.likes));
+  };
 
   const [currentIndex, setCurrentIndex] = useState(SIZE - 1);
   const currentIndexRef = useRef(currentIndex);
@@ -93,6 +108,7 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
     if (direction === "right") {
       like(socket, { senderId: userId, receiverId: id });
     }
+    view(socket, { senderId: userId, receiverId: id });
     updateCurrentIndex(index - 1);
   };
 
@@ -116,7 +132,7 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
   return (
     <Container maxWidth="sm" className={classes.root} align="center">
       <div className={classes.searchControl}>
-        <IconButton>
+        <IconButton onClick={() => history.goBack()}>
           <ArrowBack fontSize="small" />
         </IconButton>
       </div>
@@ -138,28 +154,30 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
       ) : (
         <div className={classes.cardContainer}>
           <div className={classes.profileCardContainer}>
-            {randomUsers.map((user, i) => (
-              <TinderCard
-                key={i}
-                ref={childRefs[i]}
-                className={classes.profileCard}
-                preventSwipe={["up", "down"]}
-                onSwipe={(dir) => swiped(dir, user.profile._id, i)}
-                onCardLeftScreen={() => outOfFrame(user.profile.displayName.value, i)}>
-                <ProfileCard
-                  displayName={user.profile.displayName}
-                  avatar={user.profile.avatar}
-                  headline={user.profile.headline}
-                  gender={user.profile.gender}
-                  city={user.profile.city}
-                  country={user.profile.country}
-                  relationshipStatus={user.profile.relationshipStatus}
-                  dob={user.profile.dob}
-                  isProfileVerified={user.profile.isProfileVerified}
-                  hobby={user.profile.hobby}
-                />
-              </TinderCard>
-            ))}
+            {randomUsers
+              .sort((a, b) => a.score - b.score)
+              .map((user, i) => (
+                <TinderCard
+                  key={i}
+                  ref={childRefs[i]}
+                  className={classes.profileCard}
+                  preventSwipe={["up", "down"]}
+                  onSwipe={(dir) => swiped(dir, user.profile._id, i)}
+                  onCardLeftScreen={() => outOfFrame(user.profile.displayName.value, i)}>
+                  <ProfileCard
+                    displayName={user.profile.displayName}
+                    avatar={user.profile.avatar}
+                    headline={user.profile.headline}
+                    gender={user.profile.gender}
+                    city={user.profile.city}
+                    country={user.profile.country}
+                    relationshipStatus={user.profile.relationshipStatus}
+                    dob={user.profile.dob}
+                    isProfileVerified={user.profile.isProfileVerified}
+                    hobby={user.profile.hobby}
+                  />
+                </TinderCard>
+              ))}
           </div>
           <div className={classes.action}>
             <Button

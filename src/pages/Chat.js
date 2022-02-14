@@ -32,7 +32,7 @@ import { Link, useHistory } from "react-router-dom";
 import { PropTypes } from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import { getChatListUsers } from "../redux/actions/messageActions";
-import { Alert } from "@material-ui/lab";
+import { Skeleton } from "@material-ui/lab";
 
 import { chatStyles } from "../assets/jss";
 import { getChatList } from "../utils/socket.io";
@@ -105,6 +105,8 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const classes = useStyles();
   const theme = useTheme();
   const [isSearchMode, setSearchMode] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [isFriends, setFriends] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
   const history = useHistory();
   const dispatch = useDispatch();
@@ -112,17 +114,26 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   if (!socket) return <div>Loading...</div>;
 
   const { chatListUsers, loading } = useSelector((state) => state.messages);
+  const friends = chatListUsers.filter((user) => user.isFriends === true);
 
   useEffect(() => {
-    getChatList(socket, eventEmitter, userId);
-    eventEmitter.on("chat-list-response", (data) => {
-      dispatch(getChatListUsers(data?.messages));
-    });
+    getChatList(socket, eventEmitter, userId, dispatch);
+    eventEmitter.on("chat-list-response", chatListListener);
 
     return () => {
       socket.off();
+      eventEmitter.removeListener("chat-list-response", chatListListener);
     };
   }, [userId, socket, eventEmitter]);
+
+  useEffect(() => {
+    if (isFriends) setUsers(friends);
+    else setUsers(chatListUsers);
+  }, [isFriends]);
+
+  const chatListListener = (data) => {
+    dispatch(getChatListUsers(data?.messages));
+  };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -159,15 +170,26 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
       <AppBar elevation={1} className={classes.appBar} color="inherit">
         <Toolbar variant="dense">
           <Typography
-            style={{ marginRight: theme.spacing(2) }}
+            onClick={() => setFriends(false)}
+            style={{
+              marginRight: theme.spacing(2),
+              cursor: "pointer",
+              borderBottom: !isFriends && "3px solid blue"
+            }}
             color="textSecondary"
             component="h1"
             variant="h6"
             align="center">
-            <Link to="/ikabir/friends">Friends</Link>
+            All
           </Typography>
-          <Typography color="textSecondary" component="h1" variant="h6" align="center">
-            <Link to="/all">All</Link>
+          <Typography
+            onClick={() => setFriends(true)}
+            style={{ cursor: "pointer", borderBottom: isFriends && "3px solid blue" }}
+            color="textSecondary"
+            component="h1"
+            variant="h6"
+            align="center">
+            Friends
           </Typography>
           <div style={{ flexGrow: 1 }} />
           {isSearchMode ? (
@@ -205,60 +227,86 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
       </AppBar>
       <Container className={classes.msgContainer}>
         {!loading ? (
-          chatListUsers
-            .sort((b, a) => new Date(a.createdAt) - new Date(b.createdAt))
-            .map((user, i) => (
-              <Link to={`/chat-details?userId=${user?.profile?._id}`} key={i}>
-                <Card className={classes.msgCard}>
-                  <CardHeader
-                    classes={{
-                      root: classes.cardHeaderRoot,
-                      content: classes.cardHeaderContent,
-                      subheader: classes.cardHeaderSubheader
-                    }}
-                    avatar={
-                      <ProfileBadge
-                        color="primary"
-                        anchorOrigin={{
-                          vertical: "bottom",
-                          horizontal: "right"
-                        }}
-                        overlap="circular"
-                        variant="dot"
-                        invisible={!user.profile.online}>
-                        <Avatar aria-label="user" className={classes.avatar}>
-                          {"user.profile.avatar"}
-                        </Avatar>
-                      </ProfileBadge>
-                    }
-                    title={
-                      <div className={classes.userTitle}>
-                        <Typography component="h1" variant="h6">
-                          {user.profile.displayName.value}
-                        </Typography>
-                        <Typography component="p" variant="caption">
-                          {moment(user.createdAt).fromNow()}
-                        </Typography>
-                      </div>
-                    }
-                    subheader={
-                      <div>
-                        <Typography component="p" variant="body2" className={classes.msg}>
-                          {user.message}
-                        </Typography>
-                        <Badge
-                          className={classes.msgCount}
+          users.length > 0 ? (
+            users
+              .sort((b, a) => new Date(a.createdAt) - new Date(b.createdAt))
+              .map((user, i) => (
+                <Link to={`/chat-details?userId=${user?.userId}`} key={i}>
+                  <Card className={classes.msgCard}>
+                    <CardHeader
+                      classes={{
+                        root: classes.cardHeaderRoot,
+                        content: classes.cardHeaderContent,
+                        subheader: classes.cardHeaderSubheader
+                      }}
+                      avatar={
+                        <ProfileBadge
                           color="primary"
-                          badgeContent={user.unread}
-                        />
-                      </div>
-                    }
-                  />
-                </Card>
-              </Link>
-            ))
+                          anchorOrigin={{
+                            vertical: "bottom",
+                            horizontal: "right"
+                          }}
+                          overlap="circular"
+                          variant="dot"
+                          invisible={!user.online}>
+                          <Avatar
+                            aria-label="user"
+                            src={user.avatar.value}
+                            className={classes.avatar}>
+                            {user.displayName.value}
+                          </Avatar>
+                        </ProfileBadge>
+                      }
+                      title={
+                        <div className={classes.userTitle}>
+                          <Typography component="h1" variant="h6">
+                            {user.displayName.value}
+                          </Typography>
+                          <Typography component="p" variant="caption">
+                            {moment(user.createdAt).fromNow()}
+                          </Typography>
+                        </div>
+                      }
+                      subheader={
+                        <div>
+                          <Typography component="p" variant="body2" className={classes.msg}>
+                            {user.message || "You have a new match. Go and chat..."}
+                          </Typography>
+                          <Badge
+                            className={classes.msgCount}
+                            color="primary"
+                            badgeContent={user.unread}
+                          />
+                        </div>
+                      }
+                    />
+                  </Card>
+                </Link>
+              ))
+          ) : (
+            <div>Awww such an empty. Please find some friends first</div>
+          )
         ) : (
-          <Alert severity="error">Oops! Invalid credential. Please Try again</Alert>
+          [...new Array(10)].map((_, i) => (
+            <div
+              key={i}
+              style={{
+                width: "100%",
+                margin: "2ch 0",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-evenly"
+              }}>
+              <Skeleton variant="circle" width={40} height={40} />
+              <Skeleton
+                style={{ borderRadius: "1.5ch" }}
+                variant="rect"
+                height={50}
+                width="85%"
+                animation="wave"
+              />
+            </div>
+          ))
         )}
         <ScrollTop>
           <Fab color="secondary" size="small" aria-label="scroll back to top">
