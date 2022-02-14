@@ -23,7 +23,9 @@ import {
   UPDATE_PROFILE,
   CHECK_AUTH_SUCCESS,
   CHECK_AUTH_FAIL,
-  CHECK_AUTH_REQUEST
+  CHECK_AUTH_REQUEST,
+  UPDATE_PROFILE_PREF,
+  GET_USER_PROFILE
 } from "../constants/userActionTypes";
 
 const initialState = {
@@ -130,11 +132,15 @@ export default (state = initialState, action) => {
         loading: false,
         avatar: action.payload
       };
+    case GET_USER_PROFILE:
     case UPDATE_PROFILE:
+    case UPDATE_PROFILE_PREF:
       return {
         ...state,
-        loading: false
+        loading: false,
+        userInfo: action.payload
       };
+
     default:
       return state;
   }

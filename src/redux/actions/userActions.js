@@ -23,7 +23,9 @@ import {
   UPDATE_PROFILE,
   CHECK_AUTH_REQUEST,
   CHECK_AUTH_SUCCESS,
-  CHECK_AUTH_FAIL
+  CHECK_AUTH_FAIL,
+  UPDATE_PROFILE_PREF,
+  GET_USER_PROFILE
 } from "../constants/userActionTypes";
 
 export const register = (userId) => async (dispatch) => {
@@ -126,7 +128,7 @@ export const resetPassword =
   };
 
 export const uploadAvatar = (image) => async (dispatch) => {
-  const userId = "6200f0a715496207e5a84a75";
+  const userId = "620a443378b8d091a0e1f19d";
   var formData = new FormData();
   formData.append("data", image);
   try {
@@ -151,15 +153,14 @@ export const uploadAvatar = (image) => async (dispatch) => {
 };
 
 export const updateProfile = (formData) => async (dispatch) => {
-  const userId = "6200f0a715496207e5a84a75";
+  const userId = "620a443378b8d091a0e1f19d";
   try {
     const config = {
       headers: {
         "Content-Type": "application/json"
       }
     };
-    const res = await Axios.put(`/user/profile/${userId}`, formData, config);
-
+    const res = await Axios.post(`/user/profile/Personal/${userId}`, formData, config);
     dispatch({
       type: UPDATE_PROFILE,
       payload: res.data
@@ -185,5 +186,52 @@ export const checkAuth = () => async (dispatch) => {
   } catch (error) {
     console.log(error.response);
     dispatch({ type: CHECK_AUTH_FAIL });
+  }
+};
+
+export const updateProfilePref = (formData) => async (dispatch) => {
+  const userId = "620a443378b8d091a0e1f19d";
+  try {
+    const config = {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    };
+    const res = await Axios.post(`/user/profile/${userId}`, formData, config);
+    dispatch({
+      type: UPDATE_PROFILE_PREF,
+      payload: res.data
+    });
+  } catch (error) {
+    console.log(error);
+    dispatch({
+      type: USER_UPLOAD_AVATAR_FAIL,
+      payload: {
+        code: error.response.status,
+        message:
+          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+      }
+    });
+  }
+};
+
+export const getUserProfile = () => async (dispatch) => {
+  const userId = "620a443378b8d091a0e1f19d";
+  try {
+    const res = await Axios.get(`/user/profile/${userId}`);
+    dispatch({
+      type: GET_USER_PROFILE,
+      payload: res.data
+    });
+  } catch (error) {
+    console.log(error);
+    dispatch({
+      type: USER_UPLOAD_AVATAR_FAIL,
+      payload: {
+        code: error.response.status,
+        message:
+          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+      }
+    });
   }
 };
