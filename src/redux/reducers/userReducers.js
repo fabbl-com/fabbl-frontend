@@ -18,6 +18,9 @@ import {
   RESET_PASSWORD_REQUEST,
   RESET_PASSWORD_SUCCESS,
   RESET_PASSWORD_FAIL,
+  USER_UPLOAD_AVATAR_SUCCESS,
+  USER_UPLOAD_AVATAR_FAIL,
+  UPDATE_PROFILE,
   CHECK_AUTH_SUCCESS,
   CHECK_AUTH_FAIL,
   CHECK_AUTH_REQUEST
@@ -31,7 +34,8 @@ const initialState = {
   likes: [],
   userInfo: null,
   isEmailVerified: false,
-  userId: localStorage.getItem("userId")
+  userId: localStorage.getItem("userId"),
+  avatar: null
 };
 
 export default (state = initialState, action) => {
@@ -96,6 +100,7 @@ export default (state = initialState, action) => {
     case RESET_PASSWORD_FAIL:
     case GET_ALL_USERS_FAIL:
     case SET_LIKES_FAIL:
+    case USER_UPLOAD_AVATAR_FAIL:
       return {
         ...state,
         loading: false,
@@ -118,6 +123,17 @@ export default (state = initialState, action) => {
         ...state,
         loading: false,
         messagedUsers: [...action.payload]
+      };
+    case USER_UPLOAD_AVATAR_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        avatar: action.payload
+      };
+    case UPDATE_PROFILE:
+      return {
+        ...state,
+        loading: false
       };
     default:
       return state;

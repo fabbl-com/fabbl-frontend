@@ -18,11 +18,13 @@ import { Link } from "react-router-dom";
 import animationData from "../assets/animation/auth.json";
 import recordAnimationData from "../assets/animation/recordAnimation.json";
 import sentence from "../utils/randomSentence";
+// import record_tens from "../utils/recordVoice";
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: "#2e9cca",
     color: "#fff",
-    marginBottom: "2.2rem"
+    marginBottom: "2.2rem",
+    minHeight: "100vh"
   },
   authControll: {
     backgroundColor: "#fff",
@@ -97,6 +99,11 @@ const VoiceUpload = () => {
     });
   }, []);
 
+  const handelRecoding = () => {
+    // record_tens();
+    setRecording(!isRecording);
+  };
+
   return (
     <Container maxWidth="sm" className={classes.root} align="center">
       <div className={classes.animation} ref={container}></div>
@@ -135,7 +142,11 @@ const VoiceUpload = () => {
           {sentence()}
         </Typography>
       </Box>
-      <Button className={classes.mic} onClick={() => setRecording(!isRecording)}>
+      <Button
+        className={classes.mic}
+        onClick={() => {
+          handelRecoding();
+        }}>
         {isRecording ? (
           <div className={classes.recordAnimation} ref={box}></div>
         ) : (

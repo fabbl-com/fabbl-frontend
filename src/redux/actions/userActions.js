@@ -18,6 +18,9 @@ import {
   RESET_PASSWORD_REQUEST,
   RESET_PASSWORD_SUCCESS,
   RESET_PASSWORD_FAIL,
+  USER_UPLOAD_AVATAR_SUCCESS,
+  USER_UPLOAD_AVATAR_FAIL,
+  UPDATE_PROFILE,
   CHECK_AUTH_REQUEST,
   CHECK_AUTH_SUCCESS,
   CHECK_AUTH_FAIL
@@ -122,6 +125,57 @@ export const resetPassword =
     }
   };
 
+export const uploadAvatar = (image) => async (dispatch) => {
+  const userId = "6200f0a715496207e5a84a75";
+  var formData = new FormData();
+  formData.append("data", image);
+  try {
+    const { data } = await Axios.post(`/user/upload/image/${userId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
+    console.log(data);
+    dispatch({ type: USER_UPLOAD_AVATAR_SUCCESS, payload: data });
+  } catch (error) {
+    console.log(error);
+    dispatch({
+      type: USER_UPLOAD_AVATAR_FAIL,
+      payload: {
+        code: error.response.status,
+        message:
+          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+      }
+    });
+  }
+};
+
+export const updateProfile = (formData) => async (dispatch) => {
+  const userId = "6200f0a715496207e5a84a75";
+  try {
+    const config = {
+      headers: {
+        "Content-Type": "application/json"
+      }
+    };
+    const res = await Axios.put(`/user/profile/${userId}`, formData, config);
+
+    dispatch({
+      type: UPDATE_PROFILE,
+      payload: res.data
+    });
+  } catch (error) {
+    console.log(error);
+    dispatch({
+      type: USER_UPLOAD_AVATAR_FAIL,
+      payload: {
+        code: error.response.status,
+        message:
+          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+      }
+    });
+  }
+};
 export const checkAuth = () => async (dispatch) => {
   dispatch({ type: CHECK_AUTH_REQUEST });
   try {
