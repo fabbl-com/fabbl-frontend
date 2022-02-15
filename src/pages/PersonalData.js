@@ -168,7 +168,7 @@ const hobbies = [
   "Vehicle restoration",
   "Water sports"
 ];
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   makeStyles,
@@ -236,9 +236,10 @@ const PersonalData = ({ userId }) => {
   const { loading } = useSelector((state) => state.user);
   const [image, setImage] = useState(null);
   // console.log(profile);
+  const [gender, setGender] = useState(0);
+  const [disableGenderUpdate, setDisableGenderUpdate] = useState(true);
   const [formData, setFormData] = useState({
     usernameData: "",
-    genderData: 0,
     bioData: "",
     // ageData: new Date(),
     locationData: "",
@@ -247,18 +248,27 @@ const PersonalData = ({ userId }) => {
   });
   useEffect(() => {
     if (!profile) dispatch(getUserProfile(userId));
-    if (profile)
+    if (profile) {
       setFormData({
         usernameData: profile.displayName.value,
-        genderData: profile.gender.value,
         bioData: profile.headline.value,
         ageData: profile.dob.value || new Date(),
         locationData: profile.location.value,
         relationshipStatusData: profile.relationshipStatus.value,
         hobbiesData: profile.hobby.value
       });
+      setGender(profile.gender.value);
+    }
   }, [profile]);
-  // console.log(formData);
+
+  useEffect(() => {
+    if (profile && gender !== profile.gender.value) {
+      setDisableGenderUpdate(false);
+    } else {
+      setDisableGenderUpdate(true);
+    }
+  }, [gender, profile]);
+
   const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = (e) => {
@@ -276,6 +286,8 @@ const PersonalData = ({ userId }) => {
       dispatch(uploadAvatar({ userId, data: newImage }));
     }
   };
+
+  const checkDisable = useCallback(() => formData?.hobbiesData.length >= 5, [formData]);
 
   return (
     <Container className={classes.root}>
@@ -325,7 +337,7 @@ const PersonalData = ({ userId }) => {
         </Badge>
         <div className={classes.verify}>
           <Typography component="h6" variant="h6">
-            {formData.genderData === 0 ? "Male" : formData.genderData === 1 ? "Female" : ""}
+            {profile?.gender?.value === 0 ? "Male" : formData.genderData === 1 ? "Female" : ""}
           </Typography>
           &nbsp;
           <CheckCircleOutlined fontSize="small" />
@@ -410,13 +422,15 @@ const PersonalData = ({ userId }) => {
               </Typography>
               <Autocomplete
                 multiple
+                getOptionDisabled={checkDisable}
                 options={hobbies}
                 getOptionLabel={(option) => option}
                 name="hobbiesData"
                 value={formData?.hobbiesData}
                 filterSelectedOptions
+                limitTags={1}
                 onChange={(e, value) =>
-                  setFormData((state) => ({
+                  setGender((state) => ({
                     ...state,
                     hobbiesData: [...value]
                   }))
@@ -457,18 +471,27 @@ const PersonalData = ({ userId }) => {
                 fullWidth
                 name="relationshipStatusData"
                 input={<BootstrapInput />}
-                value={formData.genderData}
-                onChange={(e) => onChange(e)}>
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}>
                 <MenuItem value={0}>Male</MenuItem>
                 <MenuItem value={1}>Female</MenuItem>
               </Select>
             </div>
             <div className={classes.fullWidth}>
               <div style={{ display: "flex", justifyContent: "space-around", marginTop: "3ch" }}>
-                <Button className={classes.button} color="primary" variant="contained" disabled>
+                <Button
+                  className={classes.button}
+                  color="primary"
+                  variant="contained"
+                  disabled={disableGenderUpdate}>
                   Verify Gender
                 </Button>
-                <Button variant="contained" color="secondary" type="submit">
+                <Button
+                  className={classes.button}
+                  variant="contained"
+                  color="secondary"
+                  type="submit"
+                  disabled={!disableGenderUpdate}>
                   Update Profile
                 </Button>
               </div>

@@ -18,10 +18,12 @@ import animationData from "../assets/animation/auth.json";
 import { FacebookIcon, GoogleIcon } from "../assets/icons/index";
 import { register, login } from "../redux/actions/userActions";
 import { useDispatch, useSelector } from "react-redux";
+import { useHistory, useLocation } from "react-router-dom";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { Alert } from "@material-ui/lab";
 import { Link } from "react-router-dom";
+import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: "3rem",
     marginBottom: "2.2rem",
     color: "#fff",
-    minHeight: "100vh"
+    minHeight: `calc(100vh - ${theme.spacing(11)}px)`
   },
   form: {
     width: "100%"
@@ -47,24 +49,34 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Auth = () => {
+const Auth = ({ isAuth }) => {
   const theme = useTheme();
   const classes = useStyles(theme);
-  const [isRegistered, setRegistered] = useState(false);
+  const [isRegister, setRegister] = useState(true);
   const [user, setUser] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const container = useRef(null);
   const dispatch = useDispatch();
+  const history = useHistory();
+  const location = useLocation();
 
+  console.log(history);
+  console.log(location);
+  if (isAuth) {
+    if (!isRegister) history.push(location?.state?.from?.pathname);
+    else history.push("/image");
+  }
   useEffect(() => {
-    lottie.loadAnimation({
+    const anim = lottie.loadAnimation({
       container: container.current,
       renderer: "svg",
       loop: true,
       autoplay: true,
       animationData
     });
+
+    return () => anim.destroy();
   }, [animationData]);
 
   const err = useSelector((state) => state.user?.error);
@@ -72,7 +84,7 @@ const Auth = () => {
   const handleRegister = (e) => {
     e.preventDefault();
     console.log(user);
-    !isRegistered ? dispatch(register(user)) : dispatch(login(user));
+    isRegister ? dispatch(register(user)) : dispatch(login(user));
   };
 
   return (
@@ -86,7 +98,7 @@ const Auth = () => {
       <div className={classes.animation} ref={container}></div>
 
       <Typography variant="h5" align="center">
-        {isRegistered ? "Sign into your Account" : "Create an Account"}
+        {isRegister ? "Sign into your Account" : "Create an Account"}
       </Typography>
       <form onSubmit={handleRegister} className={classes.form}>
         <TextField
@@ -101,7 +113,7 @@ const Auth = () => {
             className: classes.textfield
           }}
         />
-        {!isRegistered && (
+        {isRegister && (
           <TextField
             required
             fullWidth
@@ -136,14 +148,18 @@ const Auth = () => {
                   onClick={() => {
                     setShowPassword(!showPassword);
                   }}>
-                  {showPassword ? <Visibility /> : <VisibilityOff />}
+                  {showPassword ? (
+                    <Visibility style={{ color: "#362222" }} />
+                  ) : (
+                    <VisibilityOff style={{ color: "#362222" }} />
+                  )}
                 </IconButton>
               </InputAdornment>
             )
           }}
         />
 
-        {isRegistered && (
+        {isRegister && (
           <Box display="flex" justifyContent="space-between">
             <FormControlLabel
               control={
@@ -171,12 +187,12 @@ const Auth = () => {
             type="submit"
             fullWidth
             variant="contained"
-            style={{ backgroundColor: "#ef006f" }}>
-            {!isRegistered ? "Register" : "Login"}
+            style={{ backgroundColor: "#362222", marginTop: "2ch", color: "#fff" }}>
+            {isRegister ? "Register" : "Login"}
           </Button>
         </div>
       </form>
-      <Typography variant="subtitle1" align="center" paragraph>
+      <Typography style={{ margin: "1ch 0" }} variant="subtitle1" align="center">
         ------ Or--------
       </Typography>
 
@@ -187,7 +203,7 @@ const Auth = () => {
               type="submit"
               fullWidth
               startIcon={<GoogleIcon />}
-              style={{ backgroundColor: "#FF5403" }}>
+              style={{ backgroundColor: "#072227", color: "#fff" }}>
               {"  "} Login with Google
             </Button>
           </form>
@@ -198,29 +214,29 @@ const Auth = () => {
               type="submit"
               fullWidth
               startIcon={<FacebookIcon />}
-              style={{ backgroundColor: "#7900FF" }}>
+              style={{ backgroundColor: "#362222", color: "#fff" }}>
               {"  "} Login with Facebook
             </Button>
           </form>
         </Grid>
       </Grid>
 
-      {isRegistered || (
-        <Box align="center" m={2}>
+      {isRegister || (
+        <Box align="center" m={1}>
           <Circle fontSize="small" color="primary" />
           <Circle fontSize="small" style={{ color: "#fff" }} />
           <Circle fontSize="small" style={{ color: "#fff" }} />
         </Box>
       )}
       <div className={classes.authControll}>
-        {isRegistered ? (
+        {isRegister ? (
           <Typography variant="subtitle1" align="center" color="textPrimary" paragraph>
             {"Don't have an account?"}
             <Button
               color="primary"
               disableRipple={true}
               onClick={() => {
-                setRegistered(!isRegistered);
+                setRegister(isRegister);
               }}>
               Register
             </Button>
@@ -233,7 +249,7 @@ const Auth = () => {
               color="primary"
               disableRipple={true}
               onClick={() => {
-                setRegistered(!isRegistered);
+                setRegister(isRegister);
               }}>
               Login
             </Button>
@@ -243,6 +259,10 @@ const Auth = () => {
       </div>
     </Container>
   );
+};
+
+Auth.propTypes = {
+  isAuth: PropTypes.bool.isRequired
 };
 
 export default Auth;

@@ -18,12 +18,12 @@ import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import lottie from "lottie-web";
 import { uploadAvatar } from "../redux/actions/userActions";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { Alert } from "@material-ui/lab";
 import { PropTypes } from "prop-types";
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    minHeight: "100vh",
+    minHeight: `calc(100vh - ${theme.spacing(6)}px)`,
     backgroundColor: "#2e9cca",
     color: "#fff",
     marginTop: "3rem"
@@ -54,10 +54,11 @@ const ImageUpload = ({ userId }) => {
   const [rememberMe, setRememberMe] = useState(true);
   const [image, setImage] = useState(null);
   const dispatch = useDispatch();
+  const history = useHistory();
   const container = useRef(null);
 
   useEffect(() => {
-    lottie.loadAnimation({
+    const anim = lottie.loadAnimation({
       container: container.current,
       renderer: "svg",
       loop: true,
@@ -65,7 +66,7 @@ const ImageUpload = ({ userId }) => {
       animationData: require("../assets/animation/auth.json")
     });
 
-    return () => container.stop();
+    return () => anim.destroy();
   }, []);
 
   const err = useSelector((state) => state.user?.error);
@@ -157,7 +158,7 @@ const ImageUpload = ({ userId }) => {
           </Grid>
           {isUpload || (
             <Grid item>
-              <Button>Skip</Button>
+              <Button onClick={() => history.push("/verify-voice")}>Skip</Button>
             </Grid>
           )}
         </Grid>
@@ -169,7 +170,7 @@ const ImageUpload = ({ userId }) => {
         <Link to="/image">
           <Circle fontSize="small" color="primary" />
         </Link>
-        <Link to="/verifyvoice">
+        <Link to="/verify-voice">
           <Circle fontSize="small" style={{ color: "#fff" }} />
         </Link>
       </Box>

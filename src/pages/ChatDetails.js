@@ -278,7 +278,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                 <Button variant="text">ADD</Button>
               </div>
               <Typography className={classes.timeSince} variant="body2">
-                11 December 2021
+                {`Matched At: ${new Date(receiver?.matchAt).toLocaleString()}`}
               </Typography>
               <Typography className={classes.encMsg} variant="body2">
                 <EnhancedEncryption className={classes.encIcon} />

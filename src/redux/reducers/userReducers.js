@@ -127,6 +127,7 @@ export default (state = initialState, action) => {
         messagedUsers: [...action.payload]
       };
     case USER_UPLOAD_AVATAR_SUCCESS:
+      window.href = "/verify-voice";
       return {
         ...state,
         loading: false,

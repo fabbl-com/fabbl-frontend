@@ -98,9 +98,9 @@ const App = () => {
             <PrivateRoute isAuth={isAuth} path="/find">
               <FindRandom userId={userId} socket={socket} eventEmitter={eventEmitter} />
             </PrivateRoute>
-            <Route path="/auth" render={() => <Auth />} />
+            <Route path="/auth" render={() => <Auth isAuth={isAuth} />} />
             <Route path="/image" render={() => <ImageUpload userId={userId} />} />
-            <Route path="/verifyvoice" render={() => <VerifyVoice />} />
+            <Route path="/verify-voice" render={() => <VerifyVoice />} />
             <Route path="/user/verify-email" render={() => <VerifyEmail />} />
             <Route path="/user/reset-password" render={() => <ResetPassword userId={userId} />} />
           </Switch>

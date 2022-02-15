@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#2e9cca",
     color: "#fff",
     marginBottom: "2.2rem",
-    minHeight: "100vh"
+    minHeight: `calc(100vh - ${theme.spacing(6)}px)`
   },
   authControll: {
     backgroundColor: "#fff",

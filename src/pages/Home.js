@@ -22,7 +22,7 @@ function Copyright() {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: "94vh",
+    height: `calc(100vh - ${theme.spacing(6)}px)`,
     marginTop: theme.spacing(6),
     backgroundColor: "#2e9cca",
     color: "#fff"
@@ -65,6 +65,8 @@ const Home = () => {
       autoplay: true,
       animationData
     });
+
+    return () => container.stop();
   }, []);
 
   return (
@@ -92,7 +94,6 @@ const Home = () => {
           Get Started
         </Button>
       </Link>
-
       <div className={classes.copyRight} align="center">
         <Copyright />
       </div>
