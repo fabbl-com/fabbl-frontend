@@ -40,6 +40,7 @@ const Settings = ({ isTheme, setTheme }) => {
   const dispatch = useDispatch();
   const profile = useSelector((state) => state.user?.userInfo);
   console.log(profile);
+
   const [formData, setFormData] = useState({
     age: 1,
     autoDelete: "1",
@@ -52,20 +53,20 @@ const Settings = ({ isTheme, setTheme }) => {
     username: 1
   });
   useEffect(() => {
-    dispatch(getUserProfile());
+    if (!profile) dispatch(getUserProfile());
     if (profile)
       setFormData({
-        age: profile.profile.dob.status,
+        age: profile.dob.status,
         autoDelete: "1",
-        bio: profile.profile.headline.status,
-        genderPref: profile.profile.gender.status,
-        hobbies: profile.profile.hobby.status,
-        location: profile.profile.city.status,
-        relationshipStatusPref: profile.profile.relationshipStatus.status,
-        theme: profile.profile.settings.theme,
-        username: profile.profile.displayName.status
+        bio: profile.headline.status,
+        genderPref: profile.gender.status,
+        hobbies: profile.hobby.status,
+        location: profile.city.status,
+        relationshipStatusPref: profile.relationshipStatus.status,
+        theme: profile.settings.theme,
+        username: profile.displayName.status
       });
-  }, [!profile]);
+  }, [profile]);
   console.log(formData);
   const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -172,7 +173,7 @@ const Settings = ({ isTheme, setTheme }) => {
                 <FormControl size="small" variant="outlined">
                   <Select
                     name={el.name}
-                    defaultValue={2}
+                    defaultValue={1}
                     onChange={(e, index, value) => {
                       onChange(e, index, value);
                     }}
@@ -217,7 +218,7 @@ const Settings = ({ isTheme, setTheme }) => {
                   <FormControl size="small" variant="outlined">
                     <Select
                       name={el.name}
-                      defaultValue={formData.age}
+                      defaultValue={1}
                       onChange={(e, index, value) => {
                         onChange(e, index, value);
                       }}

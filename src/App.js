@@ -46,7 +46,6 @@ const App = () => {
     }
 
     dispatch(checkAuth());
-
     return () => newSocket.off();
   }, []);
 
