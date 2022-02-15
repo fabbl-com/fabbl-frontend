@@ -169,8 +169,7 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
                     avatar={user.profile.avatar}
                     headline={user.profile.headline}
                     gender={user.profile.gender}
-                    city={user.profile.city}
-                    country={user.profile.country}
+                    location={user.profile.location}
                     relationshipStatus={user.profile.relationshipStatus}
                     dob={user.profile.dob}
                     isProfileVerified={user.profile.isProfileVerified}

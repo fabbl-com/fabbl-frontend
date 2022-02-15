@@ -20,6 +20,7 @@ import { uploadAvatar } from "../redux/actions/userActions";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Alert } from "@material-ui/lab";
+import { PropTypes } from "prop-types";
 const useStyles = makeStyles(() => ({
   root: {
     minHeight: "100vh",
@@ -46,7 +47,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const ImageUpload = () => {
+const ImageUpload = ({ userId }) => {
   const classes = useStyles();
   const [isUpload, setUpload] = useState(false);
   const [user, setUser] = useState(null);
@@ -72,7 +73,7 @@ const ImageUpload = () => {
   const handleUpload = (e) => {
     e.preventDefault();
     console.log(user.data);
-    if (user.data) dispatch(uploadAvatar(user.data));
+    if (user.data) dispatch(uploadAvatar({ userId, data: user.data }));
   };
   const handleChange = (e) => {
     e.preventDefault();
@@ -180,6 +181,10 @@ const ImageUpload = () => {
       </div>
     </Container>
   );
+};
+
+ImageUpload.propTypes = {
+  userId: PropTypes.string.isRequired
 };
 
 export default ImageUpload;

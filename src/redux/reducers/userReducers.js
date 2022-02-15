@@ -130,7 +130,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        avatar: action.payload
+        userInfo: { ...state.userInfo, ...action.payload }
       };
     case GET_USER_PROFILE:
     case UPDATE_PROFILE:

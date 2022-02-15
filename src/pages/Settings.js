@@ -35,7 +35,7 @@ import { settingsStyles } from "../assets/jss";
 import { updateProfilePref, getUserProfile } from "../redux/actions/userActions";
 const useStyles = makeStyles((theme) => settingsStyles(theme));
 
-const Settings = ({ isTheme, setTheme }) => {
+const Settings = ({ userId, isTheme, setTheme }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const profile = useSelector((state) => state.user?.userInfo);
@@ -53,7 +53,7 @@ const Settings = ({ isTheme, setTheme }) => {
     username: 1
   });
   useEffect(() => {
-    if (!profile) dispatch(getUserProfile());
+    if (!profile) dispatch(getUserProfile(userId));
     if (profile)
       setFormData({
         age: profile.dob.status,
@@ -61,7 +61,7 @@ const Settings = ({ isTheme, setTheme }) => {
         bio: profile.headline.status,
         genderPref: profile.gender.status,
         hobbies: profile.hobby.status,
-        location: profile.city.status,
+        location: profile.location.status,
         relationshipStatusPref: profile.relationshipStatus.status,
         theme: profile.settings.theme,
         username: profile.displayName.status
@@ -73,7 +73,7 @@ const Settings = ({ isTheme, setTheme }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(formData);
-    dispatch(updateProfilePref(formData));
+    dispatch(updateProfilePref({ userId, data: formData }));
   };
 
   return (
@@ -249,7 +249,8 @@ const Settings = ({ isTheme, setTheme }) => {
 
 Settings.propTypes = {
   isTheme: PropTypes.bool.isRequired,
-  setTheme: PropTypes.func.isRequired
+  setTheme: PropTypes.func.isRequired,
+  userId: PropTypes.string.isRequired
 };
 
 export default Settings;

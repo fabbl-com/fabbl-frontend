@@ -47,8 +47,7 @@ const ProfileCard = ({
   avatar,
   headline,
   gender,
-  city,
-  country,
+  location,
   relationshipStatus,
   dob,
   hobby,
@@ -56,12 +55,12 @@ const ProfileCard = ({
 }) => {
   const classes = useStyles();
 
-  const capitalize = (string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+  const mapToString = (value) => {
+    const arr = ["Single", "Commited", "Married", "Broken Heart"];
+    return arr[value];
   };
 
   const age = parseInt((new Date() - new Date(dob.value)) / (365 * 24 * 60 * 60 * 1000));
-  const location = `${city.value}`;
 
   return (
     <Card elevation={1} className={classes.card}>
@@ -71,14 +70,14 @@ const ProfileCard = ({
           <Favorite fontSize="small" />
           &nbsp;&nbsp;
           <Typography align="center" variant="body1" component="p">
-            {capitalize(relationshipStatus.value)}
+            {mapToString(relationshipStatus.value)}
           </Typography>
         </div>
         <div className={classes.status}>
           <LocationOn fontSize="small" />
           &nbsp;&nbsp;
           <Typography align="center" variant="body1" component="p">
-            {location}
+            {location.value}
           </Typography>
         </div>
         <Typography className={classes.mtb1} variant="h5" component="h2">
@@ -108,8 +107,7 @@ ProfileCard.propTypes = {
   avatar: PropTypes.object,
   headline: PropTypes.object,
   gender: PropTypes.object,
-  city: PropTypes.object,
-  country: PropTypes.object,
+  location: PropTypes.object,
   relationshipStatus: PropTypes.object,
   dob: PropTypes.object,
   hobby: PropTypes.object,

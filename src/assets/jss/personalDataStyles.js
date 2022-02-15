@@ -68,6 +68,19 @@ const chatStyles = (theme) => ({
       backgroundColor: theme.palette.background.disabled,
       color: theme.palette.text.primary
     }
+  },
+  avatarSkeletonContainer: {
+    height: 0,
+    overflow: "hidden",
+    paddingTop: "100%",
+    position: "relative"
+  },
+  avatarLoader: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%"
   }
 });
 

@@ -87,10 +87,10 @@ const App = () => {
               <Profile isTheme={isTheme} setTheme={setTheme} />
             </PrivateRoute>
             <PrivateRoute isAuth={isAuth} path="/settings">
-              <Settings isTheme={isTheme} setTheme={setTheme} />
+              <Settings userId={userId} isTheme={isTheme} setTheme={setTheme} />
             </PrivateRoute>
             <PrivateRoute isAuth={isAuth} path="/edit/personal-data">
-              <PersonalData />
+              <PersonalData userId={userId} />
             </PrivateRoute>
             <PrivateRoute isAuth={isAuth} path="/edit/security-data">
               <SecurityData />
@@ -99,7 +99,7 @@ const App = () => {
               <FindRandom userId={userId} socket={socket} eventEmitter={eventEmitter} />
             </PrivateRoute>
             <Route path="/auth" render={() => <Auth />} />
-            <Route path="/image" render={() => <ImageUpload />} />
+            <Route path="/image" render={() => <ImageUpload userId={userId} />} />
             <Route path="/verifyvoice" render={() => <VerifyVoice />} />
             <Route path="/user/verify-email" render={() => <VerifyEmail />} />
             <Route path="/user/reset-password" render={() => <ResetPassword userId={userId} />} />
