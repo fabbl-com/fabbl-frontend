@@ -31,7 +31,7 @@ const PersonalData = () => {
   const [selectedDate, handleDateChange] = useState(new Date());
   const dispatch = useDispatch();
   const profile = useSelector((state) => state.user?.userInfo);
-  console.log(profile);
+  // console.log(profile);
   const [formData, setFormData] = useState({
     usernameData: " ",
     genderData: " ",
@@ -42,18 +42,18 @@ const PersonalData = () => {
     hobbiesData: []
   });
   useEffect(() => {
-    dispatch(getUserProfile());
+    if (!profile) dispatch(getUserProfile());
     if (profile)
       setFormData({
-        usernameData: profile.profile.displayName.value,
-        genderData: profile.profile.gender.value,
-        bioData: profile.profile.headline.value,
-        ageData: profile.profile.dob.value,
-        locationData: profile.profile.city.value,
-        relationshipStatusData: profile.profile.relationshipStatus.value,
-        hobbiesData: profile.profile.hobby.value
+        usernameData: profile.displayName.value,
+        genderData: profile.gender.value,
+        bioData: profile.headline.value,
+        ageData: profile.dob.value,
+        locationData: profile.city.value,
+        relationshipStatusData: profile.relationshipStatus.value,
+        hobbiesData: profile.hobby.value
       });
-  }, [!profile]);
+  }, [profile]);
   // console.log(formData);
   const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -152,7 +152,10 @@ const PersonalData = () => {
                 name="ageDate"
                 defaultValue={formData.ageData}
                 InputAdornmentProps={{ position: "end" }}
-                onChange={(date) => handleDateChange(date)}
+                onChange={(date, e) => {
+                  handleDateChange(date);
+                  onChange(e);
+                }}
               />
             </MuiPickersUtilsProvider>
           </div>
@@ -163,9 +166,6 @@ const PersonalData = () => {
             <Autocomplete
               options={["single", "In a Relationship", "Broken heart"]}
               getOptionLabel={(option) => option}
-              name="relationshipStatusData"
-              value={formData.relationshipStatusData}
-              onChange={(e) => onChange(e)}
               filterSelectedOptions
               renderInput={(params) => (
                 <TextField
@@ -174,6 +174,9 @@ const PersonalData = () => {
                   className={classes.textField}
                   variant="outlined"
                   placeholder="Relationship Status"
+                  name="relationshipStatusData"
+                  value={formData.relationshipStatusData}
+                  onChange={(e) => onChange(e)}
                 />
               )}
             />
