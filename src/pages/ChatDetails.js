@@ -151,25 +151,29 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   }, []);
 
   const sendMessageAndUpdate = (e) => {
-    e.preventDefault();
-    if (!text) alert("message is empty");
-    else if (!userId) alert("login");
-    else if (!selectedUserId) alert("select a user");
-    else {
-      try {
-        const message = {
-          sender: userId,
-          receiver: selectedUserId,
-          text: text.trim(),
-          createdAt: new Date()
-        };
-        sendMessage(socket, message);
-        setMsgs((state) => [...state, message]);
-        setText("");
-        // scroll down
-        scrollToBottom();
-      } catch (error) {
-        console.log(error);
+    console.log(e);
+    const keyCode = e.which || e.keyCode;
+    if (e.type === "submit" || (e.type === "keypress" && keyCode === 13 && !e.shiftKey)) {
+      e.preventDefault();
+      if (!text) alert("message is empty");
+      else if (!userId) alert("login");
+      else if (!selectedUserId) alert("select a user");
+      else {
+        try {
+          const message = {
+            sender: userId,
+            receiver: selectedUserId,
+            text: text.trim(),
+            createdAt: new Date()
+          };
+          sendMessage(socket, message);
+          setMsgs((state) => [...state, message]);
+          setText("");
+          // scroll down
+          scrollToBottom();
+        } catch (error) {
+          console.log(error);
+        }
       }
     }
   };
@@ -272,27 +276,8 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                 marginBottom: "0"
               }}
               ref={messagesEndRef}>
-              <div className={classes.msgAction}>
-                <Button variant="text">BLOCK</Button>
-                <Divider orientation="vertical" flexItem />
-                <Button variant="text">ADD</Button>
-              </div>
               <Typography className={classes.timeSince} variant="body2">
                 {`Matched At: ${new Date(receiver?.matchAt).toLocaleString()}`}
-              </Typography>
-              <Typography className={classes.encMsg} variant="body2">
-                <EnhancedEncryption className={classes.encIcon} />
-                Messages are end-to-end encrypted. No other user can read to them except you and{" "}
-                {"  "}
-                <Link to="/uuid">
-                  <span>uuid.</span>
-                </Link>
-                {"  "}
-                Click to
-                {"  "}
-                <Link to="/e2e">
-                  <span>learn more</span>
-                </Link>
               </Typography>
               {!loading
                 ? msgs
@@ -321,7 +306,10 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                   ))}
             </div>
             <div className={classes.msgWrapper}>
-              <form onSubmit={sendMessageAndUpdate} className={classes.sendMessage}>
+              <form
+                onSubmit={sendMessageAndUpdate}
+                onKeyPress={sendMessageAndUpdate}
+                className={classes.sendMessage}>
                 <div component="form" className={classes.inputRoot}>
                   <InputBase
                     className={classes.input}

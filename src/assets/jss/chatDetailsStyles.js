@@ -79,7 +79,7 @@ const chatStyles = (theme) => ({
     display: "inline-block",
     borderRadius: theme.shape.borderRadius,
     padding: theme.spacing(0.2, 0.5),
-    margin: theme.spacing(1, 0)
+    margin: theme.spacing(3, 0)
   },
   encIcon: {
     fontSize: 12
