@@ -48,6 +48,13 @@ export const view = (socket, data) => {
   socket.emit("view", data);
 };
 
+export const makeMessageSeen = (socket, data, eventEmitter) => {
+  socket.emit("read", data);
+  socket.on("read-response", (data) => {
+    eventEmitter.emit("read-response", data);
+  });
+};
+
 export const getLikes = (socket, eventEmitter) => {
   socket.on("like-response", (data) => {
     eventEmitter.emit("like-response", data);

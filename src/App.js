@@ -38,7 +38,7 @@ const App = () => {
   const { isAuth, authChecking } = useSelector((state) => state.user);
 
   useEffect(() => {
-    console.log(userId);
+    // console.log(userId);
     let newSocket;
     if (userId) {
       newSocket = io(ENDPOINT, { reconnectionDelayMax: 10000, query: `userId=${userId}` });
@@ -46,10 +46,10 @@ const App = () => {
     }
 
     dispatch(checkAuth());
-    return () => newSocket.off();
+    // return () => newSocket.off();
   }, []);
 
-  console.log(isAuth);
+  // console.log(isAuth);
 
   const appliedTheme = createTheme(isTheme ? dark : light);
 

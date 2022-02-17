@@ -229,14 +229,14 @@ const Auth = ({ isAuth }) => {
         </Box>
       )}
       <div className={classes.authControll}>
-        {isRegister ? (
+        {!isRegister ? (
           <Typography variant="subtitle1" align="center" color="textPrimary" paragraph>
             {"Don't have an account?"}
             <Button
               color="primary"
               disableRipple={true}
               onClick={() => {
-                setRegister(isRegister);
+                setRegister((state) => !state);
               }}>
               Register
             </Button>
@@ -249,7 +249,7 @@ const Auth = ({ isAuth }) => {
               color="primary"
               disableRipple={true}
               onClick={() => {
-                setRegister(isRegister);
+                setRegister((state) => !state);
               }}>
               Login
             </Button>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { createRef, useEffect, useRef, useState } from "react";
 import {
   makeStyles,
   Avatar,
@@ -36,7 +36,7 @@ import { PropTypes } from "prop-types";
 import queryString from "query-string";
 
 import { chatDetailsStyles } from "../assets/jss";
-import { receiveMessage, sendMessage } from "../utils/socket.io";
+import { makeMessageSeen, receiveMessage, sendMessage } from "../utils/socket.io";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { setUserMessages } from "../redux/actions/messageActions";
 import { withStyles } from "@material-ui/styles";
@@ -113,16 +113,20 @@ Message.propTypes = {
 const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [lastRreceived, setLastRreceived] = useState(-1);
   const [selectedUserId, setSelectedUserId] = useState("");
   const [msgs, setMsgs] = useState([]);
   const [text, setText] = useState("");
   const theme = useTheme();
   const dispatch = useDispatch();
   const messagesEndRef = useRef();
+  const [elems, setElems] = useState([]);
 
   if (!socket) return <div>Loading...</div>;
 
-  const { messages, loading, receiver } = useSelector((state) => state.messages);
+  const { loading, receiver } = useSelector((state) => state.messages);
+  const { messages, _id } = useSelector((state) => state.messages.messages);
+
   useEffect(() => {
     const query = queryString.parse(location?.search);
     setSelectedUserId(query.userId);
@@ -130,6 +134,8 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
     socket.on("get-user-messages-response", (data) => {
       dispatch(setUserMessages(data));
     });
+
+    return () => socket.off();
   }, [socket]);
 
   useEffect(() => {
@@ -137,21 +143,96 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   }, [messages]);
 
   useEffect(() => {
-    scrollToBottom();
+    if (msgs && msgs.length > 0) {
+      for (let i = msgs.length - 1; i >= 0; i--) {
+        if (msgs[i].sender !== userId) {
+          setLastRreceived(i);
+          break;
+        }
+      }
+      scrollToBottom();
+      setElems((state) =>
+        Array(msgs.length)
+          .fill()
+          .map((_, i) => state[i] || createRef())
+      );
+    }
   }, [msgs]);
 
   useEffect(() => {
     receiveMessage(dispatch, socket, eventEmitter);
-    eventEmitter.on("send-message-response", (message) => {
-      setMsgs((state) => [...state, message]);
-      scrollToBottom();
-    });
+    eventEmitter.on("send-message-response", sendMessageResponseListener);
 
-    // return () => eventEmitter.removeListener("send-message-response", () => {});
-  }, []);
+    return () => eventEmitter.removeListener("send-message-response", sendMessageResponseListener);
+  }, [socket, eventEmitter]);
+
+  useEffect(() => {
+    socket.on("read-response", (data) => {
+      let index = -1;
+      const temp = msgs;
+      for (let i = temp.length - 1; i >= 0; i--) {
+        if (temp[i].sender === data.sender) {
+          index = i;
+          temp[i].isRead = true;
+          break;
+        }
+      }
+      if (index !== -1 && temp && temp.length > 0) {
+        setMsgs(temp);
+        console.log(msgs);
+      }
+    });
+  }, [socket, msgs]);
+
+  const sendMessageResponseListener = (message) => {
+    setMsgs((state) => [...state, message]);
+    scrollToBottom();
+  };
+
+  // useEffect(() => {
+  //   if (visible)
+  //     makeMessageSeen(socket, {
+  //       _id,
+  //       messageId: msgs[lastRreceived]._id,
+  //       receiver: msgs[lastRreceived].receiver
+  //     });
+  // }, [socket, visible, msgs]);
+
+  useEffect(() => {
+    socket.on("disconnect", (data) => {
+      console.log(data);
+    });
+  }, [socket]);
+
+  useEffect(() => {
+    console.log("object", lastRreceived);
+    if (lastRreceived >= 0) {
+      const container = elems[lastRreceived];
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!msgs[lastRreceived].isRead && entry.isIntersecting) {
+            makeMessageSeen(socket, {
+              _id,
+              createdAt: msgs[lastRreceived].createdAt,
+              sender: msgs[lastRreceived].sender
+            });
+            console.log(true);
+            setVisible(true);
+          }
+        },
+        {
+          root: null,
+          rootMargin: "0px",
+          threshold: 1
+        }
+      );
+      observer.observe(container.current);
+      return () => observer.unobserve(container.current);
+    }
+  }, [msgs, lastRreceived]);
+  console.log(lastRreceived);
 
   const sendMessageAndUpdate = (e) => {
-    console.log(e);
     const keyCode = e.which || e.keyCode;
     if (e.type === "submit" || (e.type === "keypress" && keyCode === 13 && !e.shiftKey)) {
       e.preventDefault();
@@ -164,6 +245,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
             sender: userId,
             receiver: selectedUserId,
             text: text.trim(),
+            isRead: false,
             createdAt: new Date()
           };
           sendMessage(socket, message);
@@ -218,7 +300,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
 
   return (
     <div className={classes.root}>
-      <Container className={classes.container}>
+      <Container className={classes.elems}>
         <Paper className={classes.paper}>
           <AppBar elevation={1} className={classes.appBar} position="fixed" color="inherit">
             <Toolbar className={classes.toolBar} variant="dense">
@@ -281,9 +363,9 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
               </Typography>
               {!loading
                 ? msgs
-                    .sort((a, b) => a.createdAt - b.createdAt)
-                    .map((msg, index) => (
-                      <div key={index}>
+                    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+                    .map((msg, i) => (
+                      <div ref={elems[i]} key={i}>
                         <Message
                           align={msg.sender === userId ? "left" : "right"}
                           time={msg.createdAt}
