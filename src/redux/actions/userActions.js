@@ -25,7 +25,8 @@ import {
   CHECK_AUTH_SUCCESS,
   CHECK_AUTH_FAIL,
   UPDATE_PROFILE_PREF,
-  GET_USER_PROFILE
+  GET_USER_PROFILE,
+  SET_USER_OFFLINE
 } from "../constants/userActionTypes";
 
 export const register = (userId) => async (dispatch) => {

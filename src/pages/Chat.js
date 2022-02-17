@@ -31,7 +31,7 @@ import {
 import { Link, useHistory } from "react-router-dom";
 import { PropTypes } from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-import { getChatListUsers } from "../redux/actions/messageActions";
+import { getChatListUsers, setChatListUserOffline } from "../redux/actions/messageActions";
 import { Skeleton } from "@material-ui/lab";
 
 import { chatStyles } from "../assets/jss";
@@ -97,6 +97,13 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
       eventEmitter.removeListener("chat-list-response", chatListListener);
     };
   }, [userId, socket, eventEmitter]);
+
+  useEffect(() => {
+    socket.on("connection-response", (data) => {
+      console.log(data);
+      dispatch(setChatListUserOffline(data));
+    });
+  }, [socket]);
 
   useEffect(() => {
     if (isFriends) setUsers(friends);

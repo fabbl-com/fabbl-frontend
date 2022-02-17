@@ -38,7 +38,7 @@ import queryString from "query-string";
 import { chatDetailsStyles } from "../assets/jss";
 import { makeMessageSeen, receiveMessage, sendMessage } from "../utils/socket.io";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { setUserMessages } from "../redux/actions/messageActions";
+import { setUserMessages, setUserOffline } from "../redux/actions/messageActions";
 import { withStyles } from "@material-ui/styles";
 import { ProfileBadge } from "../components";
 
@@ -199,13 +199,12 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   // }, [socket, visible, msgs]);
 
   useEffect(() => {
-    socket.on("disconnect", (data) => {
-      console.log(data);
+    socket.on("connection-response", (data) => {
+      dispatch(setUserOffline(data));
     });
   }, [socket]);
 
   useEffect(() => {
-    console.log("object", lastRreceived);
     if (lastRreceived >= 0) {
       const container = elems[lastRreceived];
       const observer = new IntersectionObserver(
@@ -216,8 +215,6 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
               createdAt: msgs[lastRreceived].createdAt,
               sender: msgs[lastRreceived].sender
             });
-            console.log(true);
-            setVisible(true);
           }
         },
         {

@@ -141,7 +141,6 @@ export default (state = initialState, action) => {
         loading: false,
         userInfo: action.payload.profile
       };
-
     default:
       return state;
   }

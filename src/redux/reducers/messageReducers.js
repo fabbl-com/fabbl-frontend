@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import {
   GET_MESSAGES_REQUEST,
   GET_MESSAGES_SUCCESS,
@@ -10,7 +11,9 @@ import {
   SET_USER_MESSAGES_FAIL,
   SET_RANDOM_USERS_REQUEST,
   SET_RANDOM_USERS_SUCCESS,
-  SET_RANDOM_USERS_FAIL
+  SET_RANDOM_USERS_FAIL,
+  SET_USER_OFFLINE,
+  SET_CHAT_LIST_USER_OFFLINE
 } from "../constants/messageActionTypes";
 
 const initialState = {
@@ -58,6 +61,28 @@ export default (state = initialState, action) => {
         ...state,
         loading: false,
         error: action.payload
+      };
+    case SET_USER_OFFLINE:
+      return {
+        ...state,
+        receiver: {
+          ...state.receiver,
+          online: action.payload.connected,
+          lastLogin: action.payload?.lastLogin
+        }
+      };
+    case SET_CHAT_LIST_USER_OFFLINE:
+      const temp = state.chatListUsers;
+      console.log(temp, "temp");
+      const index = temp.findIndex((el) => el.userId === action.payload.userId);
+      temp[index].online = action.payload.connected;
+      temp[index].lastLogin = action.payload?.lastLogin;
+      return {
+        ...state,
+        receiver: {
+          ...state.receiver,
+          chatListUser: temp
+        }
       };
     default:
       return state;
