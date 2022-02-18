@@ -1,7 +1,4 @@
-import {
-  GET_CHAT_LIST_USERS_REQUEST,
-  SET_USER_MESSAGES_REQUEST
-} from "../redux/constants/messageActionTypes";
+import { GET_CHAT_LIST_USERS_REQUEST } from "../redux/constants/messageActionTypes";
 
 export const getChatList = (socket, eventEmitter, userId, dispatch) => {
   dispatch({ type: GET_CHAT_LIST_USERS_REQUEST });
@@ -14,14 +11,6 @@ export const getChatList = (socket, eventEmitter, userId, dispatch) => {
 
 export const sendMessage = (socket, message) => {
   socket.emit("send-message", message);
-};
-
-export const receiveMessage = (dispatch, socket, eventEmitter) => {
-  dispatch({ type: SET_USER_MESSAGES_REQUEST });
-  socket.on("send-message-response", (data) => {
-    console.log(data);
-    eventEmitter.emit("send-message-response", data);
-  });
 };
 
 export const exitChat = (socket, eventEmitter, userId) => {

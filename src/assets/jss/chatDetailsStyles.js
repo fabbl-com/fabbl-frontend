@@ -37,7 +37,7 @@ const chatStyles = (theme) => ({
   },
   menu: {
     backgroundColor: theme.palette.background.default,
-    top: `56px !important`,
+    top: `64px !important`,
     left: "auto !important",
     right: theme.spacing(2),
     minWidth: "200px",

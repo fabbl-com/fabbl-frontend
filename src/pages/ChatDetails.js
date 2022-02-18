@@ -13,22 +13,21 @@ import {
   InputBase,
   Menu,
   MenuItem,
-  Paper,
-  Button,
-  Divider,
-  Badge
+  Paper
 } from "@material-ui/core";
 import {
   Brightness4,
   BrightnessHigh,
+  Block,
   ArrowBack,
   MoreVert,
   AccountCircle,
-  EnhancedEncryption,
+  PersonAdd,
   Send,
   KeyboardArrowDown,
   InsertEmoticon,
-  Gif
+  Gif,
+  Stars
 } from "@material-ui/icons";
 import { Skeleton } from "@material-ui/lab";
 import { Link } from "react-router-dom";
@@ -36,10 +35,14 @@ import { PropTypes } from "prop-types";
 import queryString from "query-string";
 
 import { chatDetailsStyles } from "../assets/jss";
-import { makeMessageSeen, receiveMessage, sendMessage } from "../utils/socket.io";
+import { makeMessageSeen, sendMessage } from "../utils/socket.io";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { setUserMessages, setUserOffline } from "../redux/actions/messageActions";
-import { withStyles } from "@material-ui/styles";
+import {
+  setUserMessages,
+  setUserOffline,
+  setFriends,
+  setBlocked
+} from "../redux/actions/messageActions";
 import { ProfileBadge } from "../components";
 
 const useStyles = makeStyles((theme) => chatDetailsStyles(theme));
@@ -135,6 +138,11 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
       dispatch(setUserMessages(data));
     });
 
+    socket.on("send-message-response", (message) => setMsgs((state) => [...state, message]));
+    socket.on("connection-response", (data) => dispatch(setUserOffline(data)));
+    socket.on("add-friends-response", (data) => dispatch(setFriends(data)));
+    socket.on("block-response", (data) => dispatch(setBlocked(data)));
+
     return () => socket.off();
   }, [socket]);
 
@@ -160,13 +168,6 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   }, [msgs]);
 
   useEffect(() => {
-    receiveMessage(dispatch, socket, eventEmitter);
-    eventEmitter.on("send-message-response", sendMessageResponseListener);
-
-    return () => eventEmitter.removeListener("send-message-response", sendMessageResponseListener);
-  }, [socket, eventEmitter]);
-
-  useEffect(() => {
     socket.on("read-response", (data) => {
       let index = -1;
       const temp = msgs;
@@ -183,26 +184,6 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
       }
     });
   }, [socket, msgs]);
-
-  const sendMessageResponseListener = (message) => {
-    setMsgs((state) => [...state, message]);
-    scrollToBottom();
-  };
-
-  // useEffect(() => {
-  //   if (visible)
-  //     makeMessageSeen(socket, {
-  //       _id,
-  //       messageId: msgs[lastRreceived]._id,
-  //       receiver: msgs[lastRreceived].receiver
-  //     });
-  // }, [socket, visible, msgs]);
-
-  useEffect(() => {
-    socket.on("connection-response", (data) => {
-      dispatch(setUserOffline(data));
-    });
-  }, [socket]);
 
   useEffect(() => {
     if (lastRreceived >= 0) {
@@ -223,11 +204,10 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
           threshold: 1
         }
       );
-      observer.observe(container.current);
-      return () => observer.unobserve(container.current);
+      container.current && observer.observe(container.current);
+      return () => container.current && observer.unobserve(container.current);
     }
   }, [msgs, lastRreceived]);
-  console.log(lastRreceived);
 
   const sendMessageAndUpdate = (e) => {
     const keyCode = e.which || e.keyCode;
@@ -270,6 +250,22 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
     setAnchorEl(null);
   };
 
+  const handleFriends = (e) => {
+    e.preventDefault();
+    handleMenuClose();
+    console.log("click ");
+    if (userId && selectedUserId)
+      socket.emit("add-friends", { sender: userId, receiver: selectedUserId });
+  };
+
+  const handleBlock = (e) => {
+    e.preventDefault();
+    handleMenuClose();
+    console.log("click ");
+    if (userId && selectedUserId)
+      socket.emit("block", { sender: userId, receiver: selectedUserId });
+  };
+
   const Actions = (
     <Menu
       classes={{
@@ -292,6 +288,18 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
           <AccountCircle />
         </IconButton>
       </MenuItem>
+      <MenuItem className={classes.menuItem} onClick={handleFriends}>
+        <Typography>Add to Friends</Typography>
+        <IconButton className={classes.menuIcons} color="primary">
+          <PersonAdd />
+        </IconButton>
+      </MenuItem>
+      <MenuItem className={classes.menuItem} onClick={handleBlock}>
+        <Typography>Block</Typography>
+        <IconButton className={classes.menuIcons} color="primary">
+          <Block />
+        </IconButton>
+      </MenuItem>
     </Menu>
   );
 
@@ -307,31 +315,52 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                 </IconButton>
               </Link>
               <div className={classes.avatar}>
-                {/* <Avatar src={receiver?.avatar?.value} /> */}
-                <ProfileBadge
-                  color="primary"
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right"
-                  }}
-                  overlap="circular"
-                  variant="dot"
-                  invisible={!receiver?.online}>
-                  <Avatar
-                    aria-label="user"
-                    src={receiver?.avatar?.value}
-                    className={classes.avatar}>
-                    {receiver?.displayName?.value}
-                  </Avatar>
-                </ProfileBadge>
+                <Link to="/profile">
+                  <ProfileBadge
+                    color="primary"
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right"
+                    }}
+                    overlap="circular"
+                    variant="dot"
+                    invisible={!receiver?.online}>
+                    {loading ? (
+                      <Skeleton animation="wave" variant="circle" width={40} height={40} />
+                    ) : (
+                      <Avatar
+                        aria-label="user"
+                        src={receiver?.avatar?.value}
+                        className={classes.avatar}>
+                        {receiver?.displayName?.value}
+                      </Avatar>
+                    )}
+                  </ProfileBadge>
+                </Link>
                 <div className={classes.username}>
                   <Typography align="left" component="h1" variant="h6">
-                    {receiver?.displayName?.value}
+                    {loading ? (
+                      <Skeleton varint="rect" animation="wave" width={180} />
+                    ) : (
+                      receiver?.displayName?.value
+                    )}
+                    {!loading &&
+                      (receiver.isFriends ? (
+                        <Stars fontSize="small" />
+                      ) : receiver?.isBlocked ? (
+                        <Block fontSize="small" />
+                      ) : (
+                        ""
+                      ))}
                   </Typography>
                   <Typography component="h1" variant="caption">
-                    {receiver?.online
-                      ? "Active Now"
-                      : `Last active: ${new Date(receiver?.lastLogin).toLocaleTimeString()}`}
+                    {loading ? (
+                      <Skeleton varint="rect" animation="wave" width={150} />
+                    ) : receiver?.online ? (
+                      "Active Now"
+                    ) : (
+                      `Last active: ${new Date(receiver?.lastLogin).toLocaleTimeString()}`
+                    )}
                   </Typography>
                 </div>
               </div>
@@ -356,7 +385,11 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
               }}
               ref={messagesEndRef}>
               <Typography className={classes.timeSince} variant="body2">
-                {`Matched At: ${new Date(receiver?.matchAt).toLocaleString()}`}
+                {loading ? (
+                  <Skeleton animation="wave" width={200} />
+                ) : (
+                  `Matched At: ${new Date(receiver?.matchAt).toLocaleString()}`
+                )}
               </Typography>
               {!loading
                 ? msgs
