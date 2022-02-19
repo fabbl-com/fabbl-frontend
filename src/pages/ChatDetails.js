@@ -30,7 +30,7 @@ import {
   Stars
 } from "@material-ui/icons";
 import { Skeleton } from "@material-ui/lab";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { PropTypes } from "prop-types";
 import queryString from "query-string";
 
@@ -44,6 +44,7 @@ import {
   setBlocked
 } from "../redux/actions/messageActions";
 import { ProfileBadge } from "../components";
+import { SET_USER_MESSAGES_REQUEST } from "../redux/constants/messageActionTypes";
 
 const useStyles = makeStyles((theme) => chatDetailsStyles(theme));
 
@@ -122,8 +123,10 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const [text, setText] = useState("");
   const theme = useTheme();
   const dispatch = useDispatch();
+  const location = useLocation();
   const messagesEndRef = useRef();
   const [elems, setElems] = useState([]);
+  const [customProps, setCustomProps] = useState({ isBlocked: false, friendStatus: "" });
 
   if (!socket) return <div>Loading...</div>;
 
@@ -131,9 +134,15 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const { messages, _id } = useSelector((state) => state.messages.messages);
 
   useEffect(() => {
-    const query = queryString.parse(location?.search);
+    const query = location?.state;
     setSelectedUserId(query.userId);
+    setCustomProps((state) => ({
+      ...state,
+      isBlocked: query.isBlocked,
+      friendStatus: query.friendStatus
+    }));
     socket.emit("get-user-messages", { sender: userId, receiver: query.userId });
+    dispatch({ type: SET_USER_MESSAGES_REQUEST });
     socket.on("get-user-messages-response", (data) => {
       dispatch(setUserMessages(data));
     });
@@ -213,25 +222,29 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
     const keyCode = e.which || e.keyCode;
     if (e.type === "submit" || (e.type === "keypress" && keyCode === 13 && !e.shiftKey)) {
       e.preventDefault();
-      if (!text) alert("message is empty");
-      else if (!userId) alert("login");
-      else if (!selectedUserId) alert("select a user");
+      if (customProps.isBlocked)
+        alert(`You have blocked ${receiver?.displayName?.value}. Unblock to send messages`);
       else {
-        try {
-          const message = {
-            sender: userId,
-            receiver: selectedUserId,
-            text: text.trim(),
-            isRead: false,
-            createdAt: new Date()
-          };
-          sendMessage(socket, message);
-          setMsgs((state) => [...state, message]);
-          setText("");
-          // scroll down
-          scrollToBottom();
-        } catch (error) {
-          console.log(error);
+        if (!text) alert("message is empty");
+        else if (!userId) alert("login");
+        else if (!selectedUserId) alert("select a user");
+        else {
+          try {
+            const message = {
+              sender: userId,
+              receiver: selectedUserId,
+              text: text.trim(),
+              isRead: false,
+              createdAt: new Date()
+            };
+            sendMessage(socket, message);
+            setMsgs((state) => [...state, message]);
+            setText("");
+            // scroll down
+            scrollToBottom();
+          } catch (error) {
+            console.log(error);
+          }
         }
       }
     }
@@ -252,6 +265,10 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
 
   const handleFriends = (e) => {
     e.preventDefault();
+    if (customProps.friendStatus === "sent")
+      alert("You have already sent a friend request. Please wait for the response");
+    if (customProps.friendStatus === "received")
+      alert("Congratulations you have already received a friend request click OK to confirm it");
     handleMenuClose();
     console.log("click ");
     if (userId && selectedUserId)
@@ -345,7 +362,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                       receiver?.displayName?.value
                     )}
                     {!loading &&
-                      (receiver.isFriends ? (
+                      (customProps.friendStatus === "friends" ? (
                         <Stars fontSize="small" />
                       ) : receiver?.isBlocked ? (
                         <Block fontSize="small" />
@@ -391,8 +408,9 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                   `Matched At: ${new Date(receiver?.matchAt).toLocaleString()}`
                 )}
               </Typography>
-              {!loading
-                ? msgs
+              {!loading ? (
+                !receiver?.isBlockedBy ? (
+                  msgs
                     .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
                     .map((msg, i) => (
                       <div ref={elems[i]} key={i}>
@@ -404,18 +422,26 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                         </Message>
                       </div>
                     ))
-                : [...new Array(9)].map((_, i) => (
-                    <div
-                      key={i}
-                      style={{ display: "flex", width: "100%", flexDirection: "column" }}>
-                      <Skeleton
-                        height={60}
-                        style={{ alignSelf: i % 2 == 0 ? "start" : "end", borderRadius: "1ch" }}
-                        width="50%"
-                        animation="wave"
-                      />
-                    </div>
-                  ))}
+                ) : (
+                  <div style={{ color: "red" }}>You cannot reply to this conversation</div>
+                )
+              ) : (
+                [...new Array(9)].map((_, i) => (
+                  <div key={i} style={{ display: "flex", width: "100%", flexDirection: "column" }}>
+                    <Skeleton
+                      height={60}
+                      style={{ alignSelf: i % 2 == 0 ? "start" : "end", borderRadius: "1ch" }}
+                      width="50%"
+                      animation="wave"
+                    />
+                  </div>
+                ))
+              )}
+              {!loading && customProps.isBlocked && (
+                <div style={{ margin: "2ch 0", color: "red" }}>
+                  You have blocked {receiver?.displayName?.value}. Unblock to send messages
+                </div>
+              )}
             </div>
             <div className={classes.msgWrapper}>
               <form

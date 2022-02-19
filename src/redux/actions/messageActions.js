@@ -81,7 +81,6 @@ export const setRandomUsers = (data) => async (dispatch) => {
 
 export const setUserMessages = (data) => async (dispatch) => {
   console.log(data);
-  dispatch({ type: SET_USER_MESSAGES_REQUEST });
   try {
     dispatch({ type: SET_USER_MESSAGES_SUCCESS, payload: data });
   } catch (error) {

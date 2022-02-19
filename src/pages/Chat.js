@@ -18,7 +18,6 @@ import {
   Menu,
   MenuItem
 } from "@material-ui/core";
-import { withStyles } from "@material-ui/styles";
 import moment from "moment";
 import {
   AccountCircle,
@@ -86,7 +85,7 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   if (!socket) return <div>Loading...</div>;
 
   const { chatListUsers, loading } = useSelector((state) => state.messages);
-  const friends = chatListUsers.filter((user) => user.isFriends === true);
+  const friends = chatListUsers.filter((user) => user.friendStatus === "friends");
 
   useEffect(() => {
     getChatList(socket, eventEmitter, userId, dispatch);
@@ -210,7 +209,16 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
             users
               .sort((b, a) => new Date(a.createdAt) - new Date(b.createdAt))
               .map((user, i) => (
-                <Link to={`/chat-details?userId=${user?.userId}`} key={i}>
+                <Link
+                  to={{
+                    pathname: `/chat-details`,
+                    state: {
+                      userId: user.userId,
+                      friendStatus: user.friendStatus,
+                      isBlocked: user.isBlocked ? true : false
+                    }
+                  }}
+                  key={i}>
                   <Card className={classes.msgCard}>
                     <CardHeader
                       classes={{
