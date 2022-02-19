@@ -149,8 +149,13 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
 
     socket.on("send-message-response", (message) => setMsgs((state) => [...state, message]));
     socket.on("connection-response", (data) => dispatch(setUserOffline(data)));
-    socket.on("add-friends-response", (data) => dispatch(setFriends(data)));
-    socket.on("block-response", (data) => dispatch(setBlocked(data)));
+    socket.on("block-response", (data) => {
+      setCustomProps((state) => ({ ...state, isBlocked: data.isBlocked }));
+      dispatch(setBlocked(data));
+    });
+    socket.on("add-friends-response", (data) =>
+      setCustomProps((state) => ({ ...state, friendStatus: data.status || "" }))
+    );
 
     return () => socket.off();
   }, [socket]);
@@ -279,8 +284,11 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
     e.preventDefault();
     handleMenuClose();
     console.log("click ");
-    if (userId && selectedUserId)
-      socket.emit("block", { sender: userId, receiver: selectedUserId });
+    if (userId && selectedUserId) {
+      if (!customProps.isBlocked)
+        socket.emit("block", { sender: userId, receiver: selectedUserId });
+      else socket.emit("unblock", { sender: userId, receiver: selectedUserId });
+    }
   };
 
   const Actions = (
@@ -312,7 +320,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
         </IconButton>
       </MenuItem>
       <MenuItem className={classes.menuItem} onClick={handleBlock}>
-        <Typography>Block</Typography>
+        <Typography>{!customProps.isBlocked ? "Block" : "Unblock"}</Typography>
         <IconButton className={classes.menuIcons} color="primary">
           <Block />
         </IconButton>

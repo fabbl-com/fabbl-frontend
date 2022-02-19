@@ -26,7 +26,7 @@ const initialState = {
   chatListUsers: [],
   randomUsers: [],
   isFriends: false,
-  isBlocked: false,
+  isBlockedBy: false,
   receiver: {}
 };
 
@@ -103,7 +103,7 @@ export default (state = initialState, action) => {
         ...state,
         receiver: {
           ...state.receiver,
-          isBlocked: true
+          isBlockedBy: action.payload.isBlockedBy
         }
       };
     default:
