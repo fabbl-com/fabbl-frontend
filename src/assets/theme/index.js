@@ -44,6 +44,15 @@ export const light = responsiveFontSizes(
       body2: {
         fontSize: "0.8rem"
       },
+      subtitle2: {
+        fontSize: "0.75rem",
+        fontWeight: 400,
+        color: "#9E9E9E"
+      },
+      subtitle1: {
+        fontSize: "0.875rem",
+        fontWeight: 500
+      },
       button: {
         textTransform: "inherit"
       }
@@ -121,6 +130,15 @@ export const dark = responsiveFontSizes(
       },
       body2: {
         fontSize: "0.8rem"
+      },
+      subtitle1: {
+        fontSize: "0.875rem",
+        fontWeight: 500
+      },
+      subtitle2: {
+        fontSize: "0.75rem",
+        fontWeight: 400,
+        color: "#9E9E9E"
       },
       button: {
         textTransform: "inherit"

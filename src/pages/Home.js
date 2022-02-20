@@ -58,7 +58,7 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    lottie.loadAnimation({
+    const anim = lottie.loadAnimation({
       container: container.current,
       renderer: "svg",
       loop: true,
@@ -66,7 +66,7 @@ const Home = () => {
       animationData
     });
 
-    return () => container.stop();
+    return () => anim.destroy();
   }, []);
 
   return (

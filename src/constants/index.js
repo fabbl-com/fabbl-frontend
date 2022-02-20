@@ -1,0 +1,6 @@
+export const LIKED = "LIKED";
+export const MATCHED = "MATCHED";
+export const GOT_FRIEND_REQUEST = "GOT_FRIEND_REQUEST";
+export const CONFIRMED_FRIENDS_REQUEST = "CONFIRMED_FRIENDS_REQUEST";
+export const BLOCKED = "BLOCKED";
+export const UNBLOCKED = "UNBLOCKED";
