@@ -26,7 +26,7 @@ import {
   CHECK_AUTH_FAIL,
   UPDATE_PROFILE_PREF,
   GET_USER_PROFILE,
-  SET_USER_OFFLINE
+  SET_NOTIFICATIONS
 } from "../constants/userActionTypes";
 
 export const register = (userId) => async (dispatch) => {
@@ -185,7 +185,7 @@ export const checkAuth = () => async (dispatch) => {
   try {
     const { data } = await Axios.get("/auth/check");
     console.log(data);
-    dispatch({ type: CHECK_AUTH_SUCCESS });
+    dispatch({ type: CHECK_AUTH_SUCCESS, payload: data.notifications });
   } catch (error) {
     console.log(error.response);
     dispatch({ type: CHECK_AUTH_FAIL });
@@ -237,4 +237,9 @@ export const getUserProfile = (userId) => async (dispatch) => {
       }
     });
   }
+};
+
+export const setNotifications = (data) => (dispatch) => {
+  console.log(data);
+  dispatch({ type: SET_NOTIFICATIONS, payload: data });
 };

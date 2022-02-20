@@ -25,7 +25,8 @@ import {
   CHECK_AUTH_FAIL,
   CHECK_AUTH_REQUEST,
   UPDATE_PROFILE_PREF,
-  GET_USER_PROFILE
+  GET_USER_PROFILE,
+  SET_NOTIFICATIONS
 } from "../constants/userActionTypes";
 
 const initialState = {
@@ -34,7 +35,8 @@ const initialState = {
   loading: false,
   authChecking: true,
   likes: [],
-  userInfo: null,
+  userInfo: {},
+  notifications: [],
   isEmailVerified: false,
   userId: localStorage.getItem("userId"),
   avatar: null
@@ -80,7 +82,8 @@ export default (state = initialState, action) => {
       return {
         ...state,
         isAuth: true,
-        authChecking: false
+        authChecking: false,
+        notifications: action.payload
       };
     case USER_SIGNIN_FAIL:
     case USER_REGISTER_FAIL:
@@ -140,6 +143,11 @@ export default (state = initialState, action) => {
         ...state,
         loading: false,
         userInfo: action.payload.profile
+      };
+    case SET_NOTIFICATIONS:
+      return {
+        ...state,
+        notifications: [...state.notifications, action.payload]
       };
     default:
       return state;

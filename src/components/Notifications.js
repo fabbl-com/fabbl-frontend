@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, Fragment } from "react";
 import {
   Avatar,
+  Badge,
   Box,
   Button,
   ButtonBase,
@@ -56,9 +57,9 @@ const useStyles = makeStyles((theme) => ({
   },
   iconAvatar: {
     cursor: "pointer",
-    borderRadius: "12px",
-    width: "32px",
-    height: "32px",
+    borderRadius: "8px",
+    width: "28px",
+    height: "28px",
     fontSize: "1.2rem",
     transition: "all .2s ease-in-out"
   },
@@ -83,93 +84,12 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const notifications = [
-  {
-    _id: "123",
-    type: "LIKED",
-    userId: "1234",
-    message: "Congratulations someone has liked you",
-    isRead: false,
-    createdAt: "2022-02-20T15:33:06.377Z"
-  },
-  {
-    _id: "124",
-    type: "MATCHED",
-    userId: "1235",
-    message: "Congratulations you have a new match. Go and chat...",
-    isRead: false,
-    displayName: { value: "ikabir", status: 3 },
-    avatar: {
-      value:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHw%3D&w=1000&q=80",
-      status: 3
-    },
-    createdAt: "2022-02-20T15:33:06.377Z"
-  },
-  {
-    _id: "123",
-    type: "GOT_FRIEND_REQUEST",
-    userId: "1234",
-    message: "Congratulations someone has sent you a friend request",
-    isRead: false,
-    displayName: { value: "ikabir", status: 3 },
-    avatar: {
-      value:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHw%3D&w=1000&q=80",
-      status: 3
-    },
-    createdAt: "2022-02-20T15:33:06.377Z"
-  },
-  {
-    _id: "123",
-    type: "CONFIRMED_FRIENDS_REQUEST",
-    userId: "1234",
-    message: "Congratulations someone has confirmed your friend request",
-    isRead: false,
-    displayName: { value: "ikabir", status: 3 },
-    avatar: {
-      value:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHw%3D&w=1000&q=80",
-      status: 3
-    },
-    createdAt: "2022-02-20T15:33:06.377Z"
-  },
-  {
-    _id: "123",
-    type: "BLOCKED",
-    userId: "1234",
-    message: "Ooops someone has blocked you",
-    isRead: false,
-    displayName: { value: "ikabir", status: 3 },
-    avatar: {
-      value:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHw%3D&w=1000&q=80",
-      status: 3
-    },
-    createdAt: "2022-02-20T15:33:06.377Z"
-  },
-  {
-    _id: "123",
-    type: "UNBLOCKED",
-    userId: "1234",
-    message: "Congratulations someone has unblocked you",
-    isRead: false,
-    displayName: { value: "ikabir", status: 3 },
-    avatar: {
-      value:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHw%3D&w=1000&q=80",
-      status: 3
-    },
-    createdAt: "2022-02-20T15:33:06.377Z"
-  }
-];
-
-const CustomListItem = ({ name, url, time, type, isRead }) => {
+const CustomListItem = ({ name, url, time, notificationType, isRead }) => {
   const theme = useTheme();
   const classes = useStyles();
 
-  const getMessage = (type, name) => {
-    switch (type) {
+  const getMessage = (notificationType, name) => {
+    switch (notificationType) {
       case LIKED:
         return "Congratulations! someone has liked you";
       case MATCHED:
@@ -190,12 +110,21 @@ const CustomListItem = ({ name, url, time, type, isRead }) => {
   return (
     <div
       className={classes.listWrapper}
-      style={{ paddingBottom: type === GOT_FRIEND_REQUEST ? "16px" : 0 }}>
+      style={{ paddingBottom: notificationType === GOT_FRIEND_REQUEST ? "16px" : 0 }}>
       <ListItem alignItems="center">
         <ListItemAvatar>
-          <Avatar alt={name || "*****"} src={url || ""} />
+          <Avatar
+            alt={notificationType !== LIKED ? name : "*****"}
+            src={notificationType !== LIKED ? url : ""}
+          />
         </ListItemAvatar>
-        <ListItemText primary={<Typography variant="subtitle1">{name}</Typography>} />
+        <ListItemText
+          primary={
+            <Typography variant="subtitle1">
+              {notificationType !== LIKED ? name : "*****"}
+            </Typography>
+          }
+        />
         <ListItemSecondaryAction>
           <Grid container justifyContent="flex-end">
             <Grid item>
@@ -208,9 +137,9 @@ const CustomListItem = ({ name, url, time, type, isRead }) => {
       </ListItem>
       <Grid container direction="column" style={{ paddingLeft: "7ch" }}>
         <Grid item xs={12} style={{ paddingBottom: "2ch" }}>
-          <Typography variant="subtitle2">{getMessage(type, name)}</Typography>
+          <Typography variant="subtitle2">{getMessage(notificationType, name)}</Typography>
         </Grid>
-        {type === GOT_FRIEND_REQUEST && (
+        {notificationType === GOT_FRIEND_REQUEST && (
           <Grid item xs={12}>
             <Grid container justifyContent="space-between">
               <Grid item>
@@ -221,7 +150,7 @@ const CustomListItem = ({ name, url, time, type, isRead }) => {
                   }}
                   variant="contained"
                   disableElevation
-                  endIcon={<Done stroke={1.5} size="1.3rem" />}>
+                  endIcon={<Done />}>
                   Accept
                 </Button>
               </Grid>
@@ -233,7 +162,7 @@ const CustomListItem = ({ name, url, time, type, isRead }) => {
                   }}
                   variant="contained"
                   disableElevation
-                  endIcon={<Close stroke={1.5} size="1.3rem" />}>
+                  endIcon={<Close />}>
                   Decline
                 </Button>
               </Grid>
@@ -248,14 +177,15 @@ const CustomListItem = ({ name, url, time, type, isRead }) => {
 CustomListItem.propTypes = {
   name: PropTypes.string,
   url: PropTypes.string,
-  type: PropTypes.oneOf[
-    (LIKED, MATCHED, GOT_FRIEND_REQUEST, CONFIRMED_FRIENDS_REQUEST, BLOCKED, UNBLOCKED)
-  ],
+  notificationType:
+    PropTypes.oneOf[
+      (LIKED, MATCHED, GOT_FRIEND_REQUEST, CONFIRMED_FRIENDS_REQUEST, BLOCKED, UNBLOCKED)
+    ],
   time: PropTypes.string.isRequired,
   isRead: PropTypes.bool.isRequired
 };
 
-const NotificationSection = () => {
+const NotificationSection = ({ notifications }) => {
   const theme = useTheme();
   const classes = useStyles();
   const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
@@ -290,21 +220,23 @@ const NotificationSection = () => {
   return (
     <>
       <Box className={classes.box}>
-        <ButtonBase className={classes.iconWrapper}>
-          <Avatar
-            variant="rounded"
-            className={classes.iconAvatar}
-            style={{
-              background: open ? "#5E35B1" : "#EDE7F6",
-              color: open ? "#EDE7F6" : "#5E35B1"
-            }}
-            ref={anchorRef}
-            aria-controls={open ? "menu-list-grow" : undefined}
-            aria-haspopup="true"
-            onClick={handleToggle}>
-            <NotificationsNone stroke={1.5} />
-          </Avatar>
-        </ButtonBase>
+        <Badge badgeContent={notifications.length} max={9} color="secondary">
+          <ButtonBase className={classes.iconWrapper}>
+            <Avatar
+              variant="rounded"
+              className={classes.iconAvatar}
+              style={{
+                background: open ? "#5E35B1" : "#EDE7F6",
+                color: open ? "#EDE7F6" : "#5E35B1"
+              }}
+              ref={anchorRef}
+              aria-controls={open ? "menu-list-grow" : undefined}
+              aria-haspopup="true"
+              onClick={handleToggle}>
+              <NotificationsNone stroke={1.5} fontSize="small" />
+            </Avatar>
+          </ButtonBase>
+        </Badge>
       </Box>
       <Popper
         placement={matchesXs ? "bottom" : "bottom-end"}
@@ -341,11 +273,10 @@ const NotificationSection = () => {
                         style={{ paddingTop: "2ch", paddingLeft: "2ch", paddingRight: "2ch" }}>
                         <Grid item>
                           <Grid container direction="row" spacing={2}>
-                            <Typography variant="subtitle1">All Notification</Typography>
-                            &nbsp;&nbsp;
+                            <Typography variant="subtitle1">Total</Typography>&nbsp;
                             <Chip
                               size="small"
-                              label="01"
+                              label={notifications.length}
                               style={{
                                 color: theme.palette.background.default,
                                 backgroundColor: theme.palette.warning.dark
@@ -366,9 +297,8 @@ const NotificationSection = () => {
                     <Grid item xs={12}>
                       <div
                         style={{
-                          maxHeight: `calc(100vh - 205px)`,
-                          overflowX: "hidden",
-                          overflowY: "scroll"
+                          maxHeight: `calc(100vh - 200px)`,
+                          overflow: "hidden scroll"
                         }}>
                         <Grid container direction="column" spacing={2}>
                           <Grid item xs={12}>
@@ -403,11 +333,12 @@ const NotificationSection = () => {
                           style={{
                             width: "100%",
                             maxWidth: 330,
+                            minWidth: 300,
                             padding: 0,
                             [theme.breakpoints.down("md")]: {
                               maxWidth: 300
                             },
-                            "& .MuiListItemSecondaryAction-root": {
+                            "& .MuiListItemSecondaryActionRoot": {
                               top: "22px"
                             },
                             "& .MuiDividerRoot": {
@@ -415,18 +346,22 @@ const NotificationSection = () => {
                               marginBottom: 0
                             }
                           }}>
-                          {notifications.map((el, index) => (
-                            <Fragment key={index}>
-                              <CustomListItem
-                                name={el?.displayName?.value || "*****"}
-                                url={el?.avatar?.value}
-                                time={el.createdAt}
-                                type={el.type}
-                                isRead={el.isRead}
-                              />
-                              <Divider light />
-                            </Fragment>
-                          ))}
+                          {notifications.length > 0 ? (
+                            notifications.map((el, index) => (
+                              <Fragment key={index}>
+                                <CustomListItem
+                                  name={el?.displayName?.value || "*****"}
+                                  url={el?.avatar?.value}
+                                  time={el.createdAt}
+                                  notificationType={el.notificationType}
+                                  isRead={el.isRead}
+                                />
+                                <Divider light />
+                              </Fragment>
+                            ))
+                          ) : (
+                            <div style={{ paddingLeft: "2ch" }}>You have no notifications</div>
+                          )}
                         </List>
                       </div>
                     </Grid>
@@ -445,6 +380,10 @@ const NotificationSection = () => {
       </Popper>
     </>
   );
+};
+
+NotificationSection.propTypes = {
+  notifications: PropTypes.array
 };
 
 export default NotificationSection;

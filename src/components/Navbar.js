@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { AppBar, Toolbar, Typography, makeStyles } from "@material-ui/core";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import NotificationSection from "./Notifications";
+import { useDispatch, useSelector } from "react-redux";
+import { setNotifications } from "../redux/actions/userActions";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -36,6 +38,18 @@ const useStyles = makeStyles((theme) => ({
 
 const Navbar = ({ socket, userId, isTheme, setTheme }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+
+  const { isAuth, notifications } = useSelector((state) => state.user);
+
+  if (!socket) return <div>Loading...</div>;
+
+  useEffect(() => {
+    socket.on("send-notifications", (data) => dispatch(setNotifications(data)));
+
+    return () => socket.off();
+  }, [socket]);
+
   return (
     <AppBar className={classes.appBar} position="fixed" elevation={0}>
       <Toolbar variant="dense">
@@ -45,9 +59,7 @@ const Navbar = ({ socket, userId, isTheme, setTheme }) => {
           </Typography>
         </Link>
         <div style={{ flexGrow: 1 }} />
-        <div>
-          <NotificationSection />
-        </div>
+        <div>{isAuth && <NotificationSection notifications={notifications || []} />}</div>
       </Toolbar>
     </AppBar>
   );
