@@ -42,7 +42,7 @@ const Navbar = ({ socket, userId, isTheme, setTheme }) => {
 
   const { isAuth, notifications } = useSelector((state) => state.user);
 
-  const unread = notifications.filter((el) => el.isRead === false);
+  const unread = notifications?.filter((el) => el.isRead === false);
 
   if (!socket) return <div>Loading...</div>;
 

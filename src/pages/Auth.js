@@ -20,7 +20,7 @@ import { useHistory, useLocation, Link } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { Alert } from "@material-ui/lab";
 import PropTypes from "prop-types";
-import { login, register } from "../redux/actions/userActions";
+import { login, register, sendResetPasswordEmail } from "../redux/actions/userActions";
 import Logo from "../assets/logo/Logo";
 import { FacebookIcon, GoogleIcon } from "../assets/icons";
 
@@ -62,6 +62,11 @@ const Auth = ({ isAuth }) => {
     e.preventDefault();
     console.log(user);
     isRegister ? dispatch(register(user)) : dispatch(login(user));
+  };
+
+  const handelForgetPassword = (e) => {
+    console.log("clicked");
+    dispatch(sendResetPasswordEmail({ email: user.email }));
   };
 
   return (
@@ -284,6 +289,7 @@ const Auth = ({ isAuth }) => {
                             <Typography
                               variant="subtitle1"
                               color="secondary"
+                              onClick={handelForgetPassword}
                               style={{ textDecoration: "none", cursor: "pointer" }}>
                               Forgot Password?
                             </Typography>
