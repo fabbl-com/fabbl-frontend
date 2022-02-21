@@ -30,20 +30,6 @@ export const light = responsiveFontSizes(
   createTheme({
     typography: {
       fontFamily: ["Poppins", "Raleway", "Open Sans"].join(","),
-      h1: {
-        fontSize: "5rem",
-        fontFamily: "Raleway"
-      },
-      h3: {
-        fontSize: "2.5rem",
-        fontFamily: "Open Sans"
-      },
-      body1: {
-        fontSize: "0.9rem"
-      },
-      body2: {
-        fontSize: "0.8rem"
-      },
       subtitle2: {
         fontSize: "0.75rem",
         fontWeight: 400,
@@ -53,8 +39,46 @@ export const light = responsiveFontSizes(
         fontSize: "0.875rem",
         fontWeight: 500
       },
+      h6: {
+        fontWeight: 500,
+        fontSize: "0.75rem"
+      },
+      h5: {
+        fontSize: "0.875rem",
+        fontWeight: 500
+      },
+      h4: {
+        fontSize: "1rem",
+        fontWeight: 600
+      },
+      h3: {
+        fontSize: "1.25rem",
+        fontWeight: 600
+      },
+      h2: {
+        fontSize: "1.5rem",
+        fontWeight: 700
+      },
+      h1: {
+        fontSize: "2.125rem",
+        fontWeight: 700
+      },
+      caption: {
+        fontSize: "0.75rem",
+        fontWeight: 400
+      },
+      body1: {
+        fontSize: "0.875rem",
+        fontWeight: 400,
+        lineHeight: "1.334em"
+      },
+      body2: {
+        letterSpacing: "0em",
+        fontWeight: 400,
+        lineHeight: "1.5em"
+      },
       button: {
-        textTransform: "inherit"
+        textTransform: "capitalize"
       }
     },
     palette: {
@@ -71,7 +95,7 @@ export const light = responsiveFontSizes(
         main: "#1976d2"
       },
       secondary: {
-        main: "#9c27b0",
+        main: "#5E35B1",
         icons: "#009900"
       },
       icons: {
@@ -84,16 +108,6 @@ export const light = responsiveFontSizes(
       },
       card: {
         default: "#fff"
-      },
-      h3: {
-        fontSize: "2.5rem",
-        fontFamily: "Open Sans"
-      },
-      body2: {
-        fontSize: "0.8rem"
-      },
-      button: {
-        textTransform: "inherit"
       },
       divider: "#999",
       action: {
@@ -117,20 +131,6 @@ export const dark = responsiveFontSizes(
   createTheme({
     typography: {
       fontFamily: ["Poppins", "Raleway", "Open Sans"].join(","),
-      h1: {
-        fontSize: "5rem",
-        fontFamily: "Raleway"
-      },
-      h3: {
-        fontSize: "2.5rem",
-        fontFamily: "Open Sans"
-      },
-      body1: {
-        fontSize: "0.9rem"
-      },
-      body2: {
-        fontSize: "0.8rem"
-      },
       subtitle1: {
         fontSize: "0.875rem",
         fontWeight: 500
@@ -140,8 +140,46 @@ export const dark = responsiveFontSizes(
         fontWeight: 400,
         color: "#9E9E9E"
       },
+      h6: {
+        fontWeight: 500,
+        fontSize: "0.75rem"
+      },
+      h5: {
+        fontSize: "0.875rem",
+        fontWeight: 500
+      },
+      h4: {
+        fontSize: "1rem",
+        fontWeight: 600
+      },
+      h3: {
+        fontSize: "1.25rem",
+        fontWeight: 600
+      },
+      h2: {
+        fontSize: "1.5rem",
+        fontWeight: 700
+      },
+      h1: {
+        fontSize: "2.125rem",
+        fontWeight: 700
+      },
+      caption: {
+        fontSize: "0.75rem",
+        fontWeight: 400
+      },
+      body1: {
+        fontSize: "0.875rem",
+        fontWeight: 400,
+        lineHeight: "1.334em"
+      },
+      body2: {
+        letterSpacing: "0em",
+        fontWeight: 400,
+        lineHeight: "1.5em"
+      },
       button: {
-        textTransform: "inherit"
+        textTransform: "capitalize"
       }
     },
     palette: {
