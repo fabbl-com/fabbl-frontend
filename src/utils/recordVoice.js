@@ -1,38 +1,33 @@
-const recordAudio = () => async (resolve) => {
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  const mediaRecorder = new MediaRecorder(stream);
-  const audioChunks = [];
+var constraints = { audio: true };
+var chunks = [];
+function handleDataAvailable(event) {
+  console.log("data-available");
+  if (event.data.size > 0) {
+    chunks.push(event.data);
+    console.log(chunks);
+    let audioData = new Blob(chunks, { type: "audio/wav;" });
+    audioData.lastModifiedDate = new Date();
+    audioData.name = `fileName`;
+    var url = URL.createObjectURL(audioData);
+    console.log(url);
+    // const audio = new Audio(url);
+    // audio.play();
+    console.log(audioData);
+    return { url, audioData };
+  }
+}
 
-  mediaRecorder.addEventListener("dataavailable", (event) => {
-    audioChunks.push(event.data);
-  });
-
-  const start = () => mediaRecorder.start();
-
-  const stop = () =>
-    new Promise((resolve) => {
-      mediaRecorder.addEventListener("stop", () => {
-        const audioBlob = new Blob(audioChunks);
-        const audioUrl = URL.createObjectURL(audioBlob);
-        const audio = new Audio(audioUrl);
-        const play = () => audio.play();
-        resolve({ audioBlob, audioUrl, play });
-      });
-
+export const record = async () => {
+  try {
+    let stream = await navigator.mediaDevices.getUserMedia(constraints);
+    var mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.ondataavailable = handleDataAvailable;
+    mediaRecorder.start();
+    setTimeout(() => {
+      console.log("stopping");
       mediaRecorder.stop();
-    });
-
-  resolve({ start, stop });
+    }, 10000);
+  } catch (error) {
+    console.log(error);
+  }
 };
-
-const sleep = (time) => new Promise((resolve) => setTimeout(resolve, time));
-
-const record_tens = async () => {
-  const recorder = await recordAudio();
-  recorder.start();
-  await sleep(10000);
-  const audio = await recorder.stop();
-  audio.play();
-};
-
-export default record_tens;

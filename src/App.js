@@ -19,7 +19,7 @@ const SecurityData = lazy(() => import("./pages/SecurityData"));
 const Settings = lazy(() => import("./pages/Settings"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const VerifyVoice = lazy(() => import("./pages/VerifyVoice"));
-
+import NotFound from "./pages/NotFound";
 import { Navbar } from "./components";
 import { checkAuth } from "./redux/actions/userActions";
 import PrivateRoute from "./PrivateRoute";
@@ -103,6 +103,7 @@ const App = () => {
             <Route path="/verify-voice" render={() => <VerifyVoice />} />
             <Route path="/user/verify-email" render={() => <VerifyEmail />} />
             <Route path="/user/reset-password" render={() => <ResetPassword userId={userId} />} />
+            <Route component={NotFound} />
           </Switch>
         </Suspense>
       </Router>

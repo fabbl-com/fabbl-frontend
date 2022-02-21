@@ -47,7 +47,9 @@ const PersonalData = () => {
   };
   const handelPasswordChange = () => {
     const data = { oldPassword: formData.password1, newPassword: formData.password2 };
-    dispatch(updatePassword({ data, id }));
+    if (formData.password2 === formData.password3) {
+      dispatch(updatePassword({ data, id }));
+    }
   };
 
   if (loading) return <div>loading</div>;

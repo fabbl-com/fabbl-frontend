@@ -18,7 +18,7 @@ import { Link } from "react-router-dom";
 import animationData from "../assets/animation/auth.json";
 import recordAnimationData from "../assets/animation/recordAnimation.json";
 import sentence from "../utils/randomSentence";
-// import record_tens from "../utils/recordVoice";
+import { record } from "../utils/recordVoice";
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: "#2e9cca",
@@ -100,8 +100,8 @@ const VoiceUpload = () => {
   }, []);
 
   const handelRecoding = () => {
-    // record_tens();
     setRecording(!isRecording);
+    console.log(record());
   };
 
   return (
