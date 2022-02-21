@@ -19,8 +19,11 @@ const SecurityData = lazy(() => import("./pages/SecurityData"));
 const Settings = lazy(() => import("./pages/Settings"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const VerifyVoice = lazy(() => import("./pages/VerifyVoice"));
+
 import NotFound from "./pages/NotFound";
-import { Navbar } from "./components";
+
+const Navbar = lazy(() => import("./components/Navbar"));
+
 import { checkAuth } from "./redux/actions/userActions";
 import PrivateRoute from "./PrivateRoute";
 const events = require("events");
@@ -46,10 +49,10 @@ const App = () => {
     }
 
     dispatch(checkAuth());
-    return () => newSocket.off();
+    return () => newSocket && newSocket.off();
   }, []);
 
-  console.log(isAuth);
+  // console.log(isAuth);
 
   const appliedTheme = createTheme(isTheme ? dark : light);
 
@@ -60,7 +63,7 @@ const App = () => {
       <Router>
         <Suspense fallback={<span>loading...</span>}>
           <CssBaseline />
-          <Navbar isTheme={isTheme} setTheme={setTheme} />
+          <Navbar userId={userId} socket={socket} isTheme={isTheme} setTheme={setTheme} />
           <Switch>
             <Route path="/" exact>
               <Home />

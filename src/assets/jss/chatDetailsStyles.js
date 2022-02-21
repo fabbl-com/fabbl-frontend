@@ -37,7 +37,7 @@ const chatStyles = (theme) => ({
   },
   menu: {
     backgroundColor: theme.palette.background.default,
-    top: `56px !important`,
+    top: `64px !important`,
     left: "auto !important",
     right: theme.spacing(2),
     minWidth: "200px",
@@ -79,7 +79,7 @@ const chatStyles = (theme) => ({
     display: "inline-block",
     borderRadius: theme.shape.borderRadius,
     padding: theme.spacing(0.2, 0.5),
-    margin: theme.spacing(1, 0)
+    margin: theme.spacing(3, 0)
   },
   encIcon: {
     fontSize: 12

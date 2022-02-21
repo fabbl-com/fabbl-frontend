@@ -430,7 +430,7 @@ const PersonalData = ({ userId }) => {
                 filterSelectedOptions
                 limitTags={1}
                 onChange={(e, value) =>
-                  setGender((state) => ({
+                  setFormData((state) => ({
                     ...state,
                     hobbiesData: [...value]
                   }))

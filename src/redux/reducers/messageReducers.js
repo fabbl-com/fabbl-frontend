@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import {
   GET_MESSAGES_REQUEST,
   GET_MESSAGES_SUCCESS,
@@ -5,12 +6,17 @@ import {
   GET_CHAT_LIST_USERS_REQUEST,
   GET_CHAT_LIST_USERS_SUCCESS,
   GET_CHAT_LIST_USERS_FAIL,
+  SET_USER_MESSAGES,
   SET_USER_MESSAGES_REQUEST,
   SET_USER_MESSAGES_SUCCESS,
   SET_USER_MESSAGES_FAIL,
   SET_RANDOM_USERS_REQUEST,
   SET_RANDOM_USERS_SUCCESS,
-  SET_RANDOM_USERS_FAIL
+  SET_RANDOM_USERS_FAIL,
+  SET_USER_OFFLINE,
+  SET_CHAT_LIST_USER_OFFLINE,
+  SET_FRIENDS,
+  SET_BLOCKED
 } from "../constants/messageActionTypes";
 
 const initialState = {
@@ -18,7 +24,10 @@ const initialState = {
   error: null,
   loading: false,
   chatListUsers: [],
-  randomUsers: []
+  randomUsers: [],
+  isFriends: false,
+  isBlockedBy: false,
+  receiver: {}
 };
 
 export default (state = initialState, action) => {
@@ -58,6 +67,44 @@ export default (state = initialState, action) => {
         ...state,
         loading: false,
         error: action.payload
+      };
+    case SET_USER_OFFLINE:
+      return {
+        ...state,
+        receiver: {
+          ...state.receiver,
+          online: action.payload.connected,
+          lastLogin: action.payload?.lastLogin
+        }
+      };
+    case SET_CHAT_LIST_USER_OFFLINE:
+      const temp = state.chatListUsers;
+      console.log(temp, "temp");
+      const index = temp.findIndex((el) => el.userId === action.payload.userId);
+      temp[index].online = action.payload.connected;
+      temp[index].lastLogin = action.payload.lastLogin;
+      return {
+        ...state,
+        receiver: {
+          ...state.receiver,
+          chatListUser: temp
+        }
+      };
+    case SET_FRIENDS:
+      return {
+        ...state,
+        receiver: {
+          ...state.receiver,
+          isFriends: true
+        }
+      };
+    case SET_BLOCKED:
+      return {
+        ...state,
+        receiver: {
+          ...state.receiver,
+          isBlockedBy: action.payload.isBlockedBy
+        }
       };
     default:
       return state;

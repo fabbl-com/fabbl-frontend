@@ -18,7 +18,6 @@ import {
   Menu,
   MenuItem
 } from "@material-ui/core";
-import { withStyles } from "@material-ui/styles";
 import moment from "moment";
 import {
   AccountCircle,
@@ -31,7 +30,7 @@ import {
 import { Link, useHistory } from "react-router-dom";
 import { PropTypes } from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-import { getChatListUsers } from "../redux/actions/messageActions";
+import { getChatListUsers, setChatListUserOffline } from "../redux/actions/messageActions";
 import { Skeleton } from "@material-ui/lab";
 
 import { chatStyles } from "../assets/jss";
@@ -86,7 +85,7 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   if (!socket) return <div>Loading...</div>;
 
   const { chatListUsers, loading } = useSelector((state) => state.messages);
-  const friends = chatListUsers.filter((user) => user.isFriends === true);
+  const friends = chatListUsers.filter((user) => user.friendStatus === "friends");
 
   useEffect(() => {
     getChatList(socket, eventEmitter, userId, dispatch);
@@ -97,6 +96,13 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
       eventEmitter.removeListener("chat-list-response", chatListListener);
     };
   }, [userId, socket, eventEmitter]);
+
+  useEffect(() => {
+    socket.on("connection-response", (data) => {
+      console.log(data);
+      dispatch(setChatListUserOffline(data));
+    });
+  }, [socket]);
 
   useEffect(() => {
     if (isFriends) setUsers(friends);
@@ -203,7 +209,16 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
             users
               .sort((b, a) => new Date(a.createdAt) - new Date(b.createdAt))
               .map((user, i) => (
-                <Link to={`/chat-details?userId=${user?.userId}`} key={i}>
+                <Link
+                  to={{
+                    pathname: `/chat-details`,
+                    state: {
+                      userId: user.userId,
+                      friendStatus: user.friendStatus,
+                      isBlocked: user.isBlocked ? true : false
+                    }
+                  }}
+                  key={i}>
                   <Card className={classes.msgCard}>
                     <CardHeader
                       classes={{

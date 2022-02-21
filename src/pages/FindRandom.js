@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { Container, Avatar, Typography, IconButton, Button } from "@material-ui/core";
 import { randomStyles } from "../assets/jss/index";
-import { getRandomUsers, like, getLikes, view } from "../utils/socket.io";
 import { PropTypes } from "prop-types";
 import { setRandomUsers } from "../redux/actions/messageActions";
 import { setLikes } from "../redux/actions/userActions";
@@ -36,20 +35,25 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
   const { loading, error, randomUsers } = useSelector((state) => state.messages);
 
   useEffect(() => {
-    lottie.loadAnimation({
+    const anim1 = lottie.loadAnimation({
       container: container1.current,
       renderer: "svg",
       loop: true,
       autoplay: true,
       animationData: matching
     });
-    lottie.loadAnimation({
+    const anim2 = lottie.loadAnimation({
       container: container2.current,
       renderer: "svg",
       loop: true,
       autoplay: true,
       animationData: profileSearching
     });
+
+    return () => {
+      anim1.destroy();
+      anim2.destroy();
+    };
   }, [profileSearching, matching]);
 
   useEffect(() => {
@@ -59,29 +63,20 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
       limit: 10,
       choices: { day: 1 }
     };
-    getRandomUsers(socket, data);
-    socket.on("get-random-users-response", (data) => {
-      dispatch(setRandomUsers(data.users));
-    });
+    socket.emit("get-random-users", data);
+    socket.on("get-random-users-response", (data) => dispatch(setRandomUsers(data.users)));
 
-    return () => {
-      socket.off();
-    };
-  }, [page]);
+    return () => socket.off();
+  }, [page, socket]);
 
   useEffect(() => {
-    getLikes(socket, eventEmitter);
-    eventEmitter.on("like-response", likeResponseListener);
+    socket.on("like-response", (data) => dispatch(setLikes(data.likes)));
+    socket.on("reload-response", (data) => console.log(data));
 
     return () => {
       socket.off();
-      eventEmitter.removeListener("like-response", likeResponseListener);
     };
-  }, [eventEmitter]);
-
-  const likeResponseListener = (data) => {
-    dispatch(setLikes(data.likes));
-  };
+  }, [socket]);
 
   const [currentIndex, setCurrentIndex] = useState(SIZE - 1);
   const currentIndexRef = useRef(currentIndex);
@@ -104,11 +99,11 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
   const canSwipe = currentIndex >= 0;
   const swiped = (direction, id, index) => {
     console.log(direction, id, index);
-    // send to likes Array
+    const data = { senderId: userId, receiverId: id };
     if (direction === "right") {
-      like(socket, { senderId: userId, receiverId: id });
+      socket.emit("like", data);
     }
-    view(socket, { senderId: userId, receiverId: id });
+    socket.emit("view", data);
     updateCurrentIndex(index - 1);
   };
 
@@ -126,7 +121,9 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
     if (!canGoBack) return;
     const newIndex = currentIndex + 1;
     updateCurrentIndex(newIndex);
+    socket.emit("reload", { senderId: userId, receiverId: randomUsers[newIndex].id });
     await childRefs[newIndex].current.restoreCard();
+    console.log(randomUsers[newIndex], childRefs);
   };
 
   return (

@@ -26,8 +26,10 @@ import {
   CHECK_AUTH_FAIL,
   UPDATE_PROFILE_PREF,
   GET_USER_PROFILE,
-  UPDATE_EMAIL,
-  UPDATE_PASSWORD
+  UPDATE_EMAIL_SUCCESS,
+  UPDATE_PASSWORD_SUCCESS,
+  SET_NOTIFICATIONS,
+  REOMVE_NOTIFICATIONS
 } from "../constants/userActionTypes";
 
 export const register = (userId) => async (dispatch) => {
@@ -186,7 +188,7 @@ export const checkAuth = () => async (dispatch) => {
   try {
     const { data } = await Axios.get("/auth/check");
     console.log(data);
-    dispatch({ type: CHECK_AUTH_SUCCESS });
+    dispatch({ type: CHECK_AUTH_SUCCESS, payload: data.notifications });
   } catch (error) {
     console.log(error.response);
     dispatch({ type: CHECK_AUTH_FAIL });
@@ -252,7 +254,7 @@ export const updateEmail =
       console.log(data);
       await Axios.post(`/user/send-update-email/${id}`, { email: data }, config);
       dispatch({
-        type: UPDATE_EMAIL
+        type: UPDATE_EMAIL_SUCCESS
       });
     } catch (error) {
       console.log(error);
@@ -279,7 +281,7 @@ export const updatePassword =
       console.log(data);
       await Axios.post(`/user/update-password/${id}`, data, config);
       dispatch({
-        type: UPDATE_PASSWORD
+        type: UPDATE_PASSWORD_SUCCESS
       });
     } catch (error) {
       console.log(error);
@@ -293,3 +295,13 @@ export const updatePassword =
       });
     }
   };
+
+export const setNotifications = (data) => (dispatch) => {
+  console.log(data);
+  dispatch({ type: SET_NOTIFICATIONS, payload: data });
+};
+
+export const removeNotifications = (data) => (dispatch) => {
+  console.log(data);
+  dispatch({ type: REOMVE_NOTIFICATIONS, payload: data });
+};

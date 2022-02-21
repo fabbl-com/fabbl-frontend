@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { createRef, useEffect, useRef, useState } from "react";
 import {
   makeStyles,
   Avatar,
@@ -13,34 +13,37 @@ import {
   InputBase,
   Menu,
   MenuItem,
-  Paper,
-  Button,
-  Divider,
-  Badge
+  Paper
 } from "@material-ui/core";
 import {
   Brightness4,
   BrightnessHigh,
+  Block,
   ArrowBack,
   MoreVert,
   AccountCircle,
-  EnhancedEncryption,
+  PersonAdd,
   Send,
   KeyboardArrowDown,
   InsertEmoticon,
-  Gif
+  Gif,
+  Stars
 } from "@material-ui/icons";
 import { Skeleton } from "@material-ui/lab";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { PropTypes } from "prop-types";
-import queryString from "query-string";
 
 import { chatDetailsStyles } from "../assets/jss";
-import { receiveMessage, sendMessage } from "../utils/socket.io";
+import { makeMessageSeen, sendMessage } from "../utils/socket.io";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { setUserMessages } from "../redux/actions/messageActions";
-import { withStyles } from "@material-ui/styles";
+import {
+  setUserMessages,
+  setUserOffline,
+  setFriends,
+  setBlocked
+} from "../redux/actions/messageActions";
 import { ProfileBadge } from "../components";
+import { SET_USER_MESSAGES_REQUEST } from "../redux/constants/messageActionTypes";
 
 const useStyles = makeStyles((theme) => chatDetailsStyles(theme));
 
@@ -113,23 +116,47 @@ Message.propTypes = {
 const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [lastRreceived, setLastRreceived] = useState(-1);
   const [selectedUserId, setSelectedUserId] = useState("");
   const [msgs, setMsgs] = useState([]);
   const [text, setText] = useState("");
   const theme = useTheme();
   const dispatch = useDispatch();
+  const location = useLocation();
   const messagesEndRef = useRef();
+  const [elems, setElems] = useState([]);
+  const [customProps, setCustomProps] = useState({ isBlocked: false, friendStatus: "" });
 
   if (!socket) return <div>Loading...</div>;
 
-  const { messages, loading, receiver } = useSelector((state) => state.messages);
+  const { loading, receiver } = useSelector((state) => state.messages);
+  const { messages, _id } = useSelector((state) => state.messages.messages);
+
   useEffect(() => {
-    const query = queryString.parse(location?.search);
+    const query = location?.state;
     setSelectedUserId(query.userId);
+    setCustomProps((state) => ({
+      ...state,
+      isBlocked: query.isBlocked,
+      friendStatus: query.friendStatus
+    }));
     socket.emit("get-user-messages", { sender: userId, receiver: query.userId });
+    dispatch({ type: SET_USER_MESSAGES_REQUEST });
     socket.on("get-user-messages-response", (data) => {
       dispatch(setUserMessages(data));
     });
+
+    socket.on("send-message-response", (message) => setMsgs((state) => [...state, message]));
+    socket.on("connection-response", (data) => dispatch(setUserOffline(data)));
+    socket.on("block-response", (data) => {
+      setCustomProps((state) => ({ ...state, isBlocked: data.isBlocked }));
+      dispatch(setBlocked(data));
+    });
+    socket.on("add-friends-response", (data) =>
+      setCustomProps((state) => ({ ...state, friendStatus: data.status || "" }))
+    );
+
+    return () => socket.off();
   }, [socket]);
 
   useEffect(() => {
@@ -137,39 +164,92 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   }, [messages]);
 
   useEffect(() => {
-    scrollToBottom();
+    if (msgs && msgs.length > 0) {
+      for (let i = msgs.length - 1; i >= 0; i--) {
+        if (msgs[i].sender !== userId) {
+          setLastRreceived(i);
+          break;
+        }
+      }
+      scrollToBottom();
+      setElems((state) =>
+        Array(msgs.length)
+          .fill()
+          .map((_, i) => state[i] || createRef())
+      );
+    }
   }, [msgs]);
 
   useEffect(() => {
-    receiveMessage(dispatch, socket, eventEmitter);
-    eventEmitter.on("send-message-response", (message) => {
-      setMsgs((state) => [...state, message]);
-      scrollToBottom();
+    socket.on("read-response", (data) => {
+      let index = -1;
+      const temp = msgs;
+      for (let i = temp.length - 1; i >= 0; i--) {
+        if (temp[i].sender === data.sender) {
+          index = i;
+          temp[i].isRead = true;
+          break;
+        }
+      }
+      if (index !== -1 && temp && temp.length > 0) {
+        setMsgs(temp);
+        console.log(msgs);
+      }
     });
+  }, [socket, msgs]);
 
-    // return () => eventEmitter.removeListener("send-message-response", () => {});
-  }, []);
+  useEffect(() => {
+    if (lastRreceived >= 0) {
+      const container = elems[lastRreceived];
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!msgs[lastRreceived].isRead && entry.isIntersecting) {
+            makeMessageSeen(socket, {
+              _id,
+              createdAt: msgs[lastRreceived].createdAt,
+              sender: msgs[lastRreceived].sender
+            });
+          }
+        },
+        {
+          root: null,
+          rootMargin: "0px",
+          threshold: 1
+        }
+      );
+      container.current && observer.observe(container.current);
+      return () => container.current && observer.unobserve(container.current);
+    }
+  }, [msgs, lastRreceived]);
 
   const sendMessageAndUpdate = (e) => {
-    e.preventDefault();
-    if (!text) alert("message is empty");
-    else if (!userId) alert("login");
-    else if (!selectedUserId) alert("select a user");
-    else {
-      try {
-        const message = {
-          sender: userId,
-          receiver: selectedUserId,
-          text: text.trim(),
-          createdAt: new Date()
-        };
-        sendMessage(socket, message);
-        setMsgs((state) => [...state, message]);
-        setText("");
-        // scroll down
-        scrollToBottom();
-      } catch (error) {
-        console.log(error);
+    const keyCode = e.which || e.keyCode;
+    if (e.type === "submit" || (e.type === "keypress" && keyCode === 13 && !e.shiftKey)) {
+      e.preventDefault();
+      if (customProps.isBlocked)
+        alert(`You have blocked ${receiver?.displayName?.value}. Unblock to send messages`);
+      else {
+        if (!text) alert("message is empty");
+        else if (!userId) alert("login");
+        else if (!selectedUserId) alert("select a user");
+        else {
+          try {
+            const message = {
+              sender: userId,
+              receiver: selectedUserId,
+              text: text.trim(),
+              isRead: false,
+              createdAt: new Date()
+            };
+            sendMessage(socket, message);
+            setMsgs((state) => [...state, message]);
+            setText("");
+            // scroll down
+            scrollToBottom();
+          } catch (error) {
+            console.log(error);
+          }
+        }
       }
     }
   };
@@ -185,6 +265,29 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleFriends = (e) => {
+    e.preventDefault();
+    if (customProps.friendStatus === "sent")
+      alert("You have already sent a friend request. Please wait for the response");
+    if (customProps.friendStatus === "received")
+      alert("Congratulations you have already received a friend request click OK to confirm it");
+    handleMenuClose();
+    console.log("click ");
+    if (userId && selectedUserId)
+      socket.emit("add-friends", { sender: userId, receiver: selectedUserId });
+  };
+
+  const handleBlock = (e) => {
+    e.preventDefault();
+    handleMenuClose();
+    console.log("click ");
+    if (userId && selectedUserId) {
+      if (!customProps.isBlocked)
+        socket.emit("block", { sender: userId, receiver: selectedUserId });
+      else socket.emit("unblock", { sender: userId, receiver: selectedUserId });
+    }
   };
 
   const Actions = (
@@ -209,12 +312,24 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
           <AccountCircle />
         </IconButton>
       </MenuItem>
+      <MenuItem className={classes.menuItem} onClick={handleFriends}>
+        <Typography>Add to Friends</Typography>
+        <IconButton className={classes.menuIcons} color="primary">
+          <PersonAdd />
+        </IconButton>
+      </MenuItem>
+      <MenuItem className={classes.menuItem} onClick={handleBlock}>
+        <Typography>{!customProps.isBlocked ? "Block" : "Unblock"}</Typography>
+        <IconButton className={classes.menuIcons} color="primary">
+          <Block />
+        </IconButton>
+      </MenuItem>
     </Menu>
   );
 
   return (
     <div className={classes.root}>
-      <Container className={classes.container}>
+      <Container className={classes.elems}>
         <Paper className={classes.paper}>
           <AppBar elevation={1} className={classes.appBar} position="fixed" color="inherit">
             <Toolbar className={classes.toolBar} variant="dense">
@@ -224,31 +339,52 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                 </IconButton>
               </Link>
               <div className={classes.avatar}>
-                {/* <Avatar src={receiver?.avatar?.value} /> */}
-                <ProfileBadge
-                  color="primary"
-                  anchorOrigin={{
-                    vertical: "bottom",
-                    horizontal: "right"
-                  }}
-                  overlap="circular"
-                  variant="dot"
-                  invisible={!receiver?.online}>
-                  <Avatar
-                    aria-label="user"
-                    src={receiver?.avatar?.value}
-                    className={classes.avatar}>
-                    {receiver?.displayName?.value}
-                  </Avatar>
-                </ProfileBadge>
+                <Link to="/profile">
+                  <ProfileBadge
+                    color="primary"
+                    anchorOrigin={{
+                      vertical: "bottom",
+                      horizontal: "right"
+                    }}
+                    overlap="circular"
+                    variant="dot"
+                    invisible={!receiver?.online}>
+                    {loading ? (
+                      <Skeleton animation="wave" variant="circle" width={40} height={40} />
+                    ) : (
+                      <Avatar
+                        aria-label="user"
+                        src={receiver?.avatar?.value}
+                        className={classes.avatar}>
+                        {receiver?.displayName?.value}
+                      </Avatar>
+                    )}
+                  </ProfileBadge>
+                </Link>
                 <div className={classes.username}>
                   <Typography align="left" component="h1" variant="h6">
-                    {receiver?.displayName?.value}
+                    {loading ? (
+                      <Skeleton varint="rect" animation="wave" width={180} />
+                    ) : (
+                      receiver?.displayName?.value
+                    )}
+                    {!loading &&
+                      (customProps.friendStatus === "friends" ? (
+                        <Stars fontSize="small" />
+                      ) : receiver?.isBlocked ? (
+                        <Block fontSize="small" />
+                      ) : (
+                        ""
+                      ))}
                   </Typography>
                   <Typography component="h1" variant="caption">
-                    {receiver?.online
-                      ? "Active Now"
-                      : `Last active: ${new Date(receiver?.lastLogin).toLocaleTimeString()}`}
+                    {loading ? (
+                      <Skeleton varint="rect" animation="wave" width={150} />
+                    ) : receiver?.online ? (
+                      "Active Now"
+                    ) : (
+                      `Last active: ${new Date(receiver?.lastLogin).toLocaleTimeString()}`
+                    )}
                   </Typography>
                 </div>
               </div>
@@ -272,33 +408,19 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                 marginBottom: "0"
               }}
               ref={messagesEndRef}>
-              <div className={classes.msgAction}>
-                <Button variant="text">BLOCK</Button>
-                <Divider orientation="vertical" flexItem />
-                <Button variant="text">ADD</Button>
-              </div>
               <Typography className={classes.timeSince} variant="body2">
-                {`Matched At: ${new Date(receiver?.matchAt).toLocaleString()}`}
+                {loading ? (
+                  <Skeleton animation="wave" width={200} />
+                ) : (
+                  `Matched At: ${new Date(receiver?.matchAt).toLocaleString()}`
+                )}
               </Typography>
-              <Typography className={classes.encMsg} variant="body2">
-                <EnhancedEncryption className={classes.encIcon} />
-                Messages are end-to-end encrypted. No other user can read to them except you and{" "}
-                {"  "}
-                <Link to="/uuid">
-                  <span>uuid.</span>
-                </Link>
-                {"  "}
-                Click to
-                {"  "}
-                <Link to="/e2e">
-                  <span>learn more</span>
-                </Link>
-              </Typography>
-              {!loading
-                ? msgs
-                    .sort((a, b) => a.createdAt - b.createdAt)
-                    .map((msg, index) => (
-                      <div key={index}>
+              {!loading ? (
+                !receiver?.isBlockedBy ? (
+                  msgs
+                    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+                    .map((msg, i) => (
+                      <div ref={elems[i]} key={i}>
                         <Message
                           align={msg.sender === userId ? "left" : "right"}
                           time={msg.createdAt}
@@ -307,21 +429,32 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                         </Message>
                       </div>
                     ))
-                : [...new Array(9)].map((_, i) => (
-                    <div
-                      key={i}
-                      style={{ display: "flex", width: "100%", flexDirection: "column" }}>
-                      <Skeleton
-                        height={60}
-                        style={{ alignSelf: i % 2 == 0 ? "start" : "end", borderRadius: "1ch" }}
-                        width="50%"
-                        animation="wave"
-                      />
-                    </div>
-                  ))}
+                ) : (
+                  <div style={{ color: "red" }}>You cannot reply to this conversation</div>
+                )
+              ) : (
+                [...new Array(9)].map((_, i) => (
+                  <div key={i} style={{ display: "flex", width: "100%", flexDirection: "column" }}>
+                    <Skeleton
+                      height={60}
+                      style={{ alignSelf: i % 2 == 0 ? "start" : "end", borderRadius: "1ch" }}
+                      width="50%"
+                      animation="wave"
+                    />
+                  </div>
+                ))
+              )}
+              {!loading && customProps.isBlocked && (
+                <div style={{ margin: "2ch 0", color: "red" }}>
+                  You have blocked {receiver?.displayName?.value}. Unblock to send messages
+                </div>
+              )}
             </div>
             <div className={classes.msgWrapper}>
-              <form onSubmit={sendMessageAndUpdate} className={classes.sendMessage}>
+              <form
+                onSubmit={sendMessageAndUpdate}
+                onKeyPress={sendMessageAndUpdate}
+                className={classes.sendMessage}>
                 <div component="form" className={classes.inputRoot}>
                   <InputBase
                     className={classes.input}

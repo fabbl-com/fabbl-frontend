@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import {
   USER_REGISTER_FAIL,
   USER_REGISTER_REQUEST,
@@ -26,8 +27,10 @@ import {
   CHECK_AUTH_REQUEST,
   UPDATE_PROFILE_PREF,
   GET_USER_PROFILE,
-  UPDATE_PASSWORD,
-  UPDATE_EMAIL
+  UPDATE_PASSWORD_SUCCESS,
+  UPDATE_EMAIL_SUCCESS,
+  SET_NOTIFICATIONS,
+  REOMVE_NOTIFICATIONS
 } from "../constants/userActionTypes";
 
 const initialState = {
@@ -36,7 +39,8 @@ const initialState = {
   loading: false,
   authChecking: true,
   likes: [],
-  userInfo: null,
+  userInfo: {},
+  notifications: [],
   isEmailVerified: false,
   userId: localStorage.getItem("userId"),
   isFriends: false
@@ -82,7 +86,8 @@ export default (state = initialState, action) => {
       return {
         ...state,
         isAuth: true,
-        authChecking: false
+        authChecking: false,
+        notifications: action.payload
       };
     case USER_SIGNIN_FAIL:
     case USER_REGISTER_FAIL:
@@ -143,11 +148,25 @@ export default (state = initialState, action) => {
         loading: false,
         userInfo: action.payload.profile
       };
-    case UPDATE_PASSWORD:
-    case UPDATE_EMAIL:
+
+    case UPDATE_PASSWORD_SUCCESS:
+    case UPDATE_EMAIL_SUCCESS:
       return {
         ...state,
         loading: false
+      };
+    case SET_NOTIFICATIONS:
+      return {
+        ...state,
+        notifications: [action.payload, ...state.notifications]
+      };
+    case REOMVE_NOTIFICATIONS:
+      const notif = state.notifications;
+      const index = notif.findIndex((el) => el.notificationId === action.payload.notificationId);
+      if (index !== -1) notif.splice(index, 1);
+      return {
+        ...state,
+        notifications: notif
       };
     default:
       return state;
