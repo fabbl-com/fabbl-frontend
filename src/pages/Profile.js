@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import {
   makeStyles,
   Avatar,
@@ -6,7 +7,8 @@ import {
   IconButton,
   Button,
   Divider,
-  Container
+  Container,
+  Paper
 } from "@material-ui/core";
 import {
   KeyboardBackspace,
@@ -16,9 +18,10 @@ import {
   FavoriteBorder,
   CheckCircleOutlined
 } from "@material-ui/icons";
-
+import { useParams } from "react-router-dom";
 import { profileStyles } from "../assets/jss";
-
+import { useDispatch, useSelector } from "react-redux";
+import { getUserProfile } from "../redux/actions/userActions";
 const useStyles = makeStyles((theme) => profileStyles(theme));
 const tagsColor = [
   "#000000",
@@ -31,59 +34,60 @@ const tagsColor = [
   "#483434"
 ];
 
-const Profile = () => {
+const Profile = ({ userId }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const { userInfo, loading, isFriends } = useSelector((state) => state.user);
+  const { id } = useParams();
+  console.log(id);
+  console.log({ userId });
 
+  useEffect(() => {
+    dispatch(getUserProfile(id));
+  }, []);
+
+  if (loading) return <div>loading</div>;
   return (
     <Container className={classes.root}>
       <div className={classes.profileHeader}>
-        <IconButton color="primary">
+        <IconButton color="primary" href="/chat">
           <KeyboardBackspace />
         </IconButton>
-        <Typography component="h6" variant="h6">{`uuid's Profile`}</Typography>
-        <IconButton className={classes.report}>
-          <Report />
-        </IconButton>
+        <Typography component="h6" variant="h6">
+          {userInfo.displayName.value} `s profile
+        </Typography>
+        <IconButton className={classes.report}>{id != userId && <Report />}</IconButton>
       </div>
-      <div className={classes.profileBody}>
-        <Avatar
-          src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHw%3D&w=1000&q=80"
-          className={classes.avatar}
-          variant="rounded"
-        />
+      <Paper className={classes.profileBody}>
+        <Avatar src={userInfo.avatar.value} className={classes.avatar} variant="rounded" />
         <div className={classes.verify}>
           <Typography component="h6" variant="h6">
-            Female
+            {userInfo.gender.value === 0 ? "Male" : "Female"}
           </Typography>
           &nbsp;
-          <CheckCircleOutlined fontSize="small" />
+          {userInfo.isProfileVerified && <CheckCircleOutlined fontSize="small" />}
         </div>
         <Typography component="h3" variant="h3">
-          Username
+          {userInfo.displayName.value}
         </Typography>
+
         <div className={classes.location}>
           <LocationOn fontSize="small" />
           {"  "}
           <Typography component="h6" variant="h6">
-            Location
-          </Typography>
-        </div>
-        <Divider width="100%" className={classes.divider} />
-        <div>
-          <Typography align="center" component="h3" variant="h4">
-            Bio
-          </Typography>
-          <Typography className={classes.bio} align="center" variant="body1">
-            Lorem ipsum dolor sit, amet consectetur adipisicing elit. Ut natus voluptates sunt
-            rerum,quos delectus earum perferendis animi molestiae aperiam a voluptas ex nesciunt
-            veniam tempore? Iste mollitia quod aut?
+            {userInfo.location.value}
           </Typography>
         </div>
         <div className={classes.dob}>
           <Cake />
           &nbsp;&nbsp;&nbsp;
           <Typography align="center" component="h3" variant="body1">
-            22 Years Old
+            {Math.floor(new Date(userInfo.dob.value) / (365 * 24 * 60 * 60 * 1000))} Years Old
+          </Typography>
+        </div>
+        <div>
+          <Typography className={classes.bio} align="center" variant="h5">
+            {userInfo.headline.value}
           </Typography>
         </div>
         <Divider width="100%" className={classes.divider} />
@@ -91,7 +95,7 @@ const Profile = () => {
           <Typography align="center" component="h3" variant="h4">
             Hobbies & Interest
           </Typography>
-          {["Hobby 1", "Hobby 2", "Hobby 3", "Hobby 4", "Hobby 5"].map((tag, i) => (
+          {userInfo.hobby.value.map((tag, i) => (
             <Button
               disableRipple
               style={{ backgroundColor: tagsColor[i % tagsColor.length], color: "#eee" }}
@@ -102,13 +106,18 @@ const Profile = () => {
             </Button>
           ))}
         </div>
-        <Button className={classes.favorite} variant="contained" color="secondary">
-          Add To Friends &nbsp;&nbsp;&nbsp;
-          <FavoriteBorder />
-        </Button>
-      </div>
+        {id === userId || (
+          <Button className={classes.favorite} variant="contained" color="secondary">
+            Add To Friends &nbsp;&nbsp;&nbsp;
+            <FavoriteBorder />
+          </Button>
+        )}
+      </Paper>
     </Container>
   );
+};
+Profile.propTypes = {
+  userId: PropTypes.string.isRequired
 };
 
 export default Profile;

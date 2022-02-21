@@ -3,7 +3,8 @@ const chatStyles = (theme) => ({
     marginTop: theme.spacing(6)
   },
   profileHeader: {
-    width: "100%",
+    marginTop: theme.spacing(4),
+    width: "98%",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between"
@@ -25,8 +26,8 @@ const chatStyles = (theme) => ({
     color: theme.palette.error.dark
   },
   avatar: {
-    height: theme.spacing(12),
-    width: theme.spacing(12)
+    height: theme.spacing(16),
+    width: theme.spacing(16)
   },
   location: {
     display: "flex",

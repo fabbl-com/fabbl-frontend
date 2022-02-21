@@ -25,7 +25,9 @@ import {
   CHECK_AUTH_FAIL,
   CHECK_AUTH_REQUEST,
   UPDATE_PROFILE_PREF,
-  GET_USER_PROFILE
+  GET_USER_PROFILE,
+  UPDATE_PASSWORD,
+  UPDATE_EMAIL
 } from "../constants/userActionTypes";
 
 const initialState = {
@@ -37,7 +39,7 @@ const initialState = {
   userInfo: null,
   isEmailVerified: false,
   userId: localStorage.getItem("userId"),
-  avatar: null
+  isFriends: false
 };
 
 export default (state = initialState, action) => {
@@ -141,7 +143,12 @@ export default (state = initialState, action) => {
         loading: false,
         userInfo: action.payload.profile
       };
-
+    case UPDATE_PASSWORD:
+    case UPDATE_EMAIL:
+      return {
+        ...state,
+        loading: false
+      };
     default:
       return state;
   }

@@ -25,7 +25,9 @@ import {
   CHECK_AUTH_SUCCESS,
   CHECK_AUTH_FAIL,
   UPDATE_PROFILE_PREF,
-  GET_USER_PROFILE
+  GET_USER_PROFILE,
+  UPDATE_EMAIL,
+  UPDATE_PASSWORD
 } from "../constants/userActionTypes";
 
 export const register = (userId) => async (dispatch) => {
@@ -237,3 +239,57 @@ export const getUserProfile = (userId) => async (dispatch) => {
     });
   }
 };
+
+export const updateEmail =
+  ({ data, id }) =>
+  async (dispatch) => {
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      };
+      console.log(data);
+      await Axios.post(`/user/send-update-email/${id}`, { email: data }, config);
+      dispatch({
+        type: UPDATE_EMAIL
+      });
+    } catch (error) {
+      console.log(error);
+      dispatch({
+        type: USER_UPLOAD_AVATAR_FAIL,
+        payload: {
+          code: error.response.status,
+          message:
+            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+        }
+      });
+    }
+  };
+
+export const updatePassword =
+  ({ data, id }) =>
+  async (dispatch) => {
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      };
+      console.log(data);
+      await Axios.post(`/user/update-password/${id}`, data, config);
+      dispatch({
+        type: UPDATE_PASSWORD
+      });
+    } catch (error) {
+      console.log(error);
+      dispatch({
+        type: USER_UPLOAD_AVATAR_FAIL,
+        payload: {
+          code: error.response.status,
+          message:
+            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+        }
+      });
+    }
+  };

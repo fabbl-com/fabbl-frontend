@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 const Auth = ({ isAuth }) => {
   const theme = useTheme();
   const classes = useStyles(theme);
-  const [isRegister, setRegister] = useState(true);
+  const [isRegister, setRegister] = useState(false);
   const [user, setUser] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);

@@ -83,8 +83,8 @@ const App = () => {
                 setTheme={setTheme}
               />
             </PrivateRoute>
-            <PrivateRoute isAuth={isAuth} path="/profile">
-              <Profile isTheme={isTheme} setTheme={setTheme} />
+            <PrivateRoute isAuth={isAuth} path="/profile/:id">
+              <Profile isTheme={isTheme} userId={userId} setTheme={setTheme} />
             </PrivateRoute>
             <PrivateRoute isAuth={isAuth} path="/settings">
               <Settings userId={userId} isTheme={isTheme} setTheme={setTheme} />
@@ -92,7 +92,7 @@ const App = () => {
             <PrivateRoute isAuth={isAuth} path="/edit/personal-data">
               <PersonalData userId={userId} />
             </PrivateRoute>
-            <PrivateRoute isAuth={isAuth} path="/edit/security-data">
+            <PrivateRoute isAuth={isAuth} path="/edit/security-data/:id">
               <SecurityData />
             </PrivateRoute>
             <PrivateRoute isAuth={isAuth} path="/find">

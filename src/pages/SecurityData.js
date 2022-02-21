@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   makeStyles,
   Avatar,
@@ -17,7 +17,9 @@ import {
 } from "@material-ui/icons";
 
 import classNames from "classnames";
-
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { getUserProfile, updateEmail, updatePassword } from "../redux/actions/userActions";
 import { personalDataStyles } from "../assets/jss";
 
 const useStyles = makeStyles((theme) => personalDataStyles(theme));
@@ -26,21 +28,29 @@ const PersonalData = () => {
   const classes = useStyles();
   const theme = useTheme();
 
-  const [password, setPassword] = useState({
-    password1: "",
-    password2: "",
-    password3: "",
-    showPassword: false
-  });
+  const dispatch = useDispatch();
+  const { userInfo, loading } = useSelector((state) => state.user);
+  const { id } = useParams();
+  console.log(id);
+  console.log({ userInfo });
 
-  const handleChange = (prop) => (event) => {
-    setPassword({ ...password, [prop]: event.target.value });
+  const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    dispatch(getUserProfile(id));
+  }, []);
+  const [formData, setFormData] = useState({});
+  const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleClick = () => {
+    console.log(formData);
+    dispatch(updateEmail({ id, data: formData.email }));
+  };
+  const handelPasswordChange = () => {
+    const data = { oldPassword: formData.password1, newPassword: formData.password2 };
+    dispatch(updatePassword({ data, id }));
   };
 
-  const handleClickShowPassword = () => {
-    setPassword({ ...password, showPassword: !password.showPassword });
-  };
-
+  if (loading) return <div>loading</div>;
   return (
     <Container className={classes.root}>
       <div className={classes.profileHeader}>
@@ -53,14 +63,10 @@ const PersonalData = () => {
         <div />
       </div>
       <div className={classes.profileBody}>
-        <Avatar
-          src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHw%3D&w=1000&q=80"
-          className={classes.avatar}
-          variant="rounded"
-        />
+        <Avatar src={userInfo.avatar.value} className={classes.avatar} variant="rounded" />
         <div className={classes.verify}>
           <Typography component="h6" variant="h6">
-            Female
+            {userInfo.gender.value === 0 ? "Male" : "Female"}
           </Typography>
           &nbsp;
           <CheckCircleOutlined fontSize="small" />
@@ -75,13 +81,15 @@ const PersonalData = () => {
             variant="outlined"
             fullWidth
             size="small"
-            defaultValue={`someone@gmail.com`}
+            defaultValue={userInfo.email}
+            name="email"
+            onChange={(e) => onChange(e)}
           />
         </div>
         <div className={classes.fullWidth}>
           <div style={{ display: "flex", justifyContent: "space-between", marginTop: "-1ch" }}>
             <div />
-            <Button variant="contained" color="secondary">
+            <Button variant="contained" color="secondary" onClick={handleClick}>
               Update Email
             </Button>
           </div>
@@ -99,15 +107,19 @@ const PersonalData = () => {
               <TextField
                 fullWidth
                 placeholder={el.placeholder}
-                type={password.showPassword ? "text" : "password"}
+                name={el.prop}
+                onChange={(e) => onChange(e)}
+                type={showPassword ? "text" : "password"}
                 variant="outlined"
                 size="small"
-                onChange={handleChange(el.prop)}
                 className={classes.textField}
                 InputProps={{
                   endAdornment: (
-                    <IconButton onClick={handleClickShowPassword}>
-                      {password.showPassword ? (
+                    <IconButton
+                      onClick={() => {
+                        setShowPassword(!showPassword);
+                      }}>
+                      {showPassword ? (
                         <Visibility style={{ color: theme.palette.text.secondary }} />
                       ) : (
                         <VisibilityOff style={{ color: theme.palette.text.secondary }} />
@@ -122,7 +134,7 @@ const PersonalData = () => {
         <div className={classes.fullWidth}>
           <div style={{ display: "flex", justifyContent: "space-between", marginTop: "-1ch" }}>
             <div />
-            <Button variant="contained" color="secondary">
+            <Button variant="contained" color="secondary" onClick={handelPasswordChange}>
               Update Password
             </Button>
           </div>
