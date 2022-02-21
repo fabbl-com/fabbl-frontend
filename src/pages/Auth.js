@@ -18,11 +18,10 @@ import animationData from "../assets/animation/auth.json";
 import { FacebookIcon, GoogleIcon } from "../assets/icons/index";
 import { register, login } from "../redux/actions/userActions";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory, useLocation, Link } from "react-router-dom";
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
 import { Alert } from "@material-ui/lab";
-import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
 const useStyles = makeStyles((theme) => ({
@@ -53,16 +52,13 @@ const Auth = ({ isAuth }) => {
   const theme = useTheme();
   const classes = useStyles(theme);
   const [isRegister, setRegister] = useState(true);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({ rememberMe: true });
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
   const container = useRef(null);
   const dispatch = useDispatch();
   const history = useHistory();
   const location = useLocation();
 
-  console.log(history);
-  console.log(location);
   if (isAuth) {
     if (!isRegister) history.push(location?.state?.from?.pathname);
     else history.push("/image");
@@ -164,14 +160,13 @@ const Auth = ({ isAuth }) => {
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={rememberMe}
+                  checked={user.rememberMe}
                   name="RememberMe"
                   value={user?.RememberMe}
                   color="primary"
                 />
               }
               onChange={(e) => {
-                setRememberMe(!rememberMe);
                 setUser((state) => ({ ...state, rememberMe: e.target.checked }));
               }}
               label="Remember me"
