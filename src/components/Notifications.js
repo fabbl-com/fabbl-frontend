@@ -198,10 +198,11 @@ CustomListItem.propTypes = {
   isRead: PropTypes.bool.isRequired
 };
 
-const NotificationSection = ({ socket, userId, notifications }) => {
+const NotificationSection = ({ socket, userId, notifications, unread }) => {
   const theme = useTheme();
   const classes = useStyles();
   const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
+  const [unreadCount, setUnreadCount] = useState(unread.length);
 
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(0);
@@ -240,10 +241,26 @@ const NotificationSection = ({ socket, userId, notifications }) => {
     e.preventDefault();
     socket.emit("decline-friends-request", { sender: userId, receiver: id, notificationId });
   };
+
+  const handleRead = (e) => {
+    e.preventDefault();
+    socket.emit("read-all", { userId });
+  };
+
+  useEffect(() => {
+    socket.on("read-all-response", (data) => {
+      if (data.success) {
+        setUnreadCount(data.count);
+      } else {
+        alert(data.message);
+      }
+    });
+  }, [socket]);
+
   return (
     <>
       <Box className={classes.box}>
-        <Badge badgeContent={notifications.length} max={9} color="secondary">
+        <Badge badgeContent={unreadCount} max={9} color="secondary">
           <ButtonBase className={classes.iconWrapper}>
             <Avatar
               variant="rounded"
@@ -300,6 +317,7 @@ const NotificationSection = ({ socket, userId, notifications }) => {
                             <Chip
                               size="small"
                               label={notifications.length}
+                              max={9}
                               style={{
                                 color: theme.palette.background.default,
                                 backgroundColor: theme.palette.warning.dark
@@ -307,14 +325,17 @@ const NotificationSection = ({ socket, userId, notifications }) => {
                             />
                           </Grid>
                         </Grid>
-                        <Grid item>
-                          <Typography
-                            style={{ textDecoration: "underline", cursor: "pointer" }}
-                            variant="subtitle2"
-                            color="primary">
-                            Mark as all read
-                          </Typography>
-                        </Grid>
+                        {unreadCount > 0 && (
+                          <Grid item>
+                            <Typography
+                              onClick={handleRead}
+                              style={{ textDecoration: "underline", cursor: "pointer" }}
+                              variant="subtitle2"
+                              color="primary">
+                              Mark as all read
+                            </Typography>
+                          </Grid>
+                        )}
                       </Grid>
                     </Grid>
                     <Grid item xs={12}>
@@ -421,6 +442,7 @@ const NotificationSection = ({ socket, userId, notifications }) => {
 
 NotificationSection.propTypes = {
   notifications: PropTypes.array,
+  unread: PropTypes.array,
   socket: PropTypes.object.isRequired,
   userId: PropTypes.string.isRequired
 };
