@@ -4,7 +4,7 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import NotificationSection from "./Notifications";
 import { useDispatch, useSelector } from "react-redux";
-import { setNotifications } from "../redux/actions/userActions";
+import { removeNotifications, setNotifications } from "../redux/actions/userActions";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -46,6 +46,7 @@ const Navbar = ({ socket, userId, isTheme, setTheme }) => {
 
   useEffect(() => {
     socket.on("send-notifications", (data) => dispatch(setNotifications(data)));
+    socket.on("friends-request-response", (data) => dispatch(removeNotifications(data)));
 
     return () => socket.off();
   }, [socket]);
@@ -59,7 +60,15 @@ const Navbar = ({ socket, userId, isTheme, setTheme }) => {
           </Typography>
         </Link>
         <div style={{ flexGrow: 1 }} />
-        <div>{isAuth && <NotificationSection notifications={notifications || []} />}</div>
+        <div>
+          {isAuth && (
+            <NotificationSection
+              socket={socket}
+              userId={userId}
+              notifications={notifications || []}
+            />
+          )}
+        </div>
       </Toolbar>
     </AppBar>
   );

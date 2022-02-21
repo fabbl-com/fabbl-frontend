@@ -25,18 +25,17 @@ import {
   ListItemSecondaryAction,
   List
 } from "@material-ui/core";
-import { Close, Done } from "@material-ui/icons";
+import { Close, Done, NotificationsNone } from "@material-ui/icons";
 import {
   BLOCKED,
-  CONFIRMED_FRIENDS_REQUEST,
+  CONFIRMED_FRIEND_REQUEST,
   GOT_FRIEND_REQUEST,
   LIKED,
   MATCHED,
-  UNBLOCKED
+  UNBLOCKED,
+  DECLINED_FRIEND_REQUEST
 } from "../constants";
 import { PropTypes } from "prop-types";
-
-import { NotificationsNone } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   box: {
@@ -84,7 +83,15 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const CustomListItem = ({ name, url, time, notificationType, isRead }) => {
+const CustomListItem = ({
+  handleConfirm,
+  handleDecline,
+  name,
+  url,
+  time,
+  notificationType,
+  isRead
+}) => {
   const theme = useTheme();
   const classes = useStyles();
 
@@ -96,12 +103,14 @@ const CustomListItem = ({ name, url, time, notificationType, isRead }) => {
         return "Congratulations! you have got a new match. Go and chat with them...";
       case GOT_FRIEND_REQUEST:
         return `${name} has sent you a friend request. Add them to your friends list...`;
-      case CONFIRMED_FRIENDS_REQUEST:
+      case CONFIRMED_FRIEND_REQUEST:
         return `${name} has confirmed your friend request`;
       case BLOCKED:
         return `Ooops! ${name} has blocked you. You cannot message him/her further`;
       case UNBLOCKED:
         return `${name} has unblocked you. You can message him/her`;
+      case DECLINED_FRIEND_REQUEST:
+        return `${name} has declined your friend request`;
       default:
         return;
     }
@@ -148,6 +157,7 @@ const CustomListItem = ({ name, url, time, notificationType, isRead }) => {
                     backgroundColor: theme.palette.primary.light,
                     color: "#eee"
                   }}
+                  onClick={handleConfirm}
                   variant="contained"
                   disableElevation
                   endIcon={<Done />}>
@@ -160,6 +170,7 @@ const CustomListItem = ({ name, url, time, notificationType, isRead }) => {
                     backgroundColor: theme.palette.error.light,
                     color: "#eee"
                   }}
+                  onClick={handleDecline}
                   variant="contained"
                   disableElevation
                   endIcon={<Close />}>
@@ -175,17 +186,19 @@ const CustomListItem = ({ name, url, time, notificationType, isRead }) => {
 };
 
 CustomListItem.propTypes = {
+  handleConfirm: PropTypes.func.isRequired,
+  handleDecline: PropTypes.func.isRequired,
   name: PropTypes.string,
   url: PropTypes.string,
   notificationType:
     PropTypes.oneOf[
-      (LIKED, MATCHED, GOT_FRIEND_REQUEST, CONFIRMED_FRIENDS_REQUEST, BLOCKED, UNBLOCKED)
+      (LIKED, MATCHED, GOT_FRIEND_REQUEST, CONFIRMED_FRIEND_REQUEST, BLOCKED, UNBLOCKED)
     ],
   time: PropTypes.string.isRequired,
   isRead: PropTypes.bool.isRequired
 };
 
-const NotificationSection = ({ notifications }) => {
+const NotificationSection = ({ socket, userId, notifications }) => {
   const theme = useTheme();
   const classes = useStyles();
   const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
@@ -217,6 +230,16 @@ const NotificationSection = ({ notifications }) => {
     if (event?.target.value) setValue(event?.target.value);
   };
 
+  const handleConfirm = (e, { id, notificationId }) => {
+    console.log(userId, id, notificationId);
+    e.preventDefault();
+    socket.emit("confirm-friends-request", { sender: userId, receiver: id, notificationId });
+  };
+
+  const handleDecline = (e, { id, notificationId }) => {
+    e.preventDefault();
+    socket.emit("decline-friends-request", { sender: userId, receiver: id, notificationId });
+  };
   return (
     <>
       <Box className={classes.box}>
@@ -346,19 +369,33 @@ const NotificationSection = ({ notifications }) => {
                               marginBottom: 0
                             }
                           }}>
-                          {notifications.length > 0 ? (
-                            notifications.map((el, index) => (
-                              <Fragment key={index}>
-                                <CustomListItem
-                                  name={el?.displayName?.value || "*****"}
-                                  url={el?.avatar?.value}
-                                  time={el.createdAt}
-                                  notificationType={el.notificationType}
-                                  isRead={el.isRead}
-                                />
-                                <Divider light />
-                              </Fragment>
-                            ))
+                          {notifications && notifications.length > 0 ? (
+                            notifications
+                              .sort((b, a) => new Date(a.createdAt) - new Date(b.createdAt))
+                              .map((el, index) => (
+                                <Fragment key={index}>
+                                  <CustomListItem
+                                    handleConfirm={(e) =>
+                                      handleConfirm(e, {
+                                        id: el.userId,
+                                        notificationId: el?.notificationId
+                                      })
+                                    }
+                                    handleDecline={(e) =>
+                                      handleDecline(e, {
+                                        id: el.userId,
+                                        notificationId: el?.notificationId
+                                      })
+                                    }
+                                    name={el?.displayName?.value || "*****"}
+                                    url={el?.avatar?.value}
+                                    time={el.createdAt}
+                                    notificationType={el.notificationType}
+                                    isRead={el.isRead}
+                                  />
+                                  <Divider light />
+                                </Fragment>
+                              ))
                           ) : (
                             <div style={{ paddingLeft: "2ch" }}>You have no notifications</div>
                           )}
@@ -383,7 +420,9 @@ const NotificationSection = ({ notifications }) => {
 };
 
 NotificationSection.propTypes = {
-  notifications: PropTypes.array
+  notifications: PropTypes.array,
+  socket: PropTypes.object.isRequired,
+  userId: PropTypes.string.isRequired
 };
 
 export default NotificationSection;

@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import {
   USER_REGISTER_FAIL,
   USER_REGISTER_REQUEST,
@@ -26,7 +27,8 @@ import {
   CHECK_AUTH_REQUEST,
   UPDATE_PROFILE_PREF,
   GET_USER_PROFILE,
-  SET_NOTIFICATIONS
+  SET_NOTIFICATIONS,
+  REOMVE_NOTIFICATIONS
 } from "../constants/userActionTypes";
 
 const initialState = {
@@ -147,7 +149,15 @@ export default (state = initialState, action) => {
     case SET_NOTIFICATIONS:
       return {
         ...state,
-        notifications: [...state.notifications, action.payload]
+        notifications: [action.payload, ...state.notifications]
+      };
+    case REOMVE_NOTIFICATIONS:
+      const notif = state.notifications;
+      const index = notif.findIndex((el) => el.notificationId === action.payload.notificationId);
+      if (index !== -1) notif.splice(index, 1);
+      return {
+        ...state,
+        notifications: notif
       };
     default:
       return state;

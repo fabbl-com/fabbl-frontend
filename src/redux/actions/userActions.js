@@ -26,7 +26,8 @@ import {
   CHECK_AUTH_FAIL,
   UPDATE_PROFILE_PREF,
   GET_USER_PROFILE,
-  SET_NOTIFICATIONS
+  SET_NOTIFICATIONS,
+  REOMVE_NOTIFICATIONS
 } from "../constants/userActionTypes";
 
 export const register = (userId) => async (dispatch) => {
@@ -242,4 +243,9 @@ export const getUserProfile = (userId) => async (dispatch) => {
 export const setNotifications = (data) => (dispatch) => {
   console.log(data);
   dispatch({ type: SET_NOTIFICATIONS, payload: data });
+};
+
+export const removeNotifications = (data) => (dispatch) => {
+  console.log(data);
+  dispatch({ type: REOMVE_NOTIFICATIONS, payload: data });
 };

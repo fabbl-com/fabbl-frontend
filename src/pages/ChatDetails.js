@@ -32,7 +32,6 @@ import {
 import { Skeleton } from "@material-ui/lab";
 import { Link, useLocation } from "react-router-dom";
 import { PropTypes } from "prop-types";
-import queryString from "query-string";
 
 import { chatDetailsStyles } from "../assets/jss";
 import { makeMessageSeen, sendMessage } from "../utils/socket.io";
