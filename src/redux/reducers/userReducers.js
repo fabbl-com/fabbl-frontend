@@ -30,7 +30,8 @@ import {
   UPDATE_PASSWORD_SUCCESS,
   UPDATE_EMAIL_SUCCESS,
   SET_NOTIFICATIONS,
-  REOMVE_NOTIFICATIONS
+  REOMVE_NOTIFICATIONS,
+  SEND_RESET_PASSWORD_SUCCESS
 } from "../constants/userActionTypes";
 
 const initialState = {
@@ -151,6 +152,7 @@ export default (state = initialState, action) => {
 
     case UPDATE_PASSWORD_SUCCESS:
     case UPDATE_EMAIL_SUCCESS:
+    case SEND_RESET_PASSWORD_SUCCESS:
       return {
         ...state,
         loading: false

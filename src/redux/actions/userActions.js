@@ -29,7 +29,8 @@ import {
   UPDATE_EMAIL_SUCCESS,
   UPDATE_PASSWORD_SUCCESS,
   SET_NOTIFICATIONS,
-  REOMVE_NOTIFICATIONS
+  REOMVE_NOTIFICATIONS,
+  SEND_RESET_PASSWORD_SUCCESS
 } from "../constants/userActionTypes";
 
 export const register = (userId) => async (dispatch) => {
@@ -305,3 +306,24 @@ export const removeNotifications = (data) => (dispatch) => {
   console.log(data);
   dispatch({ type: REOMVE_NOTIFICATIONS, payload: data });
 };
+
+export const sendResetPasswordEmail =
+  ({ email }) =>
+  async (dispatch) => {
+    try {
+      await Axios.post(`/user/send-reset-password-email`, {
+        email: email
+      });
+      dispatch({ type: SEND_RESET_PASSWORD_SUCCESS });
+    } catch (error) {
+      console.log(error);
+      dispatch({
+        type: RESET_PASSWORD_FAIL,
+        payload: {
+          code: error.response.status,
+          message:
+            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+        }
+      });
+    }
+  };
