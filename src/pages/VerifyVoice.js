@@ -18,7 +18,6 @@ import { Link } from "react-router-dom";
 import animationData from "../assets/animation/auth.json";
 import recordAnimationData from "../assets/animation/recordAnimation.json";
 import sentence from "../utils/randomSentence";
-import { record } from "../utils/recordVoice";
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: "#2e9cca",
@@ -73,36 +72,73 @@ const VoiceUpload = () => {
   const theme = useTheme();
   const classes = useStyles(theme);
   const [Gender, setGender] = useState("");
+  const [lines, setLines] = useState("");
   const [isRecording, setRecording] = useState(false);
+  const [audio, setAudio] = useState(null);
+  const [url, setURL] = useState("");
 
   const container = useRef(null);
 
   useEffect(() => {
-    lottie.loadAnimation({
+    setLines(sentence());
+  }, []);
+
+  useEffect(() => {
+    const anim = lottie.loadAnimation({
       container: container.current,
       renderer: "svg",
       loop: true,
       autoplay: true,
       animationData
     });
-  }, []);
+    return () => anim.destroy();
+  }, [isRecording]);
 
   const box = useRef(null);
 
   useEffect(() => {
-    lottie.loadAnimation({
-      container: container.current,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-      recordAnimationData
-    });
-  }, []);
+    isRecording &&
+      lottie.loadAnimation({
+        container: box.current,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+        animationData: recordAnimationData
+      });
+  }, [isRecording]);
 
-  const handelRecoding = () => {
+  console.log(audio, url);
+
+  const handelRecoding = async () => {
     setRecording(!isRecording);
-    console.log(record());
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      const chunks = [];
+      mediaRecorder.ondataavailable = (event) => {
+        console.log("data-available");
+        if (event.data.size > 0) {
+          chunks.push(event.data);
+          let audioData = new Blob(chunks, { type: "audio/wav;" });
+          audioData.lastModifiedDate = new Date();
+          audioData.name = "test.wav";
+          var url = URL.createObjectURL(audioData);
+          setURL(url);
+          setAudio(audioData);
+        }
+      };
+      mediaRecorder.start();
+      console.log(mediaRecorder.state);
+      setTimeout(() => {
+        mediaRecorder.stop();
+        setRecording((state) => !state);
+      }, 10000);
+    } catch (error) {
+      console.log(error);
+    }
   };
+
+  const handleAudio = () => {};
 
   return (
     <Container maxWidth="sm" className={classes.root} align="center">
@@ -139,7 +175,7 @@ const VoiceUpload = () => {
       </Typography>
       <Box align="center" className={classes.lines}>
         <Typography variant="body1" align="left">
-          {sentence()}
+          {lines}
         </Typography>
       </Box>
       <Button
@@ -157,7 +193,12 @@ const VoiceUpload = () => {
         {" "}
         Tap to record{" "}
       </Typography>
-      <Button type="submit" variant="contained" className={classes.actionButton}>
+      <Button
+        onClick={handleAudio}
+        disabled={!audio}
+        type="submit"
+        variant="contained"
+        className={classes.actionButton}>
         Verify
       </Button>
       <Box align="center" m={2}>

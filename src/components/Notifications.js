@@ -204,6 +204,10 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
   const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
   const [unreadCount, setUnreadCount] = useState(unread.length);
 
+  useEffect(() => {
+    setUnreadCount(unread.length);
+  }, [unread]);
+
   const [open, setOpen] = useState(false);
   const [value, setValue] = useState(0);
   const anchorRef = useRef(null);
