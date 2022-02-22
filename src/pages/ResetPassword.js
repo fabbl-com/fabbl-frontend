@@ -6,7 +6,8 @@ import {
   Button,
   Container,
   TextField,
-  useTheme
+  useTheme,
+  Paper
 } from "@material-ui/core";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { resetPassword } from "../redux/actions/userActions";
@@ -21,7 +22,8 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    height: `calc(100vh - ${theme.spacing(6)}px)`
+    height: `calc(100vh - ${theme.spacing(6)}px)`,
+    backgroundColor: theme.palette.backgroundColor
   },
   profileBody: {
     margin: theme.spacing(2, 0)
@@ -96,42 +98,44 @@ const ResetPassword = ({ userId }) => {
 
   return (
     <Container className={classes.root}>
-      <div>
-        {[
-          { placeholder: "New Password", prop: "password1" },
-          { placeholder: "Confirm Password", prop: "password2" }
-        ].map((el, i) => (
-          <div className={classes.profileBody} key={i}>
-            <Typography component="h6" variant="h6">
-              {el.placeholder}
-            </Typography>
-            <TextField
-              fullWidth
-              placeholder={el.placeholder}
-              type={password.showPassword ? "text" : "password"}
-              variant="outlined"
-              size="small"
-              onChange={handleChange(el.prop)}
-              InputProps={{
-                endAdornment: (
-                  <IconButton onClick={handleClickShowPassword}>
-                    {password.showPassword ? (
-                      <Visibility style={{ color: theme.palette.text.secondary }} />
-                    ) : (
-                      <VisibilityOff style={{ color: theme.palette.text.secondary }} />
-                    )}
-                  </IconButton>
-                )
-              }}
-            />
-          </div>
-        ))}
+      <Paper>
         <div>
-          <Button onClick={handlePassword} fullWidth variant="contained" color="secondary">
-            Update Password
-          </Button>
+          {[
+            { placeholder: "New Password", prop: "password1" },
+            { placeholder: "Confirm Password", prop: "password2" }
+          ].map((el, i) => (
+            <div className={classes.profileBody} key={i}>
+              <Typography component="h6" variant="h6">
+                {el.placeholder}
+              </Typography>
+              <TextField
+                fullWidth
+                placeholder={el.placeholder}
+                type={password.showPassword ? "text" : "password"}
+                variant="outlined"
+                size="small"
+                onChange={handleChange(el.prop)}
+                InputProps={{
+                  endAdornment: (
+                    <IconButton onClick={handleClickShowPassword}>
+                      {password.showPassword ? (
+                        <Visibility style={{ color: theme.palette.text.secondary }} />
+                      ) : (
+                        <VisibilityOff style={{ color: theme.palette.text.secondary }} />
+                      )}
+                    </IconButton>
+                  )
+                }}
+              />
+            </div>
+          ))}
+          <div>
+            <Button onClick={handlePassword} fullWidth variant="contained" color="secondary">
+              Update Password
+            </Button>
+          </div>
         </div>
-      </div>
+      </Paper>
     </Container>
   );
 };
