@@ -44,7 +44,7 @@ const Auth = ({ isAuth }) => {
   const [isRegister, setRegister] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [isForgotPassword, setForgotPassword] = useState(false);
-  const [user, setUser] = useState({ rememberMe: true, email: "", displayName: "", password: "" });
+  const [user, setUser] = useState({ password1: "", password2: "" });
   const dispatch = useDispatch();
   const location = useLocation();
   const history = useHistory();
@@ -67,11 +67,6 @@ const Auth = ({ isAuth }) => {
       : isRegister
       ? dispatch(register(user))
       : dispatch(login(user));
-  };
-
-  const handelForgetPassword = (e) => {
-    setForgotPassword(!isForgotPassword);
-    // dispatch(sendResetPasswordEmail({ email: user.email }));
   };
 
   return (
@@ -131,15 +126,7 @@ const Auth = ({ isAuth }) => {
                               align="center"
                               gutterBottom
                               variant={matchDownSM ? "h3" : "h2"}>
-                              {isForgotPassword ? "Reset Password" : "Hi, Welcome Back"}
-                            </Typography>
-                            <Typography
-                              variant="body1"
-                              fontSize="16px"
-                              textAlign={matchDownSM ? "center" : "inherit"}>
-                              {isForgotPassword
-                                ? "Enter your mail to continue"
-                                : "Enter your credentials to continue"}
+                              Hi, Welcome Back
                             </Typography>
                           </Grid>
                         </Grid>
@@ -201,76 +188,75 @@ const Auth = ({ isAuth }) => {
                           </Box>
                         </Grid>
                         <Grid item xs={12} container alignItems="center" justifyContent="center">
-                          <Box style={{ marginBottom: "2ch" }}>
-                            <Typography variant="subtitle1">
-                              {isForgotPassword
-                                ? "Reset Password with Email address"
-                                : "Sign in with Email address"}
-                            </Typography>
+                          <Box style={{ marginBottom: "1ch" }}>
+                            <Typography variant="subtitle1">Enter New Password</Typography>
                           </Box>
                         </Grid>
                       </Grid>
 
                       <form noValidate onSubmit={handleSubmit}>
                         <TextField
-                          variant="outlined"
                           required
                           fullWidth
-                          label="Email"
-                          type="email"
-                          vaule={user?.email}
+                          variant="outlined"
+                          name="password"
+                          label="Password"
+                          type={showPassword ? "text" : "password"}
+                          vaule={user?.password1}
                           onChange={(e) =>
-                            setUser((state) => ({ ...state, email: e.target.value }))
+                            setUser((state) => ({ ...state, password1: e.target.value }))
                           }
                           margin="normal"
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <IconButton
+                                  color="secondary"
+                                  aria-label="toggle password visibility"
+                                  onClick={() => {
+                                    setShowPassword(!showPassword);
+                                  }}>
+                                  {showPassword ? (
+                                    <Visibility color="primary" />
+                                  ) : (
+                                    <VisibilityOff color="primary" />
+                                  )}
+                                </IconButton>
+                              </InputAdornment>
+                            )
+                          }}
                         />
-                        {isRegister && !isForgotPassword && (
-                          <TextField
-                            variant="outlined"
-                            required
-                            fullWidth
-                            label="Display name"
-                            type="text"
-                            margin="normal"
-                            vaule={user?.displayName}
-                            onChange={(e) =>
-                              setUser((state) => ({ ...state, displayName: e.target.value }))
-                            }
-                          />
-                        )}
-                        {!isForgotPassword && (
-                          <TextField
-                            required
-                            fullWidth
-                            variant="outlined"
-                            name="password"
-                            label="Password"
-                            type={showPassword ? "text" : "password"}
-                            vaule={user?.password}
-                            onChange={(e) =>
-                              setUser((state) => ({ ...state, password: e.target.value }))
-                            }
-                            margin="normal"
-                            InputProps={{
-                              endAdornment: (
-                                <InputAdornment position="end">
-                                  <IconButton
-                                    color="secondary"
-                                    aria-label="toggle password visibility"
-                                    onClick={() => {
-                                      setShowPassword(!showPassword);
-                                    }}>
-                                    {showPassword ? (
-                                      <Visibility color="primary" />
-                                    ) : (
-                                      <VisibilityOff color="primary" />
-                                    )}
-                                  </IconButton>
-                                </InputAdornment>
-                              )
-                            }}
-                          />
-                        )}
+                        <TextField
+                          required
+                          fullWidth
+                          variant="outlined"
+                          name="password2"
+                          label="Confirm Password"
+                          type={showPassword ? "text" : "password"}
+                          vaule={user?.password2}
+                          onChange={(e) =>
+                            setUser((state) => ({ ...state, password2: e.target.value }))
+                          }
+                          margin="normal"
+                          InputProps={{
+                            endAdornment: (
+                              <InputAdornment position="end">
+                                <IconButton
+                                  color="secondary"
+                                  aria-label="toggle password visibility"
+                                  onClick={() => {
+                                    setShowPassword(!showPassword);
+                                  }}>
+                                  {showPassword ? (
+                                    <Visibility color="primary" />
+                                  ) : (
+                                    <VisibilityOff color="primary" />
+                                  )}
+                                </IconButton>
+                              </InputAdornment>
+                            )
+                          }}
+                        />
                         <Grid
                           container
                           direction="row"
@@ -296,23 +282,8 @@ const Auth = ({ isAuth }) => {
                               label="Remember me"
                             />
                           )}
-                          {!isForgotPassword && (
-                            <Typography
-                              variant="subtitle1"
-                              color="secondary"
-                              onClick={handelForgetPassword}
-                              style={{
-                                textDecoration: "none",
-                                cursor: "pointer"
-                              }}>
-                              Forgot Password?
-                            </Typography>
-                          )}
                         </Grid>
-                        {/* <Box>
-                            <FormHelperText error>errors</FormHelperText>
-                          </Box> */}
-                        <Box style={{ marginTop: "2ch" }}>
+                        <Box style={{ marginTop: "3ch" }}>
                           <Button
                             color="secondary"
                             disableElevation
@@ -320,25 +291,10 @@ const Auth = ({ isAuth }) => {
                             size="large"
                             type="submit"
                             variant="contained">
-                            {isForgotPassword ? "send mail" : isRegister ? "Register" : "Sign in"}
+                            Reset Password
                           </Button>
                         </Box>
                       </form>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Divider light />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Grid item container direction="column" alignItems="center" xs={12}>
-                        {!isForgotPassword && (
-                          <Typography
-                            onClick={() => setRegister((state) => !state)}
-                            variant="subtitle1"
-                            style={{ textDecoration: "none", cursor: "pointer" }}>
-                            {isRegister ? `Already have an account` : `Don't have an account?`}
-                          </Typography>
-                        )}
-                      </Grid>
                     </Grid>
                   </Grid>
                 </Box>
