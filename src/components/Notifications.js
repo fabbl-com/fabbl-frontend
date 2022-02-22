@@ -238,27 +238,32 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
   const handleConfirm = (e, { id, notificationId }) => {
     console.log(userId, id, notificationId);
     e.preventDefault();
-    socket.emit("confirm-friends-request", { sender: userId, receiver: id, notificationId });
+    if (socket)
+      socket.emit("confirm-friends-request", { sender: userId, receiver: id, notificationId });
   };
 
   const handleDecline = (e, { id, notificationId }) => {
     e.preventDefault();
-    socket.emit("decline-friends-request", { sender: userId, receiver: id, notificationId });
+    if (socket)
+      socket.emit("decline-friends-request", { sender: userId, receiver: id, notificationId });
   };
 
   const handleRead = (e) => {
     e.preventDefault();
-    socket.emit("read-all", { userId });
+    if (socket) socket.emit("read-all", { userId });
   };
 
   useEffect(() => {
-    socket.on("read-all-response", (data) => {
-      if (data.success) {
-        setUnreadCount(data.count);
-      } else {
-        alert(data.message);
-      }
-    });
+    if (socket)
+      socket.on("read-all-response", (data) => {
+        if (data.success) {
+          setUnreadCount(data.count);
+        } else {
+          alert(data.message);
+        }
+      });
+
+    return () => socket && socket.off();
   }, [socket]);
 
   return (
@@ -447,7 +452,7 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
 NotificationSection.propTypes = {
   notifications: PropTypes.array,
   unread: PropTypes.array,
-  socket: PropTypes.object.isRequired,
+  socket: PropTypes.object,
   userId: PropTypes.string.isRequired
 };
 

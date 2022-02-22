@@ -21,7 +21,6 @@ import {
   RESET_PASSWORD_FAIL,
   USER_UPLOAD_AVATAR_SUCCESS,
   USER_UPLOAD_AVATAR_FAIL,
-  UPDATE_PROFILE,
   CHECK_AUTH_SUCCESS,
   CHECK_AUTH_FAIL,
   CHECK_AUTH_REQUEST,
@@ -31,19 +30,25 @@ import {
   UPDATE_EMAIL_SUCCESS,
   SET_NOTIFICATIONS,
   REOMVE_NOTIFICATIONS,
-  SEND_RESET_PASSWORD_SUCCESS
+  SEND_RESET_PASSWORD_SUCCESS,
+  UPDATE_PROFILE_REQUEST,
+  UPDATE_PROFILE_SUCCESS,
+  UPDATE_PROFILE_FAIL
 } from "../constants/userActionTypes";
+
+const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+const notifications = JSON.parse(localStorage.getItem("notifications"));
 
 const initialState = {
   error: null,
-  isAuth: false,
+  isAuth: userInfo?.isAuth || false,
   loading: false,
   authChecking: true,
   likes: [],
-  userInfo: {},
-  notifications: [],
-  isEmailVerified: false,
-  userId: localStorage.getItem("userId"),
+  profile: userInfo?.profile || {},
+  notifications: notifications?.notifications || [],
+  isEmailVerified: userInfo?.profile?.isEmailVerified || false,
+  userId: localStorage.getItem("userId") || "",
   isFriends: false
 };
 
@@ -56,6 +61,7 @@ export default (state = initialState, action) => {
     case SET_LIKES_REQUEST:
     case RESET_PASSWORD_REQUEST:
     case CHECK_AUTH_REQUEST:
+    case UPDATE_PROFILE_REQUEST:
       return { ...state, loading: true };
     case USER_REGISTER_SUCCESS:
     case USER_SIGNIN_SUCCESS:
@@ -63,16 +69,17 @@ export default (state = initialState, action) => {
       return {
         ...state,
         ...action.payload,
+        userId: action.payload.userId,
         isAuth: true,
         loading: false,
         error: null
       };
     case EMAIL_VERIFY_SUCCESS:
+      localStorage.removeItem("userInfo");
       return {
         ...state,
         loading: false,
         isEmailVerified: true,
-        ...action.payload,
         error: null
       };
     case RESET_PASSWORD_SUCCESS:
@@ -83,12 +90,40 @@ export default (state = initialState, action) => {
         error: null,
         ...action.payload
       };
-    case CHECK_AUTH_SUCCESS:
+    case UPDATE_PROFILE_SUCCESS:
+      localStorage.setItem(
+        "userInfo",
+        JSON.stringify({
+          isAuth: true,
+          profile: action.payload.profile
+        })
+      );
       return {
         ...state,
+        loading: false,
         isAuth: true,
         authChecking: false,
-        notifications: action.payload
+        ...action.payload
+      };
+    case CHECK_AUTH_SUCCESS:
+      localStorage.setItem("userId", action.payload?.profile?._id);
+      localStorage.setItem(
+        "userInfo",
+        JSON.stringify({
+          isAuth: true,
+          profile: action.payload.profile
+        })
+      );
+      localStorage.setItem(
+        "notifications",
+        JSON.stringify({ notifications: action.payload.notifications })
+      );
+      return {
+        ...state,
+        loading: false,
+        isAuth: true,
+        authChecking: false,
+        ...action.payload
       };
     case USER_SIGNIN_FAIL:
     case USER_REGISTER_FAIL:
@@ -116,6 +151,7 @@ export default (state = initialState, action) => {
         loading: false,
         error: action.payload
       };
+    case UPDATE_PROFILE_FAIL:
     case CHECK_AUTH_FAIL:
       return {
         ...state,
@@ -142,14 +178,12 @@ export default (state = initialState, action) => {
         userInfo: { ...state.userInfo, ...action.payload }
       };
     case GET_USER_PROFILE:
-    case UPDATE_PROFILE:
     case UPDATE_PROFILE_PREF:
       return {
         ...state,
         loading: false,
         userInfo: action.payload.profile
       };
-
     case UPDATE_PASSWORD_SUCCESS:
     case UPDATE_EMAIL_SUCCESS:
     case SEND_RESET_PASSWORD_SUCCESS:

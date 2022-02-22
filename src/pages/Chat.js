@@ -27,15 +27,15 @@ import {
   MoreVert,
   Search
 } from "@material-ui/icons";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { PropTypes } from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import { getChatListUsers, setChatListUserOffline } from "../redux/actions/messageActions";
 import { Skeleton } from "@material-ui/lab";
 
 import { chatStyles } from "../assets/jss";
+import { getChatList } from "../utils/socket.io";
 import { ProfileBadge } from "../components";
-import { GET_CHAT_LIST_USERS_REQUEST } from "../redux/constants/messageActionTypes";
 
 const useStyles = makeStyles((theme) => chatStyles(theme));
 
@@ -72,13 +72,14 @@ ScrollTop.propTypes = {
   window: PropTypes.func
 };
 
-const Chat = ({ userId, socket, isTheme, setTheme }) => {
+const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const classes = useStyles();
   const theme = useTheme();
   const [isSearchMode, setSearchMode] = useState(false);
   const [users, setUsers] = useState([]);
   const [isFriends, setFriends] = useState(true);
   const [anchorEl, setAnchorEl] = useState(null);
+  const history = useHistory();
   const dispatch = useDispatch();
 
   if (!socket) return <div>Loading...</div>;
@@ -87,14 +88,14 @@ const Chat = ({ userId, socket, isTheme, setTheme }) => {
   const friends = chatListUsers.filter((user) => user.friendStatus === "friends");
 
   useEffect(() => {
-    dispatch({ type: GET_CHAT_LIST_USERS_REQUEST });
-    socket.emit("chat-list", userId);
-    socket.on("chat-list-response", (data) => dispatch(getChatListUsers(data?.messages)));
+    getChatList(socket, eventEmitter, userId, dispatch);
+    eventEmitter.on("chat-list-response", chatListListener);
 
     return () => {
       socket.off();
+      eventEmitter.removeListener("chat-list-response", chatListListener);
     };
-  }, [userId, socket]);
+  }, [userId, socket, eventEmitter]);
 
   useEffect(() => {
     socket.on("connection-response", (data) => {
@@ -107,6 +108,10 @@ const Chat = ({ userId, socket, isTheme, setTheme }) => {
     if (isFriends) setUsers(friends);
     else setUsers(chatListUsers);
   }, [isFriends]);
+
+  const chatListListener = (data) => {
+    dispatch(getChatListUsers(data?.messages));
+  };
 
   const handleMenuClose = () => {
     setAnchorEl(null);
@@ -304,7 +309,8 @@ Chat.propTypes = {
   isTheme: PropTypes.bool.isRequired,
   setTheme: PropTypes.func.isRequired,
   userId: PropTypes.string,
-  socket: PropTypes.object
+  socket: PropTypes.object,
+  eventEmitter: PropTypes.object
 };
 
 export default Chat;

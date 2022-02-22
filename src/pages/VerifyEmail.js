@@ -65,6 +65,8 @@ const VerifyEmail = () => {
 
   const { isEmailVerified, error, loading } = useSelector((state) => state.user);
 
+  console.log(error);
+
   useEffect(() => {
     if (isEmailVerified) {
       lottie.loadAnimation({
@@ -85,6 +87,8 @@ const VerifyEmail = () => {
     }
   }, [verifySuccess, verifyFail, isEmailVerified, error]);
 
+  console.log(query);
+
   useEffect(() => {
     if (query?.token) dispatch(verifyEmail(query.token));
   }, []);
@@ -99,7 +103,7 @@ const VerifyEmail = () => {
             <Typography component="h3" variant="h4">
               {isEmailVerified && !error
                 ? "Email Verified"
-                : error.code == 500
+                : error?.code == 500
                 ? "Email verification failed!"
                 : "Verification email timout expired!"}
             </Typography>

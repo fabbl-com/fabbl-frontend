@@ -17,38 +17,37 @@ import {
 } from "@material-ui/icons";
 
 import classNames from "classnames";
-import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserProfile, updateEmail, updatePassword } from "../redux/actions/userActions";
 import { personalDataStyles } from "../assets/jss";
+import { PropTypes } from "prop-types";
 
 const useStyles = makeStyles((theme) => personalDataStyles(theme));
 
-const PersonalData = () => {
+const SecurityData = ({ userId }) => {
   const classes = useStyles();
   const theme = useTheme();
 
   const dispatch = useDispatch();
-  const { userInfo, loading } = useSelector((state) => state.user);
-  const { id } = useParams();
-  console.log(id);
-  console.log({ userInfo });
+  const { profile, loading } = useSelector((state) => state.user);
+
+  console.log(profile);
 
   const [showPassword, setShowPassword] = useState(false);
 
-  useEffect(() => {
-    dispatch(getUserProfile(id));
-  }, []);
+  // useEffect(() => {
+  //   dispatch(getUserProfile(userId));
+  // }, []);
   const [formData, setFormData] = useState({});
   const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
   const handleClick = () => {
     console.log(formData);
-    dispatch(updateEmail({ id, data: formData.email }));
+    dispatch(updateEmail({ id: userId, data: formData.email }));
   };
   const handelPasswordChange = () => {
     const data = { oldPassword: formData.password1, newPassword: formData.password2 };
     if (formData.password2 === formData.password3) {
-      dispatch(updatePassword({ data, id }));
+      dispatch(updatePassword({ data, id: userId }));
     }
   };
 
@@ -65,10 +64,10 @@ const PersonalData = () => {
         <div />
       </div>
       <div className={classes.profileBody}>
-        <Avatar src={userInfo.avatar.value} className={classes.avatar} variant="rounded" />
+        <Avatar src={profile.avatar.value} className={classes.avatar} variant="rounded" />
         <div className={classes.verify}>
           <Typography component="h6" variant="h6">
-            {userInfo.gender.value === 0 ? "Male" : "Female"}
+            {profile.gender.value === 0 ? "Male" : "Female"}
           </Typography>
           &nbsp;
           <CheckCircleOutlined fontSize="small" />
@@ -83,7 +82,7 @@ const PersonalData = () => {
             variant="outlined"
             fullWidth
             size="small"
-            defaultValue={userInfo.email}
+            defaultValue={profile.email}
             name="email"
             onChange={(e) => onChange(e)}
           />
@@ -146,4 +145,8 @@ const PersonalData = () => {
   );
 };
 
-export default PersonalData;
+SecurityData.propTypes = {
+  userId: PropTypes.string.isRequired
+};
+
+export default SecurityData;

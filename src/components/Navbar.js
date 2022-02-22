@@ -44,13 +44,13 @@ const Navbar = ({ socket, userId }) => {
 
   const unread = notifications?.filter((el) => el.isRead === false);
 
-  if (!socket) return <div>Loading...</div>;
-
   useEffect(() => {
-    socket.on("send-notifications", (data) => dispatch(setNotifications(data)));
-    socket.on("friends-request-response", (data) => dispatch(removeNotifications(data)));
+    if (socket) {
+      socket.on("send-notifications", (data) => dispatch(setNotifications(data)));
+      socket.on("friends-request-response", (data) => dispatch(removeNotifications(data)));
+    }
 
-    return () => socket.off();
+    return () => socket && socket.off();
   }, [socket]);
 
   return (
@@ -77,7 +77,7 @@ const Navbar = ({ socket, userId }) => {
 
 Navbar.propTypes = {
   userId: PropTypes.string.isRequired,
-  socket: PropTypes.object.isRequired
+  socket: PropTypes.object
 };
 
 export default Navbar;

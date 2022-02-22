@@ -189,7 +189,7 @@ import { Autocomplete, Skeleton } from "@material-ui/lab";
 import DateFnsUtils from "@date-io/date-fns";
 import classNames from "classnames";
 import { personalDataStyles } from "../assets/jss";
-import { updateProfile, getUserProfile, uploadAvatar } from "../redux/actions/userActions";
+import { updateProfile, uploadAvatar } from "../redux/actions/userActions";
 import { withStyles } from "@material-ui/styles";
 import { PropTypes } from "prop-types";
 const useStyles = makeStyles((theme) => personalDataStyles(theme));
@@ -232,8 +232,7 @@ const BootstrapInput = withStyles((theme) => ({
 const PersonalData = ({ userId }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const profile = useSelector((state) => state.user?.userInfo);
-  const { loading } = useSelector((state) => state.user);
+  const { loading, profile } = useSelector((state) => state.user);
   const [image, setImage] = useState(null);
   // console.log(profile);
   const [gender, setGender] = useState(0);
@@ -247,7 +246,6 @@ const PersonalData = ({ userId }) => {
     hobbiesData: []
   });
   useEffect(() => {
-    if (!profile) dispatch(getUserProfile(userId));
     if (profile) {
       setFormData({
         usernameData: profile.displayName.value,

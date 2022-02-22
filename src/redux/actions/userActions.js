@@ -15,12 +15,10 @@ import {
   SET_LIKES_REQUEST,
   SET_LIKES_SUCCESS,
   SET_LIKES_FAIL,
-  RESET_PASSWORD_REQUEST,
   RESET_PASSWORD_SUCCESS,
   RESET_PASSWORD_FAIL,
   USER_UPLOAD_AVATAR_SUCCESS,
   USER_UPLOAD_AVATAR_FAIL,
-  UPDATE_PROFILE,
   CHECK_AUTH_REQUEST,
   CHECK_AUTH_SUCCESS,
   CHECK_AUTH_FAIL,
@@ -30,7 +28,10 @@ import {
   UPDATE_PASSWORD_SUCCESS,
   SET_NOTIFICATIONS,
   REOMVE_NOTIFICATIONS,
-  SEND_RESET_PASSWORD_SUCCESS
+  SEND_RESET_PASSWORD_SUCCESS,
+  UPDATE_PROFILE_REQUEST,
+  UPDATE_PROFILE_SUCCESS,
+  UPDATE_PROFILE_FAIL
 } from "../constants/userActionTypes";
 
 export const register = (userId) => async (dispatch) => {
@@ -113,7 +114,7 @@ export const setLikes = (data) => async (dispatch) => {
 export const resetPassword =
   ({ userId, password }) =>
   async (dispatch) => {
-    dispatch({ type: RESET_PASSWORD_REQUEST });
+    dispatch({ type: UPDATE_PROFILE_REQUEST });
     try {
       const { data } = await Axios.post(`/user/update-password/${userId}`, {
         newPassword: password
@@ -122,7 +123,7 @@ export const resetPassword =
     } catch (error) {
       console.log(error);
       dispatch({
-        type: RESET_PASSWORD_FAIL,
+        type: UPDATE_PROFILE_FAIL,
         payload: {
           code: error.response.status,
           message:
@@ -161,21 +162,17 @@ export const uploadAvatar =
 export const updateProfile =
   ({ data, userId }) =>
   async (dispatch) => {
+    // dispatch({ type: USER_REGISTER_REQUEST });
     try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      };
-      const res = await Axios.post(`/user/profile/Personal/${userId}`, data, config);
+      const res = await Axios.post(`/user/profile/personal/${userId}`, data);
       dispatch({
-        type: UPDATE_PROFILE,
-        payload: res.data
+        type: UPDATE_PROFILE_SUCCESS,
+        payload: res.data?.profile
       });
     } catch (error) {
       console.log(error);
       dispatch({
-        type: USER_UPLOAD_AVATAR_FAIL,
+        type: UPDATE_PROFILE_FAIL,
         payload: {
           code: error.response.status,
           message:
@@ -189,7 +186,7 @@ export const checkAuth = () => async (dispatch) => {
   try {
     const { data } = await Axios.get("/auth/check");
     console.log(data);
-    dispatch({ type: CHECK_AUTH_SUCCESS, payload: data.notifications });
+    dispatch({ type: CHECK_AUTH_SUCCESS, payload: data });
   } catch (error) {
     console.log(error.response);
     dispatch({ type: CHECK_AUTH_FAIL });

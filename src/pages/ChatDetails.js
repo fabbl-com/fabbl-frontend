@@ -34,8 +34,14 @@ import { Link, useLocation } from "react-router-dom";
 import { PropTypes } from "prop-types";
 
 import { chatDetailsStyles } from "../assets/jss";
+import { makeMessageSeen, sendMessage } from "../utils/socket.io";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { setUserMessages, setUserOffline, setBlocked } from "../redux/actions/messageActions";
+import {
+  setUserMessages,
+  setUserOffline,
+  setFriends,
+  setBlocked
+} from "../redux/actions/messageActions";
 import { ProfileBadge } from "../components";
 import { SET_USER_MESSAGES_REQUEST } from "../redux/constants/messageActionTypes";
 
@@ -107,7 +113,7 @@ Message.propTypes = {
   isRead: PropTypes.bool
 };
 
-const ChatDetails = ({ userId, socket, isTheme, setTheme }) => {
+const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const [lastRreceived, setLastRreceived] = useState(-1);
@@ -198,11 +204,15 @@ const ChatDetails = ({ userId, socket, isTheme, setTheme }) => {
       const observer = new IntersectionObserver(
         ([entry]) => {
           if (!msgs[lastRreceived].isRead && entry.isIntersecting) {
-            socket.emit("read", {
-              _id,
-              createdAt: msgs[lastRreceived].createdAt,
-              sender: msgs[lastRreceived].sender
-            });
+            makeMessageSeen(
+              socket,
+              {
+                _id,
+                createdAt: msgs[lastRreceived].createdAt,
+                sender: msgs[lastRreceived].sender
+              },
+              eventEmitter
+            );
           }
         },
         {
@@ -235,7 +245,7 @@ const ChatDetails = ({ userId, socket, isTheme, setTheme }) => {
               isRead: false,
               createdAt: new Date()
             };
-            socket.emit("send-message", message);
+            sendMessage(socket, message);
             setMsgs((state) => [...state, message]);
             setText("");
             // scroll down
@@ -492,7 +502,8 @@ ChatDetails.propTypes = {
   isTheme: PropTypes.bool.isRequired,
   setTheme: PropTypes.func.isRequired,
   userId: PropTypes.string,
-  socket: PropTypes.object
+  socket: PropTypes.object,
+  eventEmitter: PropTypes.object
 };
 
 export default connect(mapStateToProps)(ChatDetails);

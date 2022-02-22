@@ -27,6 +27,7 @@ const Navbar = lazy(() => import("./components/Navbar"));
 
 import { checkAuth } from "./redux/actions/userActions";
 import PrivateRoute from "./PrivateRoute";
+const events = require("events");
 
 const ENDPOINT = "http://localhost:4000";
 
@@ -34,9 +35,9 @@ const App = () => {
   const [isTheme, setTheme] = useState(false);
   const [socket, setSocket] = useState(null);
   const dispatch = useDispatch();
-  const userId = localStorage.getItem("userId") || null;
+  const eventEmitter = new events.EventEmitter();
 
-  const { isAuth, authChecking } = useSelector((state) => state.user);
+  const { userId, isAuth, authChecking } = useSelector((state) => state.user);
 
   useEffect(() => {
     console.log(userId);
@@ -65,10 +66,22 @@ const App = () => {
               <Home />
             </Route>
             <PrivateRoute isAuth={isAuth} path="/chat">
-              <Chat userId={userId} socket={socket} isTheme={isTheme} setTheme={setTheme} />
+              <Chat
+                userId={userId}
+                socket={socket}
+                eventEmitter={eventEmitter}
+                isTheme={isTheme}
+                setTheme={setTheme}
+              />
             </PrivateRoute>
             <PrivateRoute isAuth={isAuth} path="/chat-details">
-              <ChatDetails userId={userId} socket={socket} isTheme={isTheme} setTheme={setTheme} />
+              <ChatDetails
+                userId={userId}
+                socket={socket}
+                eventEmitter={eventEmitter}
+                isTheme={isTheme}
+                setTheme={setTheme}
+              />
             </PrivateRoute>
             <PrivateRoute isAuth={isAuth} path="/profile/:id">
               <Profile isTheme={isTheme} userId={userId} setTheme={setTheme} />
@@ -79,11 +92,11 @@ const App = () => {
             <PrivateRoute isAuth={isAuth} path="/edit/personal-data">
               <PersonalData userId={userId} />
             </PrivateRoute>
-            <PrivateRoute isAuth={isAuth} path="/edit/security-data/:id">
-              <SecurityData />
+            <PrivateRoute path="/edit/security-data/:id">
+              <SecurityData isAuth={isAuth} />
             </PrivateRoute>
             <PrivateRoute isAuth={isAuth} path="/find">
-              <FindRandom userId={userId} socket={socket} />
+              <FindRandom userId={userId} socket={socket} eventEmitter={eventEmitter} />
             </PrivateRoute>
             <Route path="/auth" render={() => <Auth isAuth={isAuth} />} />
             <Route path="/auth1" render={() => <Auth1 />} />
