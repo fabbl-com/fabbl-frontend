@@ -36,11 +36,11 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Navbar = ({ socket, userId, isTheme, setTheme }) => {
+const Navbar = ({ socket, userId }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const { isAuth, notifications } = useSelector((state) => state.user);
+  const { notifications } = useSelector((state) => state.user);
 
   const unread = notifications?.filter((el) => el.isRead === false);
 
@@ -63,14 +63,12 @@ const Navbar = ({ socket, userId, isTheme, setTheme }) => {
         </Link>
         <div style={{ flexGrow: 1 }} />
         <div>
-          {isAuth && (
-            <NotificationSection
-              socket={socket}
-              userId={userId}
-              notifications={notifications || []}
-              unread={unread || []}
-            />
-          )}
+          <NotificationSection
+            socket={socket}
+            userId={userId}
+            notifications={notifications || []}
+            unread={unread || []}
+          />
         </div>
       </Toolbar>
     </AppBar>
@@ -78,8 +76,6 @@ const Navbar = ({ socket, userId, isTheme, setTheme }) => {
 };
 
 Navbar.propTypes = {
-  isTheme: PropTypes.bool.isRequired,
-  setTheme: PropTypes.func.isRequired,
   userId: PropTypes.string.isRequired,
   socket: PropTypes.object.isRequired
 };

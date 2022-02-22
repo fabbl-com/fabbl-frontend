@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => randomStyles(theme));
 
 const SIZE = 10;
 
-const FindRandom = ({ userId, socket, eventEmitter }) => {
+const FindRandom = ({ userId, socket }) => {
   const theme = useTheme();
   const history = useHistory();
   const classes = useStyles(theme);
@@ -203,8 +203,7 @@ const FindRandom = ({ userId, socket, eventEmitter }) => {
 
 FindRandom.propTypes = {
   userId: PropTypes.string,
-  socket: PropTypes.object,
-  eventEmitter: PropTypes.object
+  socket: PropTypes.object
 };
 
 export default FindRandom;

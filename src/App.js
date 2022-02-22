@@ -27,7 +27,6 @@ const Navbar = lazy(() => import("./components/Navbar"));
 
 import { checkAuth } from "./redux/actions/userActions";
 import PrivateRoute from "./PrivateRoute";
-const events = require("events");
 
 const ENDPOINT = "http://localhost:4000";
 
@@ -36,8 +35,6 @@ const App = () => {
   const [socket, setSocket] = useState(null);
   const dispatch = useDispatch();
   const userId = localStorage.getItem("userId") || null;
-
-  const eventEmitter = new events.EventEmitter();
 
   const { isAuth, authChecking } = useSelector((state) => state.user);
 
@@ -57,35 +54,21 @@ const App = () => {
 
   const appliedTheme = createTheme(isTheme ? dark : light);
 
-  if (authChecking) return <span>loading...</span>;
-
   return (
     <ThemeProvider theme={appliedTheme}>
       <Router>
-        <Suspense fallback={<span>loading...</span>}>
+        <Suspense fallback={authChecking && <span>loading...</span>}>
           <CssBaseline />
-          <Navbar userId={userId} socket={socket} isTheme={isTheme} setTheme={setTheme} />
+          <Navbar userId={userId} socket={socket} />
           <Switch>
             <Route path="/" exact>
               <Home />
             </Route>
             <PrivateRoute isAuth={isAuth} path="/chat">
-              <Chat
-                userId={userId}
-                socket={socket}
-                eventEmitter={eventEmitter}
-                isTheme={isTheme}
-                setTheme={setTheme}
-              />
+              <Chat userId={userId} socket={socket} isTheme={isTheme} setTheme={setTheme} />
             </PrivateRoute>
             <PrivateRoute isAuth={isAuth} path="/chat-details">
-              <ChatDetails
-                userId={userId}
-                socket={socket}
-                eventEmitter={eventEmitter}
-                isTheme={isTheme}
-                setTheme={setTheme}
-              />
+              <ChatDetails userId={userId} socket={socket} isTheme={isTheme} setTheme={setTheme} />
             </PrivateRoute>
             <PrivateRoute isAuth={isAuth} path="/profile/:id">
               <Profile isTheme={isTheme} userId={userId} setTheme={setTheme} />
@@ -100,7 +83,7 @@ const App = () => {
               <SecurityData />
             </PrivateRoute>
             <PrivateRoute isAuth={isAuth} path="/find">
-              <FindRandom userId={userId} socket={socket} eventEmitter={eventEmitter} />
+              <FindRandom userId={userId} socket={socket} />
             </PrivateRoute>
             <Route path="/auth" render={() => <Auth isAuth={isAuth} />} />
             <Route path="/auth1" render={() => <Auth1 />} />

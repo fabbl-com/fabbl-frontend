@@ -34,14 +34,8 @@ import { Link, useLocation } from "react-router-dom";
 import { PropTypes } from "prop-types";
 
 import { chatDetailsStyles } from "../assets/jss";
-import { makeMessageSeen, sendMessage } from "../utils/socket.io";
 import { connect, useDispatch, useSelector } from "react-redux";
-import {
-  setUserMessages,
-  setUserOffline,
-  setFriends,
-  setBlocked
-} from "../redux/actions/messageActions";
+import { setUserMessages, setUserOffline, setBlocked } from "../redux/actions/messageActions";
 import { ProfileBadge } from "../components";
 import { SET_USER_MESSAGES_REQUEST } from "../redux/constants/messageActionTypes";
 
@@ -113,7 +107,7 @@ Message.propTypes = {
   isRead: PropTypes.bool
 };
 
-const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
+const ChatDetails = ({ userId, socket, isTheme, setTheme }) => {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const [lastRreceived, setLastRreceived] = useState(-1);
@@ -204,7 +198,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
       const observer = new IntersectionObserver(
         ([entry]) => {
           if (!msgs[lastRreceived].isRead && entry.isIntersecting) {
-            makeMessageSeen(socket, {
+            socket.emit("read", {
               _id,
               createdAt: msgs[lastRreceived].createdAt,
               sender: msgs[lastRreceived].sender
@@ -241,7 +235,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
               isRead: false,
               createdAt: new Date()
             };
-            sendMessage(socket, message);
+            socket.emit("send-message", message);
             setMsgs((state) => [...state, message]);
             setText("");
             // scroll down
@@ -498,8 +492,7 @@ ChatDetails.propTypes = {
   isTheme: PropTypes.bool.isRequired,
   setTheme: PropTypes.func.isRequired,
   userId: PropTypes.string,
-  socket: PropTypes.object,
-  eventEmitter: PropTypes.object
+  socket: PropTypes.object
 };
 
 export default connect(mapStateToProps)(ChatDetails);
