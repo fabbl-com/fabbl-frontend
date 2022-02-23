@@ -31,7 +31,8 @@ import {
   SEND_RESET_PASSWORD_SUCCESS,
   UPDATE_PROFILE_REQUEST,
   UPDATE_PROFILE_SUCCESS,
-  UPDATE_PROFILE_FAIL
+  UPDATE_PROFILE_FAIL,
+  RESET_PASSWORD_REQUEST
 } from "../constants/userActionTypes";
 
 export const register = (userId) => async (dispatch) => {
@@ -110,28 +111,6 @@ export const setLikes = (data) => async (dispatch) => {
     dispatch({ type: SET_LIKES_FAIL, payload: error.message });
   }
 };
-
-export const resetPassword =
-  ({ userId, password }) =>
-  async (dispatch) => {
-    dispatch({ type: UPDATE_PROFILE_REQUEST });
-    try {
-      const { data } = await Axios.post(`/user/update-password/${userId}`, {
-        newPassword: password
-      });
-      dispatch({ type: RESET_PASSWORD_SUCCESS, payload: data });
-    } catch (error) {
-      console.log(error);
-      dispatch({
-        type: UPDATE_PROFILE_FAIL,
-        payload: {
-          code: error.response.status,
-          message:
-            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
-        }
-      });
-    }
-  };
 
 export const uploadAvatar =
   ({ userId, data }) =>
@@ -311,7 +290,31 @@ export const sendResetPasswordEmail =
       await Axios.post(`/user/send-reset-password-email`, {
         email: email
       });
+      console.log(email);
       dispatch({ type: SEND_RESET_PASSWORD_SUCCESS });
+    } catch (error) {
+      console.log(error);
+      dispatch({
+        type: RESET_PASSWORD_FAIL,
+        payload: {
+          code: error.response.status,
+          message:
+            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+        }
+      });
+    }
+  };
+
+export const resetPassword =
+  ({ token, password }) =>
+  async (dispatch) => {
+    dispatch({ type: RESET_PASSWORD_REQUEST });
+    try {
+      const { data } = await Axios.post(`/user/change-password`, {
+        newPassword: password,
+        token
+      });
+      dispatch({ type: RESET_PASSWORD_SUCCESS, payload: data });
     } catch (error) {
       console.log(error);
       dispatch({
