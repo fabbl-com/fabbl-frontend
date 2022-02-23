@@ -33,7 +33,10 @@ import {
   SEND_RESET_PASSWORD_SUCCESS,
   UPDATE_PROFILE_REQUEST,
   UPDATE_PROFILE_SUCCESS,
-  UPDATE_PROFILE_FAIL
+  UPDATE_PROFILE_FAIL,
+  LOGOUT_REQUEST,
+  LOGOUT_SUCCESS,
+  LOGOUT_FAIL
 } from "../constants/userActionTypes";
 
 const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -64,7 +67,6 @@ export default (state = initialState, action) => {
     case UPDATE_PROFILE_REQUEST:
       return { ...state, loading: true };
     case USER_REGISTER_SUCCESS:
-    case USER_SIGNIN_SUCCESS:
       localStorage.setItem("userId", action.payload.userId);
       return {
         ...state,
@@ -106,6 +108,7 @@ export default (state = initialState, action) => {
         ...action.payload
       };
     case CHECK_AUTH_SUCCESS:
+    case USER_SIGNIN_SUCCESS:
       localStorage.setItem("userId", action.payload?.profile?._id);
       localStorage.setItem(
         "userInfo",
@@ -146,6 +149,7 @@ export default (state = initialState, action) => {
     case GET_ALL_USERS_FAIL:
     case SET_LIKES_FAIL:
     case USER_UPLOAD_AVATAR_FAIL:
+    case LOGOUT_FAIL:
       return {
         ...state,
         loading: false,
@@ -203,6 +207,20 @@ export default (state = initialState, action) => {
       return {
         ...state,
         notifications: notif
+      };
+    case LOGOUT_SUCCESS:
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("notifications");
+      localStorage.removeItem("userId");
+      return {
+        ...state,
+        isAuth: false,
+        loading: false,
+        profile: {},
+        notifications: [],
+        isEmailVerified: false,
+        userId: "",
+        ...action.payload
       };
     default:
       return state;

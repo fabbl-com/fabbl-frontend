@@ -20,7 +20,6 @@ import {
 import { useParams } from "react-router-dom";
 import { profileStyles } from "../assets/jss";
 import { useSelector } from "react-redux";
-// import { getUserProfile } from "../redux/actions/userActions";
 const useStyles = makeStyles((theme) => profileStyles(theme));
 const tagsColor = [
   "#000000",
@@ -35,14 +34,8 @@ const tagsColor = [
 
 const Profile = ({ userId }) => {
   const classes = useStyles();
-  const { profile, loading, isFriends } = useSelector((state) => state.user);
+  const { profile, loading } = useSelector((state) => state.user);
   const { id } = useParams();
-  console.log(id);
-  console.log({ userId });
-
-  // useEffect(() => {
-  //   dispatch(getUserProfile(id));
-  // }, []);
 
   if (loading) return <div>loading</div>;
   return (
@@ -54,7 +47,7 @@ const Profile = ({ userId }) => {
         <Typography component="h6" variant="h6">
           {profile.displayName.value} `s profile
         </Typography>
-        <IconButton className={classes.report}>{id != userId && <Report />}</IconButton>
+        <IconButton className={classes.report}>{id !== userId && <Report />}</IconButton>
       </div>
       <div className={classes.profileBody}>
         <Avatar src={profile.avatar.value} className={classes.avatar} variant="rounded" />

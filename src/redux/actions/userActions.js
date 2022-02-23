@@ -32,7 +32,13 @@ import {
   UPDATE_PROFILE_REQUEST,
   UPDATE_PROFILE_SUCCESS,
   UPDATE_PROFILE_FAIL,
+
   RESET_PASSWORD_REQUEST
+
+  LOGOUT_REQUEST,
+  LOGOUT_SUCCESS,
+  LOGOUT_FAIL
+
 } from "../constants/userActionTypes";
 
 export const register = (userId) => async (dispatch) => {
@@ -168,7 +174,14 @@ export const checkAuth = () => async (dispatch) => {
     dispatch({ type: CHECK_AUTH_SUCCESS, payload: data });
   } catch (error) {
     console.log(error.response);
-    dispatch({ type: CHECK_AUTH_FAIL });
+    dispatch({
+      type: CHECK_AUTH_FAIL,
+      payload: {
+        code: error.response?.status,
+        message:
+          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+      }
+    });
   }
 };
 
@@ -287,10 +300,10 @@ export const sendResetPasswordEmail =
   ({ email }) =>
   async (dispatch) => {
     try {
-      await Axios.post(`/user/send-reset-password-email`, {
-        email: email
-      });
-      console.log(email);
+
+
+      await Axios.post(`/user/send-reset-password-email`, { email });
+
       dispatch({ type: SEND_RESET_PASSWORD_SUCCESS });
     } catch (error) {
       console.log(error);
@@ -304,6 +317,7 @@ export const sendResetPasswordEmail =
       });
     }
   };
+
 
 export const resetPassword =
   ({ token, password }) =>
@@ -327,3 +341,23 @@ export const resetPassword =
       });
     }
   };
+
+export const logout = () => async (dispatch) => {
+  // dispatch({ type: LOGOUT_REQUEST });
+  try {
+    const { data } = await Axios.post("/auth/logout");
+    console.log(data);
+    dispatch({ type: LOGOUT_SUCCESS, payload: data });
+  } catch (error) {
+    console.log(error);
+    dispatch({
+      type: LOGOUT_FAIL,
+      payload: {
+        code: error.response.status,
+        message:
+          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+      }
+    });
+  }
+};
+

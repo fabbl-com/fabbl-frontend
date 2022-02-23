@@ -193,7 +193,6 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
       }
       if (index !== -1 && temp && temp.length > 0) {
         setMsgs(temp);
-        console.log(msgs);
       }
     });
   }, [socket, msgs]);
@@ -278,7 +277,6 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
     if (customProps.friendStatus === "received")
       alert("Congratulations you have already received a friend request click OK to confirm it");
     handleMenuClose();
-    console.log("click ");
     if (userId && selectedUserId)
       socket.emit("add-friends", { sender: userId, receiver: selectedUserId });
   };
@@ -286,7 +284,6 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const handleBlock = (e) => {
     e.preventDefault();
     handleMenuClose();
-    console.log("click ");
     if (userId && selectedUserId) {
       if (!customProps.isBlocked)
         socket.emit("block", { sender: userId, receiver: selectedUserId });

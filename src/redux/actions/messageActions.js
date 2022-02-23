@@ -71,11 +71,10 @@ export const getChatListUsers = (data) => async (dispatch) => {
 
 export const setRandomUsers = (data) => async (dispatch) => {
   console.log(data);
-  dispatch({ type: SET_RANDOM_USERS_REQUEST });
   try {
     dispatch({ type: SET_RANDOM_USERS_SUCCESS, payload: data });
   } catch (error) {
-    dispatch({ type: SET_RANDOM_USERS_FAIL, payload: error.message });
+    dispatch({ type: SET_RANDOM_USERS_FAIL, payload: error });
   }
 };
 

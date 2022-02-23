@@ -27,7 +27,7 @@ function PrivateRoute({ children, isAuth, ...props }) {
 
 PrivateRoute.propTypes = {
   children: PropTypes.any.isRequired,
-  isAuth: PropTypes.bool.isRequired
+  isAuth: PropTypes.bool
 };
 
 export default PrivateRoute;

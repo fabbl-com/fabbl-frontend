@@ -1,10 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { AppBar, Toolbar, Typography, makeStyles } from "@material-ui/core";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import NotificationSection from "./Notifications";
 import { useDispatch, useSelector } from "react-redux";
 import { removeNotifications, setNotifications } from "../redux/actions/userActions";
+import ProfileSection from "./ProfileSection";
+import { Alert } from "@material-ui/lab";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -39,8 +41,9 @@ const useStyles = makeStyles((theme) => ({
 const Navbar = ({ socket, userId }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const [isLoggedOut, setLoggedOut] = useState(false);
 
-  const { notifications } = useSelector((state) => state.user);
+  const { notifications, isAuth } = useSelector((state) => state.user);
 
   const unread = notifications?.filter((el) => el.isRead === false);
 
@@ -53,22 +56,30 @@ const Navbar = ({ socket, userId }) => {
     return () => socket && socket.off();
   }, [socket]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      if (isLoggedOut && !isAuth) setLoggedOut(false);
+    }, [1000]);
+  }, [isAuth]);
+
   return (
     <AppBar className={classes.appBar} position="fixed" elevation={0}>
       <Toolbar variant="dense">
+        {isLoggedOut && <Alert severity="success">Logged out successfully</Alert>}
         <Link to="/">
           <Typography variant="h3" component="h1">
             Fabbl
           </Typography>
         </Link>
         <div style={{ flexGrow: 1 }} />
-        <div>
+        <div style={{ display: "flex", alignItems: "center" }}>
           <NotificationSection
             socket={socket}
             userId={userId}
             notifications={notifications || []}
             unread={unread || []}
           />
+          <ProfileSection userId={userId} />
         </div>
       </Toolbar>
     </AppBar>
