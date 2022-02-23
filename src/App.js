@@ -92,8 +92,8 @@ const App = () => {
             <PrivateRoute isAuth={isAuth} path="/edit/personal-data">
               <PersonalData userId={userId} />
             </PrivateRoute>
-            <PrivateRoute path="/edit/security-data/:id">
-              <SecurityData isAuth={isAuth} />
+            <PrivateRoute isAuth={isAuth} path="/edit/security-data">
+              <SecurityData userId={userId} />
             </PrivateRoute>
             <PrivateRoute isAuth={isAuth} path="/find">
               <FindRandom userId={userId} socket={socket} eventEmitter={eventEmitter} />

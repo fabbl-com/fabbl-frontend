@@ -80,6 +80,22 @@ const useStyles = makeStyles((theme) => ({
     "& .MuiListItem-root": {
       padding: 0
     }
+  },
+  list: {
+    width: "100%",
+    maxWidth: 330,
+    minWidth: 300,
+    padding: 0,
+    [theme.breakpoints.down("md")]: {
+      maxWidth: 300
+    },
+    "& .MuiListItemSecondaryActionRoot": {
+      top: "22px"
+    },
+    "& .MuiDividerRoot": {
+      marginTop: 0,
+      marginBottom: 0
+    }
   }
 }));
 
@@ -282,7 +298,7 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
               aria-controls={open ? "menu-list-grow" : undefined}
               aria-haspopup="true"
               onClick={handleToggle}>
-              <NotificationsNone stroke={1.5} fontSize="small" />
+              <NotificationsNone fontSize="small" />
             </Avatar>
           </ButtonBase>
         </Badge>
@@ -382,23 +398,7 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
                             <Divider light />
                           </Grid>
                         </Grid>
-                        <List
-                          style={{
-                            width: "100%",
-                            maxWidth: 330,
-                            minWidth: 300,
-                            padding: 0,
-                            [theme.breakpoints.down("md")]: {
-                              maxWidth: 300
-                            },
-                            "& .MuiListItemSecondaryActionRoot": {
-                              top: "22px"
-                            },
-                            "& .MuiDividerRoot": {
-                              marginTop: 0,
-                              marginBottom: 0
-                            }
-                          }}>
+                        <List className={classes.list}>
                           {notifications && notifications.length > 0 ? (
                             notifications
                               .sort((b, a) => new Date(a.createdAt) - new Date(b.createdAt))

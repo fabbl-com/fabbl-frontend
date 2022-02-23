@@ -37,7 +37,7 @@ const tagsColor = [
 const Profile = ({ userId }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { userInfo, loading, isFriends } = useSelector((state) => state.user);
+  const { profile, loading, isFriends } = useSelector((state) => state.user);
   const { id } = useParams();
   console.log(id);
   console.log({ userId });
@@ -54,40 +54,40 @@ const Profile = ({ userId }) => {
           <KeyboardBackspace />
         </IconButton>
         <Typography component="h6" variant="h6">
-          {userInfo.displayName.value} `s profile
+          {profile.displayName.value} `s profile
         </Typography>
         <IconButton className={classes.report}>{id != userId && <Report />}</IconButton>
       </div>
       <Paper className={classes.profileBody}>
-        <Avatar src={userInfo.avatar.value} className={classes.avatar} variant="rounded" />
+        <Avatar src={profile.avatar.value} className={classes.avatar} variant="rounded" />
         <div className={classes.verify}>
           <Typography component="h6" variant="h6">
-            {userInfo.gender.value === 0 ? "Male" : "Female"}
+            {profile.gender.value === 0 ? "Male" : "Female"}
           </Typography>
           &nbsp;
-          {userInfo.isProfileVerified && <CheckCircleOutlined fontSize="small" />}
+          {profile.isProfileVerified && <CheckCircleOutlined fontSize="small" />}
         </div>
         <Typography component="h3" variant="h3">
-          {userInfo.displayName.value}
+          {profile.displayName.value}
         </Typography>
 
         <div className={classes.location}>
           <LocationOn fontSize="small" />
           {"  "}
           <Typography component="h6" variant="h6">
-            {userInfo.location.value}
+            {profile.location.value}
           </Typography>
         </div>
         <div className={classes.dob}>
           <Cake />
           &nbsp;&nbsp;&nbsp;
           <Typography align="center" component="h3" variant="body1">
-            {Math.floor(new Date(userInfo.dob.value) / (365 * 24 * 60 * 60 * 1000))} Years Old
+            {Math.floor(new Date(profile.dob.value) / (365 * 24 * 60 * 60 * 1000))} Years Old
           </Typography>
         </div>
         <div>
           <Typography className={classes.bio} align="center" variant="h5">
-            {userInfo.headline.value}
+            {profile.headline.value}
           </Typography>
         </div>
         <Divider width="100%" className={classes.divider} />
@@ -95,7 +95,7 @@ const Profile = ({ userId }) => {
           <Typography align="center" component="h3" variant="h4">
             Hobbies & Interest
           </Typography>
-          {userInfo.hobby.value.map((tag, i) => (
+          {profile.hobby.value.map((tag, i) => (
             <Button
               disableRipple
               style={{ backgroundColor: tagsColor[i % tagsColor.length], color: "#eee" }}

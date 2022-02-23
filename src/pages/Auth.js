@@ -83,7 +83,9 @@ const Auth = ({ isAuth }) => {
       }}>
       {error &&
         (error.code === 401 ? (
-          <Alert severity="error">Oops! Invalid credential. Please Try again</Alert>
+          <Alert style={{ top: 0, position: "absolute", zIndex: 1200 }} severity="error">
+            Oops! Invalid credential. Please Try again
+          </Alert>
         ) : (
           <Alert severity="error">Something went wrong. Please try agin</Alert>
         ))}

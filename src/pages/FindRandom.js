@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import { Container, Avatar, Typography, IconButton, Button } from "@material-ui/core";
 import { randomStyles } from "../assets/jss/index";
@@ -22,6 +22,7 @@ const SIZE = 10;
 const FindRandom = ({ userId, socket }) => {
   const theme = useTheme();
   const history = useHistory();
+  const location = useLocation();
   const classes = useStyles(theme);
   const dispatch = useDispatch();
   const container1 = useRef(null);
@@ -32,7 +33,11 @@ const FindRandom = ({ userId, socket }) => {
 
   // console.log(history);
 
-  const { loading, error, randomUsers } = useSelector((state) => state.messages);
+  const { error, randomUsers } = useSelector((state) => state.messages);
+  const { loading, profile } = useSelector((state) => state.user);
+
+  if (!loading && !profile?.isProfileCompleted)
+    history.push({ pathname: "/edit/personal-data", state: { from: location } });
 
   useEffect(() => {
     const anim1 = lottie.loadAnimation({
