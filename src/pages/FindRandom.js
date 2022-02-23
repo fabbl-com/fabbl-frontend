@@ -14,10 +14,11 @@ import { ProfileCard } from "../components";
 import TinderCard from "react-tinder-card";
 import { Replay, ArrowBack, Close, Favorite } from "@material-ui/icons";
 import classNames from "classnames";
+import { SET_RANDOM_USERS_REQUEST } from "../redux/constants/messageActionTypes";
 
 const useStyles = makeStyles((theme) => randomStyles(theme));
 
-const SIZE = 10;
+const SIZE = 5;
 
 const FindRandom = ({ userId, socket }) => {
   const theme = useTheme();
@@ -28,47 +29,52 @@ const FindRandom = ({ userId, socket }) => {
   const container1 = useRef(null);
   const container2 = useRef(null);
   const [page, setPage] = useState(1);
+  const [currentIndex, setCurrentIndex] = useState(SIZE - 1);
+  const currentIndexRef = useRef(currentIndex);
 
   if (!socket) return <div style={{ marginTop: "3rem" }}>Loading...</div>;
 
-  // console.log(history);
+  console.log(currentIndex);
 
   const { error, randomUsers } = useSelector((state) => state.messages);
+  const isFinding = useSelector((state) => state.messages?.loading);
   const { loading, profile } = useSelector((state) => state.user);
 
   if (!loading && !profile?.isProfileCompleted)
     history.push({ pathname: "/edit/personal-data", state: { from: location } });
 
   useEffect(() => {
-    const anim1 = lottie.loadAnimation({
-      container: container1.current,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-      animationData: matching
-    });
-    const anim2 = lottie.loadAnimation({
-      container: container2.current,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-      animationData: profileSearching
-    });
-
-    return () => {
-      anim1.destroy();
-      anim2.destroy();
-    };
-  }, [profileSearching, matching]);
+    if (isFinding) {
+      const anim1 = lottie.loadAnimation({
+        container: container1.current,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+        animationData: matching
+      });
+      const anim2 = lottie.loadAnimation({
+        container: container2.current,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+        animationData: profileSearching
+      });
+      return () => {
+        anim1.destroy();
+        anim2.destroy();
+      };
+    }
+  }, [profileSearching, matching, isFinding]);
 
   useEffect(() => {
     const data = {
       userId,
       page,
-      limit: 10,
+      limit: SIZE,
       choices: { day: 1 }
     };
     socket.emit("get-random-users", data);
+    dispatch({ type: SET_RANDOM_USERS_REQUEST });
     socket.on("get-random-users-response", (data) => dispatch(setRandomUsers(data.users)));
 
     return () => socket.off();
@@ -83,8 +89,12 @@ const FindRandom = ({ userId, socket }) => {
     };
   }, [socket]);
 
-  const [currentIndex, setCurrentIndex] = useState(SIZE - 1);
-  const currentIndexRef = useRef(currentIndex);
+  useEffect(() => {
+    if (currentIndex === -1) {
+      setPage((state) => state + 1);
+      setCurrentIndex(SIZE - 1);
+    }
+  }, [currentIndex]);
 
   const childRefs = useMemo(
     () =>
@@ -118,6 +128,7 @@ const FindRandom = ({ userId, socket }) => {
 
   const swipe = (dir) => {
     if (canSwipe && currentIndex < SIZE) {
+      console.log(childRefs[currentIndex], childRefs);
       childRefs[currentIndex].current.swipe(dir);
     }
   };

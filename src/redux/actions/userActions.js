@@ -195,7 +195,7 @@ export const checkAuth = () => async (dispatch) => {
     dispatch({
       type: CHECK_AUTH_FAIL,
       payload: {
-        code: error.response.status,
+        code: error.response?.status,
         message:
           error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
       }
