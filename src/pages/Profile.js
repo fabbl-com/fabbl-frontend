@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import {
   makeStyles,
@@ -7,8 +7,7 @@ import {
   IconButton,
   Button,
   Divider,
-  Container,
-  Paper
+  Container
 } from "@material-ui/core";
 import {
   KeyboardBackspace,
@@ -20,8 +19,7 @@ import {
 } from "@material-ui/icons";
 import { useParams } from "react-router-dom";
 import { profileStyles } from "../assets/jss";
-import { useDispatch, useSelector } from "react-redux";
-import { getUserProfile } from "../redux/actions/userActions";
+import { useSelector } from "react-redux";
 const useStyles = makeStyles((theme) => profileStyles(theme));
 const tagsColor = [
   "#000000",
@@ -36,15 +34,8 @@ const tagsColor = [
 
 const Profile = ({ userId }) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const { profile, loading, isFriends } = useSelector((state) => state.user);
+  const { profile, loading } = useSelector((state) => state.user);
   const { id } = useParams();
-  console.log(id);
-  console.log({ userId });
-
-  useEffect(() => {
-    dispatch(getUserProfile(id));
-  }, []);
 
   if (loading) return <div>loading</div>;
   return (
@@ -56,9 +47,9 @@ const Profile = ({ userId }) => {
         <Typography component="h6" variant="h6">
           {profile.displayName.value} `s profile
         </Typography>
-        <IconButton className={classes.report}>{id != userId && <Report />}</IconButton>
+        <IconButton className={classes.report}>{id !== userId && <Report />}</IconButton>
       </div>
-      <Paper className={classes.profileBody}>
+      <div className={classes.profileBody}>
         <Avatar src={profile.avatar.value} className={classes.avatar} variant="rounded" />
         <div className={classes.verify}>
           <Typography component="h6" variant="h6">
@@ -112,7 +103,7 @@ const Profile = ({ userId }) => {
             <FavoriteBorder />
           </Button>
         )}
-      </Paper>
+      </div>
     </Container>
   );
 };

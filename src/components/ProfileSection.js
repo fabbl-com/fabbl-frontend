@@ -294,7 +294,7 @@ const ProfileSection = ({ userId }) => {
                       <ListItem
                         component={Button}
                         className={classes.listItem}
-                        onClick={(event) => handleListItemClick(event, "/edit/security-data")}>
+                        onClick={(event) => handleListItemClick(event, `/edit/security-data`)}>
                         <ListItemIcon>
                           <Lock fontSize="small" />
                         </ListItemIcon>
