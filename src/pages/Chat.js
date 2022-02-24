@@ -32,6 +32,7 @@ import { PropTypes } from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
 import { getChatListUsers, setChatListUserOffline } from "../redux/actions/messageActions";
 import { Skeleton } from "@material-ui/lab";
+import { decode, genDerivedKey } from "../lib/hashAlgorithm";
 
 import { chatStyles } from "../assets/jss";
 import { getChatList } from "../utils/socket.io";
@@ -72,6 +73,86 @@ ScrollTop.propTypes = {
   window: PropTypes.func
 };
 
+const UserCard = ({ online, displayName, url, time, message, unread, privateKey, publicKey }) => {
+  const classes = useStyles();
+  const [derivedKey, setDerivedKey] = useState(null);
+  const [msg, setMsg] = useState("You have a new match. Go and chat...");
+
+  useEffect(async () => {
+    if (privateKey && publicKey) {
+      const pKey = JSON.parse(publicKey);
+      const key = await genDerivedKey(pKey, privateKey);
+      setDerivedKey(key);
+    }
+  }, [publicKey, privateKey]);
+
+  useEffect(() => {
+    console.log(message);
+    const work = async () => {
+      const msg = await decode(message, derivedKey);
+      console.log(msg);
+      setMsg(msg);
+    };
+    if (message && derivedKey) work();
+  }, [message, derivedKey]);
+
+  return (
+    <Card className={classes.msgCard}>
+      <CardHeader
+        classes={{
+          root: classes.cardHeaderRoot,
+          content: classes.cardHeaderContent,
+          subheader: classes.cardHeaderSubheader
+        }}
+        avatar={
+          <ProfileBadge
+            color="primary"
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "right"
+            }}
+            overlap="circular"
+            variant="dot"
+            invisible={!online}>
+            <Avatar aria-label="user" src={url} className={classes.avatar}>
+              {displayName}
+            </Avatar>
+          </ProfileBadge>
+        }
+        title={
+          <div className={classes.userTitle}>
+            <Typography component="h1" variant="h6">
+              {displayName}
+            </Typography>
+            <Typography component="p" variant="caption">
+              {moment(time).fromNow()}
+            </Typography>
+          </div>
+        }
+        subheader={
+          <div>
+            <Typography component="p" variant="body2" className={classes.msg}>
+              {msg}
+            </Typography>
+            <Badge className={classes.msgCount} color="primary" badgeContent={unread} />
+          </div>
+        }
+      />
+    </Card>
+  );
+};
+
+UserCard.propTypes = {
+  online: PropTypes.bool.isRequired,
+  displayName: PropTypes.string.isRequired,
+  url: PropTypes.string.isRequired,
+  time: PropTypes.string.isRequired,
+  message: PropTypes.string,
+  unread: PropTypes.number.isRequired,
+  privateKey: PropTypes.object.isRequired,
+  publicKey: PropTypes.object.isRequired
+};
+
 const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const classes = useStyles();
   const theme = useTheme();
@@ -85,6 +166,7 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   if (!socket) return <div>Loading...</div>;
 
   const { chatListUsers, loading } = useSelector((state) => state.messages);
+  const { privateKey } = useSelector((state) => state.user);
   const friends = chatListUsers.filter((user) => user.friendStatus === "friends");
 
   useEffect(() => {
@@ -192,7 +274,6 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
               <Search />
             </IconButton>
           )}
-
           <IconButton
             aria-controls="actions-menu"
             onClick={(e) => setAnchorEl(e.currentTarget)}
@@ -219,55 +300,16 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                     }
                   }}
                   key={i}>
-                  <Card className={classes.msgCard}>
-                    <CardHeader
-                      classes={{
-                        root: classes.cardHeaderRoot,
-                        content: classes.cardHeaderContent,
-                        subheader: classes.cardHeaderSubheader
-                      }}
-                      avatar={
-                        <ProfileBadge
-                          color="primary"
-                          anchorOrigin={{
-                            vertical: "bottom",
-                            horizontal: "right"
-                          }}
-                          overlap="circular"
-                          variant="dot"
-                          invisible={!user.online}>
-                          <Avatar
-                            aria-label="user"
-                            src={user.avatar.value}
-                            className={classes.avatar}>
-                            {user.displayName.value}
-                          </Avatar>
-                        </ProfileBadge>
-                      }
-                      title={
-                        <div className={classes.userTitle}>
-                          <Typography component="h1" variant="h6">
-                            {user.displayName.value}
-                          </Typography>
-                          <Typography component="p" variant="caption">
-                            {moment(user.createdAt).fromNow()}
-                          </Typography>
-                        </div>
-                      }
-                      subheader={
-                        <div>
-                          <Typography component="p" variant="body2" className={classes.msg}>
-                            {user.message || "You have a new match. Go and chat..."}
-                          </Typography>
-                          <Badge
-                            className={classes.msgCount}
-                            color="primary"
-                            badgeContent={user.unread}
-                          />
-                        </div>
-                      }
-                    />
-                  </Card>
+                  <UserCard
+                    online={user?.online}
+                    displayName={user?.displayName?.value}
+                    url={user?.avatar?.value}
+                    message={user?.message || ""}
+                    time={user?.createdAt}
+                    unread={user?.unread}
+                    privateKey={privateKey}
+                    publicKey={user?.publicKey}
+                  />
                 </Link>
               ))
           ) : (

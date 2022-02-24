@@ -44,6 +44,7 @@ import {
 } from "../redux/actions/messageActions";
 import { ProfileBadge } from "../components";
 import { SET_USER_MESSAGES_REQUEST } from "../redux/constants/messageActionTypes";
+import { decode, encode, genDerivedKey } from "../lib/hashAlgorithm";
 
 const useStyles = makeStyles((theme) => chatDetailsStyles(theme));
 
@@ -74,18 +75,27 @@ ScrollDown.propTypes = {
   children: PropTypes.element.isRequired
 };
 
-const Message = ({ time, isRead, children, ...props }) => {
+const Message = ({ derivedKey, time, isRead, children, ...props }) => {
   const classes = useStyles(props);
   const theme = useTheme();
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const work = async () => {
+      const msg = await decode(children, derivedKey);
+      setMessage(msg);
+    };
+    work();
+  }, [props]);
 
   return (
     <>
       <div>
         <div {...props}>
           <div
-            style={{ width: `${children && children.length <= 10 && "100px"}` }}
+            style={{ width: `${message && message.length <= 10 && "100px"}` }}
             className={classes.msgBubble}>
-            <div>{children}</div>
+            <div>{message}</div>
             <Typography variant="caption" className={classes.timestamp}>
               {new Date(time).toLocaleString("en-US", {
                 hour: "numeric",
@@ -108,6 +118,7 @@ const Message = ({ time, isRead, children, ...props }) => {
 
 Message.propTypes = {
   children: PropTypes.string.isRequired,
+  derivedKey: PropTypes.object.isRequired,
   align: PropTypes.string,
   time: PropTypes.string,
   isRead: PropTypes.bool
@@ -124,13 +135,22 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const dispatch = useDispatch();
   const location = useLocation();
   const messagesEndRef = useRef();
+  const [derivedKey, setDerivedKey] = useState(null);
+  const [publicKey, setPublicKey] = useState(null);
   const [elems, setElems] = useState([]);
   const [customProps, setCustomProps] = useState({ isBlocked: false, friendStatus: "" });
 
   if (!socket) return <div>Loading...</div>;
 
-  const { loading, receiver } = useSelector((state) => state.messages);
-  const { messages, _id } = useSelector((state) => state.messages.messages);
+  const { loading, receiver, messages, messageId } = useSelector((state) => state.messages);
+  const { privateKey } = useSelector((state) => state.user);
+
+  useEffect(async () => {
+    if (privateKey && publicKey) {
+      const key = await genDerivedKey(publicKey, privateKey);
+      setDerivedKey(key);
+    }
+  }, [publicKey, privateKey]);
 
   useEffect(() => {
     const query = location?.state;
@@ -143,7 +163,12 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
     socket.emit("get-user-messages", { sender: userId, receiver: query.userId });
     dispatch({ type: SET_USER_MESSAGES_REQUEST });
     socket.on("get-user-messages-response", (data) => {
-      dispatch(setUserMessages(data));
+      console.log(data);
+      const key = data?.receiver?.publicKey;
+      if (key) setPublicKey(JSON.parse(key));
+      const msgs = data?.messages?.messages;
+      const _id = data?.messages?._id;
+      dispatch(setUserMessages({ messageId: _id, messages: msgs, receiver: data?.receiver }));
     });
 
     socket.on("send-message-response", (message) => setMsgs((state) => [...state, message]));
@@ -206,7 +231,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
             makeMessageSeen(
               socket,
               {
-                _id,
+                _id: messageId,
                 createdAt: msgs[lastRreceived].createdAt,
                 sender: msgs[lastRreceived].sender
               },
@@ -225,8 +250,9 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
     }
   }, [msgs, lastRreceived]);
 
-  const sendMessageAndUpdate = (e) => {
+  const sendMessageAndUpdate = async (e) => {
     const keyCode = e.which || e.keyCode;
+    if (!derivedKey) return;
     if (e.type === "submit" || (e.type === "keypress" && keyCode === 13 && !e.shiftKey)) {
       e.preventDefault();
       if (customProps.isBlocked)
@@ -237,10 +263,12 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
         else if (!selectedUserId) alert("select a user");
         else {
           try {
+            const hash = await encode(text.trim(), derivedKey);
+            console.log(derivedKey, hash, msgs);
             const message = {
               sender: userId,
               receiver: selectedUserId,
-              text: text.trim(),
+              text: hash,
               isRead: false,
               createdAt: new Date()
             };
@@ -425,6 +453,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                         <Message
                           align={msg.sender === userId ? "left" : "right"}
                           time={msg.createdAt}
+                          derivedKey={derivedKey}
                           isRead={msg.isRead}>
                           {msg.text}
                         </Message>

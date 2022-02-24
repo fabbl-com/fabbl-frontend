@@ -36,7 +36,8 @@ import {
   UPDATE_PROFILE_FAIL,
   LOGOUT_REQUEST,
   LOGOUT_SUCCESS,
-  LOGOUT_FAIL
+  LOGOUT_FAIL,
+  SET_KEYS
 } from "../constants/userActionTypes";
 
 const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -52,7 +53,13 @@ const initialState = {
   notifications: notifications?.notifications || [],
   isEmailVerified: userInfo?.profile?.isEmailVerified || false,
   userId: localStorage.getItem("userId") || "",
-  isFriends: false
+  isFriends: false,
+  privateKey: localStorage.getItem("privateKey")
+    ? JSON.parse(localStorage.getItem("privateKey"))
+    : null,
+  publicKey: localStorage.getItem("publicKey")
+    ? JSON.parse(localStorage.getItem("publicKey"))
+    : null
 };
 
 export default (state = initialState, action) => {
@@ -220,6 +227,13 @@ export default (state = initialState, action) => {
         notifications: [],
         isEmailVerified: false,
         userId: "",
+        ...action.payload
+      };
+    case SET_KEYS:
+      localStorage.setItem("privateKey", JSON.stringify(action.payload.privateKey));
+      localStorage.setItem("publicKey", JSON.stringify(action.payload.publicKey));
+      return {
+        ...state,
         ...action.payload
       };
     default:
