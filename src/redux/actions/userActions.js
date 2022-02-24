@@ -32,13 +32,10 @@ import {
   UPDATE_PROFILE_REQUEST,
   UPDATE_PROFILE_SUCCESS,
   UPDATE_PROFILE_FAIL,
-
-  RESET_PASSWORD_REQUEST
-
+  RESET_PASSWORD_REQUEST,
   LOGOUT_REQUEST,
   LOGOUT_SUCCESS,
   LOGOUT_FAIL
-
 } from "../constants/userActionTypes";
 
 export const register = (userId) => async (dispatch) => {
@@ -124,13 +121,13 @@ export const uploadAvatar =
     var formData = new FormData();
     formData.append("data", data);
     try {
-      const { data } = await Axios.post(`/user/upload/image/${userId}`, formData, {
+      const res = await Axios.post(`/user/upload/image/${userId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data"
         }
       });
-      console.log(data);
-      dispatch({ type: USER_UPLOAD_AVATAR_SUCCESS, payload: data });
+      console.log({ formData, data });
+      dispatch({ type: USER_UPLOAD_AVATAR_SUCCESS, payload: res.data });
     } catch (error) {
       console.log(error);
       dispatch({
@@ -300,8 +297,6 @@ export const sendResetPasswordEmail =
   ({ email }) =>
   async (dispatch) => {
     try {
-
-
       await Axios.post(`/user/send-reset-password-email`, { email });
 
       dispatch({ type: SEND_RESET_PASSWORD_SUCCESS });
@@ -317,7 +312,6 @@ export const sendResetPasswordEmail =
       });
     }
   };
-
 
 export const resetPassword =
   ({ token, password }) =>
@@ -360,4 +354,3 @@ export const logout = () => async (dispatch) => {
     });
   }
 };
-

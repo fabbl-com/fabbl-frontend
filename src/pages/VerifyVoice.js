@@ -112,14 +112,21 @@ const VoiceUpload = () => {
   const handelRecoding = async () => {
     setRecording(!isRecording);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const options = {
+        mimeType: "audio/x-wav;codecs=acm",
+        audioBitsPerSecond: 128
+      };
+      const stream = await navigator.mediaDevices.getUserMedia(
+        { audio: true, sampleSize: 16 },
+        options
+      );
       const mediaRecorder = new MediaRecorder(stream);
       const chunks = [];
       mediaRecorder.ondataavailable = (event) => {
         console.log("data-available");
         if (event.data.size > 0) {
           chunks.push(event.data);
-          let audioData = new Blob(chunks, { type: "audio/wav;" });
+          let audioData = new Blob(chunks, { type: "audio/x-wav;codecs=acm" });
           audioData.lastModifiedDate = new Date();
           audioData.name = "test.wav";
           var url = URL.createObjectURL(audioData);

@@ -332,14 +332,12 @@ const Auth = ({ isAuth }) => {
                     </Grid>
                     <Grid item xs={12}>
                       <Grid item container direction="column" alignItems="center" xs={12}>
-                        {!isForgotPassword && (
-                          <Typography
-                            onClick={() => setRegister((state) => !state)}
-                            variant="subtitle1"
-                            style={{ textDecoration: "none", cursor: "pointer" }}>
-                            {isRegister ? `Already have an account` : `Don't have an account?`}
-                          </Typography>
-                        )}
+                        <Typography
+                          onClick={() => setRegister((state) => !state)}
+                          variant="subtitle1"
+                          style={{ textDecoration: "none", cursor: "pointer" }}>
+                          {isRegister ? `Already have an account` : `Don't have an account?`}
+                        </Typography>
                       </Grid>
                     </Grid>
                   </Grid>
