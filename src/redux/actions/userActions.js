@@ -33,6 +33,7 @@ import {
   UPDATE_PROFILE_REQUEST,
   UPDATE_PROFILE_SUCCESS,
   UPDATE_PROFILE_FAIL,
+  RESET_PASSWORD_REQUEST,
   LOGOUT_REQUEST,
   LOGOUT_SUCCESS,
   LOGOUT_FAIL,
@@ -116,41 +117,19 @@ export const setLikes = (data) => async (dispatch) => {
   }
 };
 
-export const resetPassword =
-  ({ userId, password }) =>
-  async (dispatch) => {
-    dispatch({ type: UPDATE_PROFILE_REQUEST });
-    try {
-      const { data } = await Axios.post(`/user/update-password/${userId}`, {
-        newPassword: password
-      });
-      dispatch({ type: RESET_PASSWORD_SUCCESS, payload: data });
-    } catch (error) {
-      console.log(error);
-      dispatch({
-        type: UPDATE_PROFILE_FAIL,
-        payload: {
-          code: error.response.status,
-          message:
-            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
-        }
-      });
-    }
-  };
-
 export const uploadAvatar =
   ({ userId, data }) =>
   async (dispatch) => {
     var formData = new FormData();
     formData.append("data", data);
     try {
-      const { data } = await Axios.post(`/user/upload/image/${userId}`, formData, {
+      const res = await Axios.post(`/user/upload/image/${userId}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data"
         }
       });
-      console.log(data);
-      dispatch({ type: USER_UPLOAD_AVATAR_SUCCESS, payload: data });
+      console.log({ formData, data });
+      dispatch({ type: USER_UPLOAD_AVATAR_SUCCESS, payload: res.data });
     } catch (error) {
       console.log(error);
       dispatch({
@@ -332,7 +311,31 @@ export const sendResetPasswordEmail =
   async (dispatch) => {
     try {
       await Axios.post(`/user/send-reset-password-email`, { email });
+
       dispatch({ type: SEND_RESET_PASSWORD_SUCCESS });
+    } catch (error) {
+      console.log(error);
+      dispatch({
+        type: RESET_PASSWORD_FAIL,
+        payload: {
+          code: error.response.status,
+          message:
+            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+        }
+      });
+    }
+  };
+
+export const resetPassword =
+  ({ token, password }) =>
+  async (dispatch) => {
+    dispatch({ type: RESET_PASSWORD_REQUEST });
+    try {
+      const { data } = await Axios.post(`/user/change-password`, {
+        newPassword: password,
+        token
+      });
+      dispatch({ type: RESET_PASSWORD_SUCCESS, payload: data });
     } catch (error) {
       console.log(error);
       dispatch({

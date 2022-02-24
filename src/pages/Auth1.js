@@ -3,8 +3,6 @@ import {
   Button,
   Typography,
   TextField,
-  FormControlLabel,
-  Checkbox,
   Box,
   Grid,
   InputAdornment,
@@ -20,9 +18,10 @@ import { useHistory, useLocation, Link } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
 import { Alert } from "@material-ui/lab";
 import PropTypes from "prop-types";
-import { login, register, sendResetPasswordEmail } from "../redux/actions/userActions";
+import { resetPassword } from "../redux/actions/userActions";
 import Logo from "../assets/logo/Logo";
 import { FacebookIcon, GoogleIcon } from "../assets/icons";
+import Swal from "sweetalert2";
 
 const useStyles = makeStyles((theme) => ({
   btn: {
@@ -41,20 +40,17 @@ const Auth = ({ isAuth }) => {
   const theme = useTheme();
 
   const matchDownSM = useMediaQuery(theme.breakpoints.down("md"));
-  const [isRegister, setRegister] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
-  const [isForgotPassword, setForgotPassword] = useState(false);
   const [user, setUser] = useState({ password1: "", password2: "" });
   const dispatch = useDispatch();
-  const location = useLocation();
   const history = useHistory();
   const classes = useStyles();
-
-  if (isAuth) {
-    if (!isRegister) history.push(location?.state?.from?.pathname);
-    else history.push("/image");
+  function useQuery() {
+    const { search } = useLocation();
+    return React.useMemo(() => new URLSearchParams(search), [search]);
   }
-
+  let query = useQuery();
+  const token = query.get("token");
   const { error, success } = useSelector((state) => state.user);
 
   if (success) history.push(location?.state?.from?.pathname || "/");
@@ -62,11 +58,18 @@ const Auth = ({ isAuth }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log(user);
-    isForgotPassword
-      ? dispatch(sendResetPasswordEmail({ email: user.email }))
-      : isRegister
-      ? dispatch(register(user))
-      : dispatch(login(user));
+    if (user.password1 && user.password2) {
+      console.log(user);
+      if (user.password1 != user.password2) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Password do not match"
+        });
+      } else {
+        dispatch(resetPassword({ token, password: user.password2 }));
+      }
+    }
   };
 
   return (
@@ -257,32 +260,7 @@ const Auth = ({ isAuth }) => {
                             )
                           }}
                         />
-                        <Grid
-                          container
-                          direction="row"
-                          alignItems="center"
-                          justifyContent={!isRegister ? "space-between" : "flex-end"}
-                          spacing={1}>
-                          {!isForgotPassword && !isRegister && (
-                            <FormControlLabel
-                              control={
-                                <Checkbox
-                                  checked={user?.rememberMe}
-                                  value={user?.rememberMe}
-                                  onChange={(e) =>
-                                    setUser((state) => ({
-                                      ...state,
-                                      rememberMe: e.target.checked
-                                    }))
-                                  }
-                                  name="checked"
-                                  color="primary"
-                                />
-                              }
-                              label="Remember me"
-                            />
-                          )}
-                        </Grid>
+
                         <Box style={{ marginTop: "3ch" }}>
                           <Button
                             color="secondary"

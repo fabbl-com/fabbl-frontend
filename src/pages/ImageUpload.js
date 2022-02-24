@@ -50,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
 const ImageUpload = ({ userId }) => {
   const classes = useStyles();
   const [isUpload, setUpload] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState("");
   const [rememberMe, setRememberMe] = useState(true);
   const [image, setImage] = useState(null);
   const dispatch = useDispatch();
