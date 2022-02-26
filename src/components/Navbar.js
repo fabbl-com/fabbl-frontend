@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Navbar = ({ socket, userId }) => {
+const Navbar = ({ socket, userId, isTheme, setTheme }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [isLoggedOut, setLoggedOut] = useState(false);
@@ -79,7 +79,7 @@ const Navbar = ({ socket, userId }) => {
             notifications={notifications || []}
             unread={unread || []}
           />
-          <ProfileSection userId={userId} />
+          <ProfileSection isTheme={isTheme} setTheme={setTheme} userId={userId} />
         </div>
       </Toolbar>
     </AppBar>
@@ -88,7 +88,9 @@ const Navbar = ({ socket, userId }) => {
 
 Navbar.propTypes = {
   userId: PropTypes.string.isRequired,
-  socket: PropTypes.object
+  socket: PropTypes.object,
+  isTheme: PropTypes.bool.isRequired,
+  setTheme: PropTypes.func.isRequired
 };
 
 export default Navbar;

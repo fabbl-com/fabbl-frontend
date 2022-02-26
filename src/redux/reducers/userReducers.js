@@ -219,6 +219,7 @@ export default (state = initialState, action) => {
       localStorage.removeItem("userInfo");
       localStorage.removeItem("notifications");
       localStorage.removeItem("userId");
+      localStorage.removeItem("theme");
       return {
         ...state,
         isAuth: false,

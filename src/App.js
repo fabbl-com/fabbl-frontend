@@ -27,13 +27,13 @@ const Navbar = lazy(() => import("./components/Navbar"));
 
 import { checkAuth } from "./redux/actions/userActions";
 import PrivateRoute from "./PrivateRoute";
-import { genKeys } from "./lib/hashAlgorithm";
 const events = require("events");
 
 const ENDPOINT = "http://localhost:4000";
 
 const App = () => {
-  const [isTheme, setTheme] = useState(false);
+  const theme = localStorage.getItem("theme") ? JSON.parse(localStorage.getItem("theme")) : false;
+  const [isTheme, setTheme] = useState(Boolean(theme));
   const [socket, setSocket] = useState(null);
   const dispatch = useDispatch();
   const eventEmitter = new events.EventEmitter();
@@ -61,7 +61,7 @@ const App = () => {
       <Router>
         <Suspense fallback={!socket && authChecking && <span>loading...</span>}>
           <CssBaseline />
-          <Navbar userId={userId} socket={socket} />
+          <Navbar userId={userId} socket={socket} isTheme={isTheme} setTheme={setTheme} />
           <Switch>
             <Route path="/" exact>
               <Home />

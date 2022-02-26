@@ -1,7 +1,7 @@
 /* eslint-disable no-constant-condition */
 import { useState, useRef, useEffect } from "react";
 
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 
 // material-ui
 import {
@@ -112,9 +112,10 @@ const useStyles = makeStyles((theme) => ({
 
 // ==============================|| PROFILE MENU ||============================== //
 
-const ProfileSection = ({ userId }) => {
+const ProfileSection = ({ userId, isTheme, setTheme }) => {
   const theme = useTheme();
   const history = useHistory();
+  const location = useLocation();
   const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -156,7 +157,7 @@ const ProfileSection = ({ userId }) => {
     setOpen((state) => !state);
 
     if (route && route !== "") {
-      history.push(route);
+      history.push({ pathname: route, from: location?.pathname || "/" });
     }
   };
   const handleToggle = () => {
@@ -185,6 +186,12 @@ const ProfileSection = ({ userId }) => {
 
     prevOpen.current = open;
   }, [open]);
+
+  const handleThemeChange = () => {
+    localStorage.setItem("theme", !isTheme);
+    setTheme((state) => !state);
+    console.log(isTheme);
+  };
 
   return (
     <>
@@ -250,7 +257,13 @@ const ProfileSection = ({ userId }) => {
                                 <Typography variant="subtitle1">Change Theme</Typography>
                               </Grid>
                               <Grid item>
-                                <Switch color="primary" name="theme" size="small" />
+                                <Switch
+                                  checked={isTheme}
+                                  onChange={handleThemeChange}
+                                  color="primary"
+                                  name="theme"
+                                  size="small"
+                                />
                               </Grid>
                             </Grid>
                           </Grid>
@@ -326,7 +339,9 @@ const ProfileSection = ({ userId }) => {
 };
 
 ProfileSection.propTypes = {
-  userId: PropTypes.string.isRequired
+  userId: PropTypes.string.isRequired,
+  isTheme: PropTypes.bool.isRequired,
+  setTheme: PropTypes.func.isRequired
 };
 
 export default ProfileSection;
