@@ -36,6 +36,7 @@ import {
   DECLINED_FRIEND_REQUEST
 } from "../constants";
 import { PropTypes } from "prop-types";
+import moment from "moment";
 
 const useStyles = makeStyles((theme) => ({
   box: {
@@ -83,8 +84,8 @@ const useStyles = makeStyles((theme) => ({
   },
   list: {
     width: "100%",
-    maxWidth: 330,
-    minWidth: 300,
+    maxWidth: 350,
+    minWidth: 330,
     padding: 0,
     [theme.breakpoints.down("md")]: {
       maxWidth: 300
@@ -154,7 +155,7 @@ const CustomListItem = ({
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Typography variant="caption" display="block" gutterBottom>
-                {time}
+                {moment({ time }).fromNow()}
               </Typography>
             </Grid>
           </Grid>

@@ -13,7 +13,8 @@ import {
   InputBase,
   Menu,
   MenuItem,
-  Paper
+  Paper,
+  Box
 } from "@material-ui/core";
 import {
   Brightness4,
@@ -27,7 +28,9 @@ import {
   KeyboardArrowDown,
   InsertEmoticon,
   Gif,
-  Stars
+  Stars,
+  Done,
+  DoneAll
 } from "@material-ui/icons";
 import { Skeleton } from "@material-ui/lab";
 import { Link, useLocation } from "react-router-dom";
@@ -93,13 +96,14 @@ const Message = ({ time, isRead, children, ...props }) => {
                 hour12: true
               })}
             </Typography>
+
+            {props.align === "left" && (
+              <Box align="left" mb={-5}>
+                {isRead ? <DoneAll fontSize="small" /> : <Done fontSize="small" />}
+              </Box>
+            )}
           </div>
         </div>
-        {props.align === "left" && (
-          <Typography align="left" component="p" variant="caption">
-            {isRead ? "seen" : "not seen"}
-          </Typography>
-        )}
         <div style={{ margin: theme.spacing(1, 0) }} />
       </div>
     </>

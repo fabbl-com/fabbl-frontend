@@ -114,7 +114,9 @@ const VoiceUpload = () => {
     try {
       const options = {
         mimeType: "audio/x-wav;codecs=acm",
-        audioBitsPerSecond: 128
+        audioBitsPerSecond: 128,
+        sampleRate: 22050,
+        sampleSize: 1024
       };
       const stream = await navigator.mediaDevices.getUserMedia(
         { audio: true, sampleSize: 16 },
@@ -139,7 +141,7 @@ const VoiceUpload = () => {
       setTimeout(() => {
         mediaRecorder.stop();
         setRecording((state) => !state);
-      }, 10000);
+      }, 5000);
     } catch (error) {
       console.log(error);
     }

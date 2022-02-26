@@ -156,7 +156,7 @@ const FindRandom = ({ userId, socket }) => {
               <Typography className={classes.header} align="center" variant="h3">
                 Finding someone
               </Typography>
-              <Avatar className={classes.avatar} src={"https://bit.ly/3Ez2w7J"} />
+              <Avatar className={classes.avatar} src={profile.avatar} />
             </div>
             <div className={classes.matching} ref={container1} />
             <div className={classes.searchingConatiner}>
