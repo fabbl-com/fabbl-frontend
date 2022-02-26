@@ -17,7 +17,7 @@ import {
   FavoriteBorder,
   CheckCircleOutlined
 } from "@material-ui/icons";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation, useHistory } from "react-router-dom";
 import { profileStyles } from "../assets/jss";
 import { useSelector } from "react-redux";
 const useStyles = makeStyles((theme) => profileStyles(theme));
@@ -36,12 +36,19 @@ const Profile = ({ userId }) => {
   const classes = useStyles();
   const { profile, loading } = useSelector((state) => state.user);
   const { id } = useParams();
+  const history = useHistory();
+  const location = useLocation();
+
+  const goBack = (e) => {
+    e.preventDefault();
+    history.push(location.from);
+  };
 
   if (loading) return <div>loading</div>;
   return (
     <Container className={classes.root}>
       <div className={classes.profileHeader}>
-        <IconButton color="primary" href="/chat">
+        <IconButton color="primary" onClick={goBack}>
           <KeyboardBackspace />
         </IconButton>
         <Typography component="h6" variant="h6">

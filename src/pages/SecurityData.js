@@ -15,7 +15,7 @@ import {
   Visibility,
   VisibilityOff
 } from "@material-ui/icons";
-
+import { useLocation, useHistory } from "react-router-dom";
 import classNames from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserProfile, updateEmail, updatePassword } from "../redux/actions/userActions";
@@ -27,7 +27,8 @@ const useStyles = makeStyles((theme) => personalDataStyles(theme));
 const SecurityData = ({ userId }) => {
   const classes = useStyles();
   const theme = useTheme();
-
+  const history = useHistory();
+  const location = useLocation();
   const dispatch = useDispatch();
   const { profile, loading } = useSelector((state) => state.user);
 
@@ -51,11 +52,16 @@ const SecurityData = ({ userId }) => {
     }
   };
 
+  const goBack = (e) => {
+    e.preventDefault();
+    history.push(location.from);
+  };
+
   if (loading) return <div>loading</div>;
   return (
     <Container className={classes.root}>
       <div className={classes.profileHeader}>
-        <IconButton color="primary">
+        <IconButton onClick={goBack} color="primary">
           <KeyboardBackspace />
         </IconButton>
         <Typography component="h6" variant="h6">

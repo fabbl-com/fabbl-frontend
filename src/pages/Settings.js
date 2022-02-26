@@ -33,11 +33,14 @@ import { PropTypes } from "prop-types";
 
 import { settingsStyles } from "../assets/jss";
 import { updateProfilePref, getUserProfile } from "../redux/actions/userActions";
+import { useLocation, useHistory } from "react-router-dom";
 const useStyles = makeStyles((theme) => settingsStyles(theme));
 
 const Settings = ({ userId, isTheme, setTheme }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const history = useHistory();
+  const location = useLocation();
   const profile = useSelector((state) => state.user?.userInfo);
   console.log(profile);
 
@@ -76,10 +79,15 @@ const Settings = ({ userId, isTheme, setTheme }) => {
     dispatch(updateProfilePref({ userId, data: formData }));
   };
 
+  const goBack = (e) => {
+    e.preventDefault();
+    history.push(location.from);
+  };
+
   return (
     <Container className={classes.root}>
       <div className={classes.profileHeader}>
-        <IconButton color="primary">
+        <IconButton onClick={goBack} color="primary">
           <KeyboardBackspace />
         </IconButton>
         <Typography component="h6" variant="h6">
@@ -174,9 +182,7 @@ const Settings = ({ userId, isTheme, setTheme }) => {
                   <Select
                     name={el.name}
                     defaultValue={1}
-                    onChange={(e, index, value) => {
-                      onChange(e, index, value);
-                    }}
+                    onChange={onChange}
                     classes={{
                       select: classes.visibility
                     }}>
@@ -219,9 +225,7 @@ const Settings = ({ userId, isTheme, setTheme }) => {
                     <Select
                       name={el.name}
                       defaultValue={1}
-                      onChange={(e, index, value) => {
-                        onChange(e, index, value);
-                      }}
+                      onChange={onChange}
                       native
                       classes={{
                         select: classes.visibility
