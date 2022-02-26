@@ -13,7 +13,8 @@ import {
   Card,
   Divider,
   useTheme,
-  makeStyles
+  makeStyles,
+  FormControl
 } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation, Link } from "react-router-dom";
@@ -23,6 +24,7 @@ import PropTypes from "prop-types";
 import { login, register, sendResetPasswordEmail } from "../redux/actions/userActions";
 import Logo from "../assets/logo/Logo";
 import { FacebookIcon, GoogleIcon } from "../assets/icons";
+import { strengthColor, strengthIndicator } from "../utils/paswordStrenth";
 
 const useStyles = makeStyles((theme) => ({
   btn: {
@@ -45,6 +47,8 @@ const Auth = ({ isAuth }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isForgotPassword, setForgotPassword] = useState(false);
   const [user, setUser] = useState({ rememberMe: true, email: "", displayName: "", password: "" });
+  const [strength, setStrength] = useState(0);
+  const [level, setLevel] = useState();
   const dispatch = useDispatch();
   const location = useLocation();
   const history = useHistory();
@@ -72,6 +76,12 @@ const Auth = ({ isAuth }) => {
   const handelForgetPassword = (e) => {
     setForgotPassword(!isForgotPassword);
     // dispatch(sendResetPasswordEmail({ email: user.email }));
+  };
+
+  const handlePasswordStrength = (value) => {
+    const temp = strengthIndicator(value);
+    setStrength(temp);
+    setLevel(strengthColor(temp));
   };
 
   return (
@@ -249,9 +259,10 @@ const Auth = ({ isAuth }) => {
                             label="Password"
                             type={showPassword ? "text" : "password"}
                             vaule={user?.password}
-                            onChange={(e) =>
-                              setUser((state) => ({ ...state, password: e.target.value }))
-                            }
+                            onChange={(e) => {
+                              setUser((state) => ({ ...state, password: e.target.value }));
+                              handlePasswordStrength(e.target.value);
+                            }}
                             margin="normal"
                             InputProps={{
                               endAdornment: (
@@ -311,6 +322,25 @@ const Auth = ({ isAuth }) => {
                             </Typography>
                           )}
                         </Grid>
+                        {isRegister && strength !== 0 && (
+                          <FormControl fullWidth>
+                            <Box sx={{ mb: 2 }}>
+                              <Grid container spacing={2} alignItems="center">
+                                <Grid item>
+                                  <Box
+                                    style={{ backgroundColor: level.color }}
+                                    sx={{ width: 85, height: 8, borderRadius: "7px" }}
+                                  />
+                                </Grid>
+                                <Grid item>
+                                  <Typography variant="subtitle1" fontSize="0.75rem">
+                                    {level?.label}
+                                  </Typography>
+                                </Grid>
+                              </Grid>
+                            </Box>
+                          </FormControl>
+                        )}
                         {/* <Box>
                             <FormHelperText error>errors</FormHelperText>
                           </Box> */}
