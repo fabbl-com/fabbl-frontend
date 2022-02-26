@@ -27,6 +27,7 @@ const Navbar = lazy(() => import("./components/Navbar"));
 
 import { checkAuth } from "./redux/actions/userActions";
 import PrivateRoute from "./PrivateRoute";
+import { genKeys } from "./lib/hashAlgorithm";
 const events = require("events");
 
 const ENDPOINT = "http://localhost:4000";
@@ -58,7 +59,7 @@ const App = () => {
   return (
     <ThemeProvider theme={appliedTheme}>
       <Router>
-        <Suspense fallback={authChecking && <span>loading...</span>}>
+        <Suspense fallback={!socket && authChecking && <span>loading...</span>}>
           <CssBaseline />
           <Navbar userId={userId} socket={socket} />
           <Switch>

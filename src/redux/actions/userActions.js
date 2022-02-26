@@ -1,4 +1,5 @@
 import Axios from "axios";
+import { genKeys } from "../../lib/hashAlgorithm";
 
 import {
   USER_REGISTER_FAIL,
@@ -35,7 +36,8 @@ import {
   RESET_PASSWORD_REQUEST,
   LOGOUT_REQUEST,
   LOGOUT_SUCCESS,
-  LOGOUT_FAIL
+  LOGOUT_FAIL,
+  SET_KEYS
 } from "../constants/userActionTypes";
 
 export const register = (userId) => async (dispatch) => {
@@ -166,9 +168,20 @@ export const updateProfile =
 export const checkAuth = () => async (dispatch) => {
   dispatch({ type: CHECK_AUTH_REQUEST });
   try {
-    const { data } = await Axios.get("/auth/check");
-    console.log(data);
+    const publicKey = localStorage.getItem("publicKey");
+
+    const keys = await genKeys();
+
+    const body = {
+      publicKey: publicKey ? null : keys?.publicKey
+    };
+
+    const { data } = await Axios.post("/auth/check", body);
+    console.log(data, keys);
     dispatch({ type: CHECK_AUTH_SUCCESS, payload: data });
+    if (data?.isPublicKeyUpdated) {
+      dispatch({ type: SET_KEYS, payload: keys });
+    }
   } catch (error) {
     console.log(error.response);
     dispatch({
