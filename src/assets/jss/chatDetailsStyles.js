@@ -50,12 +50,12 @@ const chatStyles = (theme) => ({
     justifyContent: "space-between",
     "&:hover": {
       backgroundColor: theme.palette.background.hover
-    },
-    "&:first-child": {
-      "&:hover": {
-        backgroundColor: "transparent"
-      }
     }
+    // "&:first-child": {
+    //   "&:hover": {
+    //     backgroundColor: "transparent"
+    //   }
+    // }
   },
   menuIcons: {
     "&:hover": {

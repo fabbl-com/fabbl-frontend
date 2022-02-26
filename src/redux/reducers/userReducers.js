@@ -37,7 +37,8 @@ import {
   LOGOUT_REQUEST,
   LOGOUT_SUCCESS,
   LOGOUT_FAIL,
-  SET_KEYS
+  SET_KEYS,
+  SET_KEYS_1
 } from "../constants/userActionTypes";
 
 const userInfo = JSON.parse(localStorage.getItem("userInfo"));
@@ -216,10 +217,13 @@ export default (state = initialState, action) => {
         notifications: notif
       };
     case LOGOUT_SUCCESS:
+      window.href = "/";
       localStorage.removeItem("userInfo");
       localStorage.removeItem("notifications");
       localStorage.removeItem("userId");
       localStorage.removeItem("theme");
+      localStorage.removeItem("privateKey");
+      localStorage.removeItem("publicKey");
       return {
         ...state,
         isAuth: false,
@@ -236,6 +240,14 @@ export default (state = initialState, action) => {
       return {
         ...state,
         ...action.payload
+      };
+    case SET_KEYS_1:
+      localStorage.setItem("privateKey", action.payload.privateKey);
+      localStorage.setItem("publicKey", action.payload.publicKey);
+      return {
+        ...state,
+        privateKey: action.payload?.privateKey ? JSON.parse(action.payload?.privateKey) : null,
+        publicKey: action.payload?.publicKey ? JSON.parse(action.payload?.publicKey) : null
       };
     default:
       return state;

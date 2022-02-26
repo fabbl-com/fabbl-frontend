@@ -81,3 +81,4 @@ export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
 export const LOGOUT_FAIL = "LOGOUT_FAIL";
 
 export const SET_KEYS = "SET_KEYS";
+export const SET_KEYS_1 = "SET_KEYS_1";

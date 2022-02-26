@@ -143,6 +143,7 @@ const ProfileSection = ({ userId, isTheme, setTheme }) => {
           title: matchesXs ? `${classes.title}` : `${classes.titleMd}`
         }
       });
+      history.push("/");
     }
   }, [isLoggedOut, error, matchesXs]);
 
@@ -162,17 +163,18 @@ const ProfileSection = ({ userId, isTheme, setTheme }) => {
   };
   const handleToggle = () => {
     if (!isAuth) {
-      Swal.fire({
-        position: "center",
-        icon: "error",
-        title: "You are not logged in",
-        customClass: {
-          button: matchesXs && `${classes.button}`,
-          popup: matchesXs && `${classes.popup}`,
-          icon: matchesXs && `${classes.icon}`,
-          title: matchesXs && `${classes.title}`
-        }
-      });
+      // Swal.fire({
+      //   position: "center",
+      //   icon: "error",
+      //   title: "You are not logged in",
+      //   customClass: {
+      //     button: matchesXs && `${classes.button}`,
+      //     popup: matchesXs && `${classes.popup}`,
+      //     icon: matchesXs && `${classes.icon}`,
+      //     title: matchesXs && `${classes.title}`
+      //   }
+      // });
+      history.push("/auth");
     } else {
       setOpen((prevOpen) => !prevOpen);
     }

@@ -17,12 +17,9 @@ import {
   Box
 } from "@material-ui/core";
 import {
-  Brightness4,
-  BrightnessHigh,
   Block,
   ArrowBack,
   MoreVert,
-  AccountCircle,
   PersonAdd,
   Send,
   KeyboardArrowDown,
@@ -39,12 +36,7 @@ import { PropTypes } from "prop-types";
 import { chatDetailsStyles } from "../assets/jss";
 import { makeMessageSeen, sendMessage } from "../utils/socket.io";
 import { connect, useDispatch, useSelector } from "react-redux";
-import {
-  setUserMessages,
-  setUserOffline,
-  setFriends,
-  setBlocked
-} from "../redux/actions/messageActions";
+import { setUserMessages, setUserOffline, setBlocked } from "../redux/actions/messageActions";
 import { ProfileBadge } from "../components";
 import { SET_USER_MESSAGES_REQUEST } from "../redux/constants/messageActionTypes";
 import { decode, encode, genDerivedKey } from "../lib/hashAlgorithm";
@@ -85,8 +77,13 @@ const Message = ({ derivedKey, time, isRead, children, ...props }) => {
 
   useEffect(() => {
     const work = async () => {
-      const msg = await decode(children, derivedKey);
-      setMessage(msg);
+      try {
+        const msg = await decode(children, derivedKey);
+        setMessage(msg);
+      } catch (error) {
+        console.log(error);
+        setMessage("");
+      }
     };
     work();
   }, [props]);
@@ -189,7 +186,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   }, [socket]);
 
   useEffect(() => {
-    if (messages && messages.length > 0) setMsgs((state) => [...state, ...messages]);
+    if (messages && messages.length > 0) setMsgs([...messages]);
   }, [messages]);
 
   useEffect(() => {
@@ -333,18 +330,6 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
       anchorEl={anchorEl}
       onClose={handleMenuClose}
       open={Boolean(anchorEl)}>
-      <MenuItem disableRipple className={classes.menuItem}>
-        <Typography>Change Theme</Typography>
-        <IconButton color="primary" onClick={() => setTheme(!isTheme)}>
-          {!isTheme ? <Brightness4 /> : <BrightnessHigh />}
-        </IconButton>
-      </MenuItem>
-      <MenuItem className={classes.menuItem} onClick={handleMenuClose}>
-        <Typography>My account</Typography>
-        <IconButton className={classes.menuIcons} color="primary">
-          <AccountCircle />
-        </IconButton>
-      </MenuItem>
       <MenuItem className={classes.menuItem} onClick={handleFriends}>
         <Typography>Add to Friends</Typography>
         <IconButton className={classes.menuIcons} color="primary">
@@ -372,7 +357,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                 </IconButton>
               </Link>
               <div className={classes.avatar}>
-                <Link to="/profile">
+                <Link to={`/profile/${userId}`}>
                   <ProfileBadge
                     color="primary"
                     anchorOrigin={{
@@ -506,7 +491,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                     <InsertEmoticon />
                   </IconButton>
                 </div>
-                <IconButton type="submit" color="primary" className={classes.iconButton2}>
+                <IconButton color="primary" className={classes.iconButton2}>
                   <Send />
                 </IconButton>
               </form>

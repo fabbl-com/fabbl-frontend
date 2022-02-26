@@ -37,7 +37,8 @@ import {
   LOGOUT_REQUEST,
   LOGOUT_SUCCESS,
   LOGOUT_FAIL,
-  SET_KEYS
+  SET_KEYS,
+  SET_KEYS_1
 } from "../constants/userActionTypes";
 
 export const register = (userId) => async (dispatch) => {
@@ -169,18 +170,25 @@ export const checkAuth = () => async (dispatch) => {
   dispatch({ type: CHECK_AUTH_REQUEST });
   try {
     const publicKey = localStorage.getItem("publicKey");
+    const privateKey = localStorage.getItem("privateKey");
 
     const keys = await genKeys();
 
     const body = {
-      publicKey: publicKey ? null : keys?.publicKey
+      publicKey: publicKey ? null : keys?.publicKey,
+      privateKey: privateKey ? null : keys?.privateKey
     };
 
     const { data } = await Axios.post("/auth/check", body);
     console.log(data, keys);
     dispatch({ type: CHECK_AUTH_SUCCESS, payload: data });
-    if (data?.isPublicKeyUpdated) {
+    if (data?.isKeysUpdated) {
       dispatch({ type: SET_KEYS, payload: keys });
+    } else {
+      dispatch({
+        type: SET_KEYS_1,
+        payload: { privateKey: data?.profile?.privateKey, publicKey: data?.profile?.publicKey }
+      });
     }
   } catch (error) {
     console.log(error.response);

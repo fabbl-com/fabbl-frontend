@@ -57,7 +57,7 @@ const Auth = ({ isAuth }) => {
 
   const { error, success } = useSelector((state) => state.user);
 
-  if (success) history.push(location?.state?.from?.pathname || "/");
+  if (success) history.push(location?.state?.from?.pathname);
 
   const handleSubmit = (e) => {
     e.preventDefault();

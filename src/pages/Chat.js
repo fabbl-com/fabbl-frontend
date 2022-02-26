@@ -78,12 +78,16 @@ const UserCard = ({ online, displayName, url, time, message, unread, privateKey,
   const [derivedKey, setDerivedKey] = useState(null);
   const [msg, setMsg] = useState("You have a new match. Go and chat...");
 
-  useEffect(async () => {
-    if (privateKey && publicKey) {
-      const pKey = JSON.parse(publicKey);
-      const key = await genDerivedKey(pKey, privateKey);
-      setDerivedKey(key);
-    }
+  useEffect(() => {
+    const work = async () => {
+      if (privateKey && publicKey) {
+        const pKey = JSON.parse(publicKey);
+        const key = await genDerivedKey(pKey, privateKey);
+        console.log(pKey, privateKey, key);
+        setDerivedKey(key);
+      }
+    };
+    work();
   }, [publicKey, privateKey]);
 
   useEffect(() => {
@@ -150,7 +154,7 @@ UserCard.propTypes = {
   message: PropTypes.string,
   unread: PropTypes.number.isRequired,
   privateKey: PropTypes.object.isRequired,
-  publicKey: PropTypes.object.isRequired
+  publicKey: PropTypes.string.isRequired
 };
 
 const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {

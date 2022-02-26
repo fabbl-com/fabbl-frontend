@@ -39,13 +39,15 @@ const genDerivedKey = async (publicKeyJwk, privateKeyJwk) => {
     ["deriveKey", "deriveBits"]
   );
 
-  return await window.crypto.subtle.deriveKey(
+  const result = await window.crypto.subtle.deriveKey(
     { name: "ECDH", public: publicKey },
     privateKey,
     { name: "AES-GCM", length: 256 },
     true,
     ["encrypt", "decrypt"]
   );
+
+  return result;
 };
 
 const encode = async (text, derivedKey) => {
@@ -78,7 +80,8 @@ const decode = async (text, derivedKey) => {
 
     return new TextDecoder().decode(decryptedData);
   } catch (e) {
-    return `error decrypting message: ${e}`;
+    // console.log(e);
+    return `error`;
   }
 };
 
