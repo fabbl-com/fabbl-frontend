@@ -37,7 +37,8 @@ import {
 } from "../constants";
 import { PropTypes } from "prop-types";
 import moment from "moment";
-
+import PerfectScrollbar from "react-perfect-scrollbar";
+import "react-perfect-scrollbar/dist/css/styles.css";
 const useStyles = makeStyles((theme) => ({
   box: {
     marginLeft: "2ch",
@@ -76,7 +77,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     padding: 16,
     "&:hover": {
-      background: "#E3F2FD"
+      background: theme.palette.background.primary
     },
     "& .MuiListItem-root": {
       padding: 0
@@ -171,8 +172,7 @@ const CustomListItem = ({
               <Grid item>
                 <Button
                   style={{
-                    backgroundColor: theme.palette.primary.light,
-                    color: "#eee"
+                    backgroundColor: theme.palette.primary
                   }}
                   onClick={handleConfirm}
                   variant="contained"
@@ -184,8 +184,7 @@ const CustomListItem = ({
               <Grid item>
                 <Button
                   style={{
-                    backgroundColor: theme.palette.error.light,
-                    color: "#eee"
+                    backgroundColor: theme.palette.error.light
                   }}
                   onClick={handleDecline}
                   variant="contained"
@@ -315,7 +314,7 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
           <Grow
             style={{
               transformOrigin: matchesXs ? "top" : "top-right",
-              backgroundColor: "#fff",
+              background: theme.palette.background.default,
               borderRadius: "12px",
               marginTop: "1ch"
             }}
@@ -325,7 +324,7 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
               <ClickAwayListener onClickAway={handleClose}>
                 <Card
                   style={{
-                    backgroundColor: "#fff",
+                    background: theme.palette.background.default,
                     borderRadius: "12px",
                     boxShadow: theme.shadows[16]
                   }}
@@ -364,6 +363,7 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
                         )}
                       </Grid>
                     </Grid>
+
                     <Grid item xs={12}>
                       <div
                         style={{
@@ -400,36 +400,38 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
                           </Grid>
                         </Grid>
                         <List className={classes.list}>
-                          {notifications && notifications.length > 0 ? (
-                            notifications
-                              .sort((b, a) => new Date(a.createdAt) - new Date(b.createdAt))
-                              .map((el, index) => (
-                                <Fragment key={index}>
-                                  <CustomListItem
-                                    handleConfirm={(e) =>
-                                      handleConfirm(e, {
-                                        id: el.userId,
-                                        notificationId: el?.notificationId
-                                      })
-                                    }
-                                    handleDecline={(e) =>
-                                      handleDecline(e, {
-                                        id: el.userId,
-                                        notificationId: el?.notificationId
-                                      })
-                                    }
-                                    name={el?.displayName?.value || "*****"}
-                                    url={el?.avatar?.value}
-                                    time={el.createdAt}
-                                    notificationType={el.notificationType}
-                                    isRead={el.isRead}
-                                  />
-                                  <Divider light />
-                                </Fragment>
-                              ))
-                          ) : (
-                            <div style={{ paddingLeft: "2ch" }}>You have no notifications</div>
-                          )}
+                          <PerfectScrollbar data-mdb-perfect-scrollbar="true">
+                            {notifications && notifications.length > 0 ? (
+                              notifications
+                                .sort((b, a) => new Date(a.createdAt) - new Date(b.createdAt))
+                                .map((el, index) => (
+                                  <Fragment key={index}>
+                                    <CustomListItem
+                                      handleConfirm={(e) =>
+                                        handleConfirm(e, {
+                                          id: el.userId,
+                                          notificationId: el?.notificationId
+                                        })
+                                      }
+                                      handleDecline={(e) =>
+                                        handleDecline(e, {
+                                          id: el.userId,
+                                          notificationId: el?.notificationId
+                                        })
+                                      }
+                                      name={el?.displayName?.value || "*****"}
+                                      url={el?.avatar?.value}
+                                      time={el.createdAt}
+                                      notificationType={el.notificationType}
+                                      isRead={el.isRead}
+                                    />
+                                    <Divider light />
+                                  </Fragment>
+                                ))
+                            ) : (
+                              <div style={{ paddingLeft: "2ch" }}>You have no notifications</div>
+                            )}
+                          </PerfectScrollbar>
                         </List>
                       </div>
                     </Grid>

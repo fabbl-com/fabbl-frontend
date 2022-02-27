@@ -476,7 +476,13 @@ const PersonalData = ({ userId }) => {
               </Select>
             </div>
             <div className={classes.fullWidth}>
-              <div style={{ display: "flex", justifyContent: "space-around", marginTop: "3ch" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-around",
+                  marginTop: "3ch",
+                  paddingBottom: "6ch"
+                }}>
                 <Button
                   className={classes.button}
                   color="primary"
