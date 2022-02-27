@@ -23,7 +23,8 @@ const chatStyles = (theme) => ({
     width: `calc(100% - ${theme.spacing(4)}px)`,
     left: "50%",
     transform: "translateX(-50%)",
-    top: theme.spacing(8)
+    top: theme.spacing(8),
+    zIndex: 10
   },
   toolBar: {
     padding: theme.spacing(0, 1)
@@ -64,8 +65,9 @@ const chatStyles = (theme) => ({
   },
   msgContainer: {
     position: "relative",
-    paddingTop: theme.spacing(6),
-    paddingBottom: theme.spacing(5)
+    // paddingTop: theme.spacing(6),
+    // paddingBottom: theme.spacing(5)
+    padding: 0
   },
   msgAction: {
     display: "flex",

@@ -186,7 +186,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   }, [socket]);
 
   useEffect(() => {
-    if (messages && messages.length > 0) setMsgs([...messages]);
+    if (messages && messages.length > 0) setMsgs((state) => [...messages, ...state]);
   }, [messages]);
 
   useEffect(() => {
@@ -320,6 +320,8 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
     }
   };
 
+  console.log(messagesEndRef?.current?.scrollTop);
+
   const Actions = (
     <Menu
       classes={{
@@ -421,9 +423,10 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
             <div
               style={{
                 maxWidth: "100%",
-                height: "100vh",
+                height: `calc(100vh - ${theme.spacing(10)}px)`,
                 overflowY: "scroll",
-                marginBottom: "0"
+                marginBottom: "0",
+                padding: "6ch 2ch"
               }}
               ref={messagesEndRef}>
               <Typography className={classes.timeSince} variant="body2">
@@ -436,6 +439,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
               {!loading ? (
                 !receiver?.isBlockedBy ? (
                   msgs
+                    .slice(0)
                     .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
                     .map((msg, i) => (
                       <div ref={elems[i]} key={i}>
@@ -452,7 +456,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                   <div style={{ color: "red" }}>You cannot reply to this conversation</div>
                 )
               ) : (
-                [...new Array(9)].map((_, i) => (
+                [...new Array(15)].map((_, i) => (
                   <div key={i} style={{ display: "flex", width: "100%", flexDirection: "column" }}>
                     <Skeleton
                       height={60}
@@ -491,7 +495,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                     <InsertEmoticon />
                   </IconButton>
                 </div>
-                <IconButton color="primary" className={classes.iconButton2}>
+                <IconButton type="submit" color="primary" className={classes.iconButton2}>
                   <Send />
                 </IconButton>
               </form>

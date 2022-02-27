@@ -151,7 +151,7 @@ const ProfileSection = ({ userId, isTheme, setTheme }) => {
     if (anchorRef.current && anchorRef.current.contains(event.target)) {
       return;
     }
-    setOpen((state) => !state);
+    setOpen(false);
   };
 
   const handleListItemClick = (event, route = "") => {
