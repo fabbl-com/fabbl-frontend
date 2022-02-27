@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import {
   makeStyles,
@@ -6,7 +6,7 @@ import {
   Typography,
   IconButton,
   Button,
-  Divider,
+  Box,
   Container
 } from "@material-ui/core";
 import {
@@ -15,11 +15,13 @@ import {
   LocationOn,
   Cake,
   FavoriteBorder,
-  CheckCircleOutlined
+  CheckCircleOutlined,
+  Edit
 } from "@material-ui/icons";
 import { useParams, useLocation, useHistory } from "react-router-dom";
 import { profileStyles } from "../assets/jss";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { getUserProfile } from "../redux/actions/userActions.js";
 const useStyles = makeStyles((theme) => profileStyles(theme));
 const tagsColor = [
   "#000000",
@@ -34,11 +36,17 @@ const tagsColor = [
 
 const Profile = ({ userId }) => {
   const classes = useStyles();
-  const { profile, loading } = useSelector((state) => state.user);
+  let { profile, loading } = useSelector((state) => state.user);
   const { id } = useParams();
   const history = useHistory();
   const location = useLocation();
+  const dispatch = useDispatch();
 
+  useEffect(() => {
+    dispatch(getUserProfile(id));
+  }, [getUserProfile]);
+
+  console.log(profile);
   const goBack = (e) => {
     e.preventDefault();
     history.push(location.from);
@@ -54,56 +62,68 @@ const Profile = ({ userId }) => {
         <Typography component="h6" variant="h6">
           {profile.displayName.value} `s profile
         </Typography>
-        <IconButton className={classes.report}>{id !== userId && <Report />}</IconButton>
+        <IconButton
+          className={classes.report}
+          href={id === userId ? "/edit/personal-data" : "/report"}>
+          {id !== userId ? <Report /> : <Edit color="primary" />}
+        </IconButton>
       </div>
       <div className={classes.profileBody}>
         <Avatar src={profile.avatar.value} className={classes.avatar} variant="rounded" />
-        <div className={classes.verify}>
-          <Typography component="h6" variant="h6">
+        <Box mt={2}>
+          <Typography component="h1" variant="h1">
+            {profile.displayName.value}
+          </Typography>
+        </Box>
+        <Box className={classes.verify} m={1}>
+          <Typography component="h4" variant="h4">
             {profile.gender.value === 0 ? "Male" : "Female"}
           </Typography>
           &nbsp;
           {profile.isProfileVerified && <CheckCircleOutlined fontSize="small" />}
-        </div>
-        <Typography component="h3" variant="h3">
-          {profile.displayName.value}
-        </Typography>
-
+        </Box>
         <div className={classes.location}>
           <LocationOn fontSize="small" />
           {"  "}
           <Typography component="h6" variant="h6">
             {profile.location.value}
           </Typography>
-        </div>
-        <div className={classes.dob}>
-          <Cake />
-          &nbsp;&nbsp;&nbsp;
-          <Typography align="center" component="h3" variant="body1">
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          <Cake fontSize="small" />
+          &nbsp;
+          <Typography component="h3">
             {Math.floor(new Date(profile.dob.value) / (365 * 24 * 60 * 60 * 1000))} Years Old
           </Typography>
         </div>
-        <div>
-          <Typography className={classes.bio} align="center" variant="h5">
+        <Box mb={1}>
+          <Typography
+            className={classes.bio}
+            align="center"
+            component="h3"
+            variant="subtitle1"
+            gutterBottom>
             {profile.headline.value}
           </Typography>
-        </div>
-        <Divider width="100%" className={classes.divider} />
+        </Box>
+        {/* <Divider width="100%" className={classes.divider} /> */}
         <div className={classes.hobby}>
           <Typography align="center" component="h3" variant="h4">
             Hobbies & Interest
           </Typography>
-          {profile.hobby.value.map((tag, i) => (
-            <Button
-              disableRipple
-              style={{ backgroundColor: tagsColor[i % tagsColor.length], color: "#eee" }}
-              size="small"
-              className={classes.tags}
-              key={i}>
-              {tag}
-            </Button>
-          ))}
+          <center>
+            {profile.hobby.value.map((tag, i) => (
+              <Button
+                disableRipple
+                style={{ backgroundColor: tagsColor[i % tagsColor.length], color: "#eee" }}
+                size="small"
+                className={classes.tags}
+                key={i}>
+                {tag}
+              </Button>
+            ))}
+          </center>
         </div>
+
         {id === userId || (
           <Button className={classes.favorite} variant="contained" color="secondary">
             Add To Friends &nbsp;&nbsp;&nbsp;

@@ -194,7 +194,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        userInfo: action.payload.profile
+        profile: action.payload.profile
       };
     case UPDATE_PASSWORD_SUCCESS:
     case UPDATE_EMAIL_SUCCESS:

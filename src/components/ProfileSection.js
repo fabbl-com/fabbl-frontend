@@ -18,7 +18,6 @@ import {
   Button,
   ListItemIcon,
   ListItemText,
-  Paper,
   Popper,
   Switch,
   Typography,
@@ -60,7 +59,7 @@ const useStyles = makeStyles((theme) => ({
   },
   card: {
     borderRadius: "12px",
-    background: "#fff",
+    background: theme.palette.background.default,
     padding: "1ch",
     ":hover": {
       boxShadow: theme.shadows[16]
@@ -74,7 +73,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer"
   },
   card2: {
-    backgroundColor: "#E3F2FD",
+    background: theme.palette.background.default,
     borderRadius: "12px",
     marginTop: "2ch",
     marginBottom: "2ch"
@@ -208,7 +207,7 @@ const ProfileSection = ({ userId, isTheme, setTheme }) => {
             aria-haspopup="true"
           />
         }
-        label={<Settings fontSize="small" />}
+        label={<Settings fontSize="small" color="primary" />}
         variant="outlined"
         ref={anchorRef}
         aria-controls={open && "menu-list-grow"}
@@ -233,106 +232,104 @@ const ProfileSection = ({ userId, isTheme, setTheme }) => {
             }}
             in={open}
             {...TransitionProps}>
-            <Paper>
-              <ClickAwayListener onClickAway={handleClose}>
-                <Card className={classes.card} elevation={16}>
-                  <Box style={{ padding: "1ch" }}>
-                    <Grid>
-                      <Grid container direction="row" spacing={1} alignItems="center">
-                        <Typography variant="h4">Hello</Typography>
-                        {isAuth && (
-                          <Typography component="span" variant="h4" style={{ fontWeight: 400 }}>
-                            ,&nbsp;{profile?.displayName?.value}
-                          </Typography>
-                        )}
-                      </Grid>
+            <ClickAwayListener onClickAway={handleClose}>
+              <Card className={classes.card} elevation={16}>
+                <Box style={{ padding: "1ch" }}>
+                  <Grid>
+                    <Grid container direction="row" spacing={1} alignItems="center">
+                      <Typography variant="h4">Hello</Typography>
+                      {isAuth && (
+                        <Typography component="span" variant="h4" style={{ fontWeight: 400 }}>
+                          ,&nbsp;{profile?.displayName?.value}
+                        </Typography>
+                      )}
                     </Grid>
-                    <Divider light style={{ marginTop: "2ch" }} />
-                  </Box>
-                  <Box>
-                    <Card className={classes.card2}>
-                      <CardContent>
-                        <Grid container spacing={3} direction="column">
-                          <Grid item>
-                            <Grid item container alignItems="center" justifyContent="space-between">
-                              <Grid item>
-                                <Typography variant="subtitle1">Change Theme</Typography>
-                              </Grid>
-                              <Grid item>
-                                <Switch
-                                  checked={isTheme}
-                                  onChange={handleThemeChange}
-                                  color="primary"
-                                  name="theme"
-                                  size="small"
-                                />
-                              </Grid>
+                  </Grid>
+                  <Divider light style={{ marginTop: "2ch" }} />
+                </Box>
+                <Box>
+                  <Card className={classes.card2}>
+                    <CardContent>
+                      <Grid container spacing={3} direction="column">
+                        <Grid item>
+                          <Grid item container alignItems="center" justifyContent="space-between">
+                            <Grid item>
+                              <Typography variant="subtitle1">Change Theme</Typography>
                             </Grid>
-                          </Grid>
-                          <Grid item>
-                            <Grid item container alignItems="center" justifyContent="space-between">
-                              <Grid item>
-                                <Typography variant="subtitle1">Allow Auto Delete</Typography>
-                              </Grid>
-                              <Grid item>
-                                <Switch name="auto-delete" size="small" />
-                              </Grid>
+                            <Grid item>
+                              <Switch
+                                checked={isTheme}
+                                onChange={handleThemeChange}
+                                color="primary"
+                                name="theme"
+                                size="small"
+                              />
                             </Grid>
                           </Grid>
                         </Grid>
-                      </CardContent>
-                    </Card>
-                    <Divider light />
-                    <List className={classes.list}>
-                      <ListItem
-                        component={Button}
-                        className={classes.listItem}
-                        onClick={(event) => handleListItemClick(event, `profile/${userId}`)}>
-                        <ListItemIcon>
-                          <Person fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText>
-                          <Typography variant="body2">Profile</Typography>
-                        </ListItemText>
-                      </ListItem>
-                      <ListItem
-                        component={Button}
-                        className={classes.listItem}
-                        onClick={(event) => handleListItemClick(event, "/settings")}>
-                        <ListItemIcon>
-                          <Settings fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText>
-                          <Typography variant="body2">Account Settings</Typography>
-                        </ListItemText>
-                      </ListItem>
-                      <ListItem
-                        component={Button}
-                        className={classes.listItem}
-                        onClick={(event) => handleListItemClick(event, `/edit/security-data`)}>
-                        <ListItemIcon>
-                          <Lock fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText>
-                          <Typography variant="body2">Security Data</Typography>
-                        </ListItemText>
-                      </ListItem>
-                      <ListItem
-                        component={Button}
-                        className={classes.listItem}
-                        onClick={handleLogout}>
-                        <ListItemIcon>
-                          <ExitToApp fontSize="small" />
-                        </ListItemIcon>
-                        <ListItemText>
-                          <Typography variant="body2">Logout</Typography>
-                        </ListItemText>
-                      </ListItem>
-                    </List>
-                  </Box>
-                </Card>
-              </ClickAwayListener>
-            </Paper>
+                        <Grid item>
+                          <Grid item container alignItems="center" justifyContent="space-between">
+                            <Grid item>
+                              <Typography variant="subtitle1">Allow Auto Delete</Typography>
+                            </Grid>
+                            <Grid item>
+                              <Switch name="auto-delete" size="small" />
+                            </Grid>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    </CardContent>
+                  </Card>
+                  <Divider light />
+                  <List className={classes.list}>
+                    <ListItem
+                      component={Button}
+                      className={classes.listItem}
+                      onClick={(event) => handleListItemClick(event, `profile/${userId}`)}>
+                      <ListItemIcon>
+                        <Person fontSize="small" color="primary" />
+                      </ListItemIcon>
+                      <ListItemText>
+                        <Typography variant="body2">Profile</Typography>
+                      </ListItemText>
+                    </ListItem>
+                    <ListItem
+                      component={Button}
+                      className={classes.listItem}
+                      onClick={(event) => handleListItemClick(event, "/settings")}>
+                      <ListItemIcon>
+                        <Settings fontSize="small" color="primary" />
+                      </ListItemIcon>
+                      <ListItemText>
+                        <Typography variant="body2">Account Settings</Typography>
+                      </ListItemText>
+                    </ListItem>
+                    <ListItem
+                      component={Button}
+                      className={classes.listItem}
+                      onClick={(event) => handleListItemClick(event, `/edit/security-data`)}>
+                      <ListItemIcon>
+                        <Lock fontSize="small" color="primary" />
+                      </ListItemIcon>
+                      <ListItemText>
+                        <Typography variant="body2">Security Data</Typography>
+                      </ListItemText>
+                    </ListItem>
+                    <ListItem
+                      component={Button}
+                      className={classes.listItem}
+                      onClick={handleLogout}>
+                      <ListItemIcon>
+                        <ExitToApp fontSize="small" color="primary" />
+                      </ListItemIcon>
+                      <ListItemText>
+                        <Typography variant="body2">Logout</Typography>
+                      </ListItemText>
+                    </ListItem>
+                  </List>
+                </Box>
+              </Card>
+            </ClickAwayListener>
           </Grow>
         )}
       </Popper>
