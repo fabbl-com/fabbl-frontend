@@ -27,13 +27,14 @@ import {
   Gif,
   Stars,
   Done,
-  DoneAll
+  DoneAll,
+  Close
 } from "@material-ui/icons";
 import { Skeleton } from "@material-ui/lab";
 import { Link, useLocation, useHistory } from "react-router-dom";
 import PropTypes from "prop-types";
 import InfiniteScroll from "react-infinite-scroll-component";
-
+import Picker, { SKIN_TONE_MEDIUM_DARK } from "emoji-picker-react";
 import { chatDetailsStyles } from "../assets/jss";
 import { makeMessageSeen, sendMessage } from "../utils/socket.io";
 import { connect, useDispatch, useSelector } from "react-redux";
@@ -120,6 +121,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const [hasMore, setHasMore] = useState(true);
   const [showScrollDownButton, setShowScrollDownButton] = useState(false);
   const [page, setPage] = useState(1);
+  const [isEmoji, setEmoji] = useState(false);
   const timelineRef = useRef();
 
   // if (!socket) return <div>Loading...</div>;
@@ -269,6 +271,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
             setMsgs((state) => [message, ...state]);
             setText("");
             scrollToBottom();
+            setEmoji(false);
           } catch (error) {
             console.log(error);
           }
@@ -329,6 +332,10 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const onScroll = (e) => {
     if (e.target?.scrollTop < -100) setShowScrollDownButton(true);
     else setShowScrollDownButton(false);
+  };
+
+  const onEmojiClick = (e, emojiObj) => {
+    setText((state) => state + emojiObj.emoji);
   };
 
   return (
@@ -473,6 +480,13 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
             </div>
           </Container>
           <div className={classes.msgWrapper}>
+            {isEmoji && (
+              <Picker
+                className={classes.picker}
+                onEmojiClick={onEmojiClick}
+                skinTone={SKIN_TONE_MEDIUM_DARK}
+              />
+            )}
             <form
               onSubmit={sendMessageAndUpdate}
               onKeyPress={sendMessageAndUpdate}
@@ -490,8 +504,11 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                 <IconButton color="secondary" className={classes.iconButton1}>
                   <Gif />
                 </IconButton>
-                <IconButton color="secondary" className={classes.iconButton1}>
-                  <InsertEmoticon />
+                <IconButton
+                  onClick={() => setEmoji(!isEmoji)}
+                  color="secondary"
+                  className={classes.iconButton1}>
+                  {!isEmoji ? <InsertEmoticon /> : <Close />}
                 </IconButton>
               </div>
               <IconButton type="submit" color="primary" className={classes.iconButton2}>

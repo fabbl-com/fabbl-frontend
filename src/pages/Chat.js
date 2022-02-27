@@ -151,8 +151,8 @@ UserCard.propTypes = {
   url: PropTypes.string.isRequired,
   time: PropTypes.string.isRequired,
   message: PropTypes.string,
-  unread: PropTypes.number.isRequired,
-  privateKey: PropTypes.object.isRequired,
+  unread: PropTypes.number,
+  privateKey: PropTypes.object,
   publicKey: PropTypes.string.isRequired
 };
 
@@ -191,7 +191,7 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   useEffect(() => {
     if (isFriends) setUsers(friends);
     else setUsers(chatListUsers);
-  }, [isFriends]);
+  }, [isFriends, friends.length]);
 
   const chatListListener = (data) => {
     dispatch(getChatListUsers(data?.messages));

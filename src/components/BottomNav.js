@@ -24,16 +24,21 @@ const useStyles = makeStyles(() => ({
 
 export default function BottomNav({ isAuth }) {
   const classes = useStyles();
-  const [value, setValue] = useState(0);
   const location = useLocation();
-  console.log(location.pathname);
   if (!isAuth || location.pathname === "/chat-details") return <></>;
+
+  const values = {
+    "/": 0,
+    "/find": 1,
+    "/chat": 2,
+    "/edit/personal-data": 3
+  };
 
   return (
     <BottomNavigation
-      value={value}
+      value={values[location.pathname]}
       showLabels
-      onChange={(event, newValue) => setValue(newValue)}
+      // onChange={(event, newValue) => setValue(newValue)}
       className={classes.root}>
       <BottomNavigationAction
         label={

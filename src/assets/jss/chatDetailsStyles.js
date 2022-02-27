@@ -128,7 +128,7 @@ const chatStyles = (theme) => ({
   },
   msgWrapper: {
     position: "fixed",
-    width: `calc(100% - ${theme.spacing(6)}px)`,
+    width: `calc(100% - ${theme.spacing(4)}px)`,
     bottom: theme.spacing(2),
     borderRadius: theme.spacing(1),
     left: "50%",
@@ -136,12 +136,34 @@ const chatStyles = (theme) => ({
     backgroundColor: theme.palette.background.default,
     zIndex: "2",
     textAlign: "left",
-    padding: theme.spacing(0.2, 1, 1, 1)
+    // padding: theme.spacing(0.2, 1, 1, 1),
+    padding: 0,
+    "& > aside": {
+      width: "100% !important",
+      background: `${theme.palette.background.default} !important`,
+      boxShadow: `${theme.shadows[16]} !important`
+    },
+    "& > aside section ul:before": {
+      background: `${theme.palette.background.default} !important`
+    },
+    "& > aside input": {
+      background: `${theme.palette.background.default} !important`,
+      color: `${theme.palette.text.primary} !important`,
+      borderRadius: `24px !important`,
+      // boxShadow: `${theme.shadows[16]} !important`,
+      border: `1px solid ${theme.palette.background.hover} !important`,
+      marginBottom: theme.spacing(1)
+    },
+    "& > aside > nav": {
+      background: "#D9D7F1 !important",
+      marginBottom: theme.spacing(1)
+    }
   },
   sendMessage: {
     display: "flex",
     justifyContent: "space-around",
-    alignItems: "end"
+    alignItems: "end",
+    padding: theme.spacing(0.2, 2, 1, 2)
   },
   inputRoot: {
     padding: theme.spacing(0, 0.6),
@@ -150,7 +172,7 @@ const chatStyles = (theme) => ({
     width: `calc(100% - ${theme.spacing(6)}px)`,
     borderRadius: theme.spacing(3),
     backgroundColor: theme.palette.background.default,
-    border: `1px solid ${theme.palette.background.hover}`
+    border: `1px solid ${theme.palette.background.hover} !important`
   },
   input: {
     marginLeft: theme.spacing(1),
