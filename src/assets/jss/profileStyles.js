@@ -26,8 +26,8 @@ const chatStyles = (theme) => ({
     color: theme.palette.error.dark
   },
   avatar: {
-    height: theme.spacing(16),
-    width: theme.spacing(16)
+    height: theme.spacing(30),
+    width: theme.spacing(45)
   },
   location: {
     display: "flex",
@@ -35,10 +35,6 @@ const chatStyles = (theme) => ({
   },
   bio: {
     marginTop: theme.spacing(2)
-  },
-  dob: {
-    display: "flex",
-    alignItems: "center"
   },
   divider: {
     margin: theme.spacing(2, 0),
@@ -50,7 +46,7 @@ const chatStyles = (theme) => ({
     padding: theme.spacing(0.2, 1),
     textTransform: "capitalize",
     minWidth: "auto",
-    margin: theme.spacing(2, 1),
+    margin: theme.spacing(1),
     pointerEvents: "none"
   },
   favorite: {
