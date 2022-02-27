@@ -91,7 +91,6 @@ const UserCard = ({ online, displayName, url, time, message, unread, privateKey,
   }, [publicKey, privateKey]);
 
   useEffect(() => {
-    console.log(message);
     const work = async () => {
       const msg = await decode(message, derivedKey);
       console.log(msg);
@@ -163,7 +162,6 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const [isSearchMode, setSearchMode] = useState(false);
   const [users, setUsers] = useState([]);
   const [isFriends, setFriends] = useState(true);
-  const [anchorEl, setAnchorEl] = useState(null);
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -198,35 +196,6 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const chatListListener = (data) => {
     dispatch(getChatListUsers(data?.messages));
   };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const Actions = (
-    <Menu
-      classes={{
-        paper: classes.menu
-      }}
-      id="actions-menu"
-      keepMounted
-      anchorEl={anchorEl}
-      onClose={handleMenuClose}
-      open={Boolean(anchorEl)}>
-      <MenuItem disableRipple className={classes.menuItem}>
-        <Typography>Change Theme</Typography>
-        <IconButton color="primary" onClick={() => setTheme(!isTheme)}>
-          {!isTheme ? <Brightness4 /> : <BrightnessHigh />}
-        </IconButton>
-      </MenuItem>
-      <MenuItem className={classes.menuItem} onClick={handleMenuClose}>
-        <Typography>My account</Typography>
-        <IconButton className={classes.menuIcons} color="primary">
-          <AccountCircle />
-        </IconButton>
-      </MenuItem>
-    </Menu>
-  );
 
   return (
     <div className={classes.root}>
@@ -278,14 +247,6 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
               <Search />
             </IconButton>
           )}
-          <IconButton
-            aria-controls="actions-menu"
-            onClick={(e) => setAnchorEl(e.currentTarget)}
-            style={{ color: theme.palette.icons.primary }}
-            size="small">
-            <MoreVert />
-          </IconButton>
-          {Actions}
         </Toolbar>
       </AppBar>
       <Container className={classes.msgContainer}>

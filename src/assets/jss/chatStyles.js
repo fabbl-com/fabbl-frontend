@@ -4,7 +4,8 @@ const chatStyles = (theme) => ({
   },
   appBar: {
     marginTop: theme.spacing(6),
-    backgroundColor: theme.palette.background.default
+    backgroundColor: theme.palette.background.default,
+    zIndex: 10
   },
   search: {
     position: "relative",
