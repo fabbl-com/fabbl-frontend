@@ -30,7 +30,7 @@ import {
   DoneAll
 } from "@material-ui/icons";
 import { Skeleton } from "@material-ui/lab";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useHistory } from "react-router-dom";
 import PropTypes from "prop-types";
 import InfiniteScroll from "react-infinite-scroll-component";
 
@@ -111,6 +111,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const location = useLocation();
+  const history = useHistory();
   const scrollDownRef = useRef();
   const [derivedKey, setDerivedKey] = useState(null);
   const [publicKey, setPublicKey] = useState(null);

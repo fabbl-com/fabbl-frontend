@@ -25,7 +25,7 @@ import {
   ListItemSecondaryAction,
   List
 } from "@material-ui/core";
-import { Close, Done, NotificationsNone } from "@material-ui/icons";
+import { Close, Done, NotificationsActive, NotificationsNone } from "@material-ui/icons";
 import {
   BLOCKED,
   CONFIRMED_FRIEND_REQUEST,
@@ -298,7 +298,11 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
               aria-controls={open ? "menu-list-grow" : undefined}
               aria-haspopup="true"
               onClick={handleToggle}>
-              <NotificationsNone fontSize="small" />
+              {unreadCount === 0 ? (
+                <NotificationsNone fontSize="small" />
+              ) : (
+                <NotificationsActive fontSize="small" />
+              )}
             </Avatar>
           </ButtonBase>
         </Badge>

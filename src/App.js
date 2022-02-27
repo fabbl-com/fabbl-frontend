@@ -1,6 +1,6 @@
 import React, { useState, useEffect, lazy, Suspense } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import { CssBaseline } from "@material-ui/core";
+import { CssBaseline, useMediaQuery } from "@material-ui/core";
 import { ThemeProvider } from "@material-ui/styles";
 import { createTheme } from "@material-ui/core/styles";
 import io from "socket.io-client";
@@ -23,7 +23,7 @@ const VerifyVoice = lazy(() => import("./pages/VerifyVoice"));
 import NotFound from "./pages/NotFound";
 
 const Navbar = lazy(() => import("./components/Navbar"));
-const BottomNav = lazy(() => import("./components/BottomNav.js"));
+const BottomNav = lazy(() => import("./components/BottomNav"));
 
 import { checkAuth } from "./redux/actions/userActions";
 import PrivateRoute from "./PrivateRoute";
@@ -32,8 +32,10 @@ const events = require("events");
 const ENDPOINT = "http://localhost:4000";
 
 const App = () => {
-  const theme = localStorage.getItem("theme") ? JSON.parse(localStorage.getItem("theme")) : false;
-  const [isTheme, setTheme] = useState(Boolean(theme));
+  const _isTheme = localStorage.getItem("theme")
+    ? JSON.parse(localStorage.getItem("theme"))
+    : false;
+  const [isTheme, setTheme] = useState(_isTheme);
   const [socket, setSocket] = useState(null);
   const dispatch = useDispatch();
   const eventEmitter = new events.EventEmitter();
@@ -55,13 +57,20 @@ const App = () => {
   // console.log(isAuth);
 
   const appliedTheme = createTheme(isTheme ? dark : light);
+  const matchesMd = useMediaQuery(appliedTheme.breakpoints.up("sm"));
 
   return (
     <ThemeProvider theme={appliedTheme}>
       <Router>
         <Suspense fallback={!socket && authChecking && <span>loading...</span>}>
           <CssBaseline />
-          <Navbar userId={userId} socket={socket} isTheme={isTheme} setTheme={setTheme} />
+          <Navbar
+            matchesMd={matchesMd}
+            userId={userId}
+            socket={socket}
+            isTheme={isTheme}
+            setTheme={setTheme}
+          />
           <Switch>
             <Route path="/" exact>
               <Home />
@@ -100,14 +109,13 @@ const App = () => {
               <FindRandom userId={userId} socket={socket} eventEmitter={eventEmitter} />
             </PrivateRoute>
             <Route path="/auth" render={() => <Auth isAuth={isAuth} />} />
-
             <Route path="/image" render={() => <ImageUpload userId={userId} />} />
             <Route path="/verify-voice" render={() => <VerifyVoice />} />
             <Route path="/user/verify-email" render={() => <VerifyEmail />} />
             <Route path="/user/reset-password" render={() => <ResetPassword userId={userId} />} />
             <Route component={NotFound} />
           </Switch>
-          <BottomNav isAuth={isAuth} />
+          {!matchesMd && <BottomNav isAuth={isAuth} />}
         </Suspense>
       </Router>
     </ThemeProvider>

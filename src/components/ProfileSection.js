@@ -43,9 +43,9 @@ const useStyles = makeStyles((theme) => ({
     border: `1px solid transparent !important`,
     backgroundColor: "#EDE7F6 !important",
     '&[aria-controls="menu-list-grow"], &:hover': {
-      border: `1px solid ${theme.palette.secondary.main} !important`,
+      border: `1px solid #5E35B1 !important`,
       boxShadow: theme.shadows[16],
-      background: `${theme.palette.secondary.main}!important`,
+      background: `#5E35B1 !important`,
       color: theme.palette.secondary.light,
       "& .MuiChip-label": {
         color: "#fff"
@@ -207,7 +207,7 @@ const ProfileSection = ({ userId, isTheme, setTheme }) => {
             aria-haspopup="true"
           />
         }
-        label={<Settings fontSize="small" color="primary" />}
+        label={<Settings fontSize="small" />}
         variant="outlined"
         ref={anchorRef}
         aria-controls={open && "menu-list-grow"}

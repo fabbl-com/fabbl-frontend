@@ -1,67 +1,85 @@
 import React, { useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import BottomNavigation from "@material-ui/core/BottomNavigation";
-import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
-import HomeIcon from "@material-ui/icons/Home";
-import ExploreIcon from "@material-ui/icons/Explore";
-import PersonIcon from "@material-ui/icons/Person";
-import ChatIcon from "@material-ui/icons/Chat";
+import {
+  BottomNavigation,
+  BottomNavigationAction,
+  Typography,
+  makeStyles
+} from "@material-ui/core";
+import { Favorite, Explore, Home, Person } from "@material-ui/icons";
 import { useLocation, Link } from "react-router-dom";
-import { PropTypes } from "prop-types";
-const useStyles = makeStyles((theme) => ({
+import PropTypes from "prop-types";
+const useStyles = makeStyles(() => ({
   root: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
     position: "fixed",
     bottom: 0,
-    width: " 100vw",
-    height: "3rem",
-    background: theme.palette.background.default
+    width: "100vw",
+    "& Mui-selected .MuiSvgIcon-root": {
+      transform: "scale(1.5)"
+    }
   }
 }));
 
 export default function BottomNav({ isAuth }) {
   const classes = useStyles();
   const [value, setValue] = useState(0);
-  let location = useLocation();
+  const location = useLocation();
   console.log(location.pathname);
-  if (!isAuth || location.pathname === "/chat-details") {
-    return <></>;
-  }
+  if (!isAuth || location.pathname === "/chat-details") return <></>;
 
   return (
     <BottomNavigation
       value={value}
-      onChange={(event, newValue) => {
-        setValue(newValue);
-      }}
+      showLabels
+      onChange={(event, newValue) => setValue(newValue)}
       className={classes.root}>
       <BottomNavigationAction
+        label={
+          <Link to={"/"}>
+            <Typography variant="caption">Home</Typography>
+          </Link>
+        }
         icon={
           <Link to={"/"}>
-            <HomeIcon fontSize="medium" />
+            <Home className={classes.icon} fontSize="small" />
           </Link>
         }
       />
       <BottomNavigationAction
+        label={
+          <Link to={"/find"}>
+            <Typography variant="caption">Explore</Typography>
+          </Link>
+        }
         icon={
           <Link to={"/find"}>
-            <ExploreIcon fontSize="medium" />
+            <Explore fontSize="small" />
           </Link>
         }
       />
       <BottomNavigationAction
+        label={
+          <Link to={"/chat"}>
+            <Typography variant="caption">Matches</Typography>
+          </Link>
+        }
         icon={
           <Link to={"/chat"}>
-            <ChatIcon fontSize="medium" />
+            <Favorite fontSize="small" />
           </Link>
         }
       />
       <BottomNavigationAction
+        label={
+          <Link to={"/edit/personal-data"}>
+            <Typography variant="caption">Profile</Typography>
+          </Link>
+        }
         icon={
           <Link to={"/edit/personal-data"}>
-            <PersonIcon fontSize="medium" />
+            <Person fontSize="small" />
           </Link>
         }
       />

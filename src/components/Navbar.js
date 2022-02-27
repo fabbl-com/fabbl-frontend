@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { AppBar, Toolbar, Typography, makeStyles } from "@material-ui/core";
+import { AppBar, Box, Toolbar, Typography, makeStyles } from "@material-ui/core";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import NotificationSection from "./Notifications";
@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { removeNotifications, setNotifications } from "../redux/actions/userActions";
 import ProfileSection from "./ProfileSection";
 import { Alert } from "@material-ui/lab";
+import { Explore, Favorite } from "@material-ui/icons";
+import ButtonWrapper from "./ButtonWrapper";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
@@ -18,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
     top: `48px !important`,
     left: "auto !important",
     right: 0,
-
     minWidth: "200px",
     "& > ul": {
       padding: 0
@@ -35,10 +36,28 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: "transparent"
       }
     }
+  },
+  box: {
+    marginLeft: theme.spacing(2)
+  },
+  link: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  btnWrapper: {
+    "&:hover": {
+      "& $icon": {
+        color: "#fff"
+      }
+    }
+  },
+  icon: {
+    color: "#5E35B1"
   }
 }));
 
-const Navbar = ({ socket, userId, isTheme, setTheme }) => {
+const Navbar = ({ socket, userId, isTheme, setTheme, matchesMd }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [isLoggedOut, setLoggedOut] = useState(false);
@@ -73,6 +92,24 @@ const Navbar = ({ socket, userId, isTheme, setTheme }) => {
         </Link>
         <div style={{ flexGrow: 1 }} />
         <div style={{ display: "flex", alignItems: "center" }}>
+          {matchesMd && (
+            <>
+              <Box className={classes.box}>
+                <ButtonWrapper className={classes.btnWrapper}>
+                  <Link className={classes.link} to={"/find"}>
+                    <Explore className={classes.icon} fontSize="small" />
+                  </Link>
+                </ButtonWrapper>
+              </Box>
+              <Box className={classes.box}>
+                <ButtonWrapper className={classes.btnWrapper}>
+                  <Link className={classes.link} to={"/chat"}>
+                    <Favorite className={classes.icon} fontSize="small" />
+                  </Link>
+                </ButtonWrapper>
+              </Box>
+            </>
+          )}
           <NotificationSection
             socket={socket}
             userId={userId}
@@ -90,7 +127,8 @@ Navbar.propTypes = {
   userId: PropTypes.string.isRequired,
   socket: PropTypes.object,
   isTheme: PropTypes.bool.isRequired,
-  setTheme: PropTypes.func.isRequired
+  setTheme: PropTypes.func.isRequired,
+  matchesMd: PropTypes.bool.isRequired
 };
 
 export default Navbar;
