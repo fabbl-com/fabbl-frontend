@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
@@ -6,7 +6,7 @@ import HomeIcon from "@material-ui/icons/Home";
 import ExploreIcon from "@material-ui/icons/Explore";
 import PersonIcon from "@material-ui/icons/Person";
 import ChatIcon from "@material-ui/icons/Chat";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { PropTypes } from "prop-types";
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function BottomNav({ isAuth }) {
   const classes = useStyles();
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
   let location = useLocation();
   console.log(location.pathname);
   if (!isAuth || location.pathname === "/chat-details") {
@@ -37,10 +37,34 @@ export default function BottomNav({ isAuth }) {
         setValue(newValue);
       }}
       className={classes.root}>
-      <BottomNavigationAction icon={<HomeIcon fontSize="medium" />} />
-      <BottomNavigationAction icon={<ExploreIcon fontSize="medium" />} />
-      <BottomNavigationAction icon={<ChatIcon fontSize="medium" />} />
-      <BottomNavigationAction icon={<PersonIcon fontSize="medium" />} />
+      <BottomNavigationAction
+        icon={
+          <Link to={"/"}>
+            <HomeIcon fontSize="medium" />
+          </Link>
+        }
+      />
+      <BottomNavigationAction
+        icon={
+          <Link to={"/find"}>
+            <ExploreIcon fontSize="medium" />
+          </Link>
+        }
+      />
+      <BottomNavigationAction
+        icon={
+          <Link to={"/chat"}>
+            <ChatIcon fontSize="medium" />
+          </Link>
+        }
+      />
+      <BottomNavigationAction
+        icon={
+          <Link to={"/edit/personal-data"}>
+            <PersonIcon fontSize="medium" />
+          </Link>
+        }
+      />
     </BottomNavigation>
   );
 }

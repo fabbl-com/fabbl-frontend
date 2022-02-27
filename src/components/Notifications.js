@@ -37,7 +37,8 @@ import {
 } from "../constants";
 import { PropTypes } from "prop-types";
 import moment from "moment";
-
+import PerfectScrollbar from "react-perfect-scrollbar";
+import "react-perfect-scrollbar/dist/css/styles.css";
 const useStyles = makeStyles((theme) => ({
   box: {
     marginLeft: "2ch",
@@ -362,6 +363,7 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
                         )}
                       </Grid>
                     </Grid>
+
                     <Grid item xs={12}>
                       <div
                         style={{
@@ -398,36 +400,38 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
                           </Grid>
                         </Grid>
                         <List className={classes.list}>
-                          {notifications && notifications.length > 0 ? (
-                            notifications
-                              .sort((b, a) => new Date(a.createdAt) - new Date(b.createdAt))
-                              .map((el, index) => (
-                                <Fragment key={index}>
-                                  <CustomListItem
-                                    handleConfirm={(e) =>
-                                      handleConfirm(e, {
-                                        id: el.userId,
-                                        notificationId: el?.notificationId
-                                      })
-                                    }
-                                    handleDecline={(e) =>
-                                      handleDecline(e, {
-                                        id: el.userId,
-                                        notificationId: el?.notificationId
-                                      })
-                                    }
-                                    name={el?.displayName?.value || "*****"}
-                                    url={el?.avatar?.value}
-                                    time={el.createdAt}
-                                    notificationType={el.notificationType}
-                                    isRead={el.isRead}
-                                  />
-                                  <Divider light />
-                                </Fragment>
-                              ))
-                          ) : (
-                            <div style={{ paddingLeft: "2ch" }}>You have no notifications</div>
-                          )}
+                          <PerfectScrollbar data-mdb-perfect-scrollbar="true">
+                            {notifications && notifications.length > 0 ? (
+                              notifications
+                                .sort((b, a) => new Date(a.createdAt) - new Date(b.createdAt))
+                                .map((el, index) => (
+                                  <Fragment key={index}>
+                                    <CustomListItem
+                                      handleConfirm={(e) =>
+                                        handleConfirm(e, {
+                                          id: el.userId,
+                                          notificationId: el?.notificationId
+                                        })
+                                      }
+                                      handleDecline={(e) =>
+                                        handleDecline(e, {
+                                          id: el.userId,
+                                          notificationId: el?.notificationId
+                                        })
+                                      }
+                                      name={el?.displayName?.value || "*****"}
+                                      url={el?.avatar?.value}
+                                      time={el.createdAt}
+                                      notificationType={el.notificationType}
+                                      isRead={el.isRead}
+                                    />
+                                    <Divider light />
+                                  </Fragment>
+                                ))
+                            ) : (
+                              <div style={{ paddingLeft: "2ch" }}>You have no notifications</div>
+                            )}
+                          </PerfectScrollbar>
                         </List>
                       </div>
                     </Grid>
