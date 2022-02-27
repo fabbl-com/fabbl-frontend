@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
     padding: 16,
     "&:hover": {
-      background: "#E3F2FD"
+      background: theme.palette.background.primary
     },
     "& .MuiListItem-root": {
       padding: 0
@@ -171,8 +171,7 @@ const CustomListItem = ({
               <Grid item>
                 <Button
                   style={{
-                    backgroundColor: theme.palette.primary.light,
-                    color: "#eee"
+                    backgroundColor: theme.palette.primary
                   }}
                   onClick={handleConfirm}
                   variant="contained"
@@ -184,8 +183,7 @@ const CustomListItem = ({
               <Grid item>
                 <Button
                   style={{
-                    backgroundColor: theme.palette.error.light,
-                    color: "#eee"
+                    backgroundColor: theme.palette.error.light
                   }}
                   onClick={handleDecline}
                   variant="contained"
@@ -315,7 +313,7 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
           <Grow
             style={{
               transformOrigin: matchesXs ? "top" : "top-right",
-              backgroundColor: "#fff",
+              background: theme.palette.background.default,
               borderRadius: "12px",
               marginTop: "1ch"
             }}
@@ -325,7 +323,7 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
               <ClickAwayListener onClickAway={handleClose}>
                 <Card
                   style={{
-                    backgroundColor: "#fff",
+                    background: theme.palette.background.default,
                     borderRadius: "12px",
                     boxShadow: theme.shadows[16]
                   }}

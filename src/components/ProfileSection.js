@@ -89,7 +89,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "12px",
     margin: "0.1ch 0",
     "&:hover": {
-      backgroundColor: "rgb(237, 231, 246)"
+      background: theme.palette.background.primary
     }
   },
   popup: {

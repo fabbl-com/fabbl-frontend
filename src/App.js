@@ -7,7 +7,6 @@ import io from "socket.io-client";
 import { useDispatch, useSelector } from "react-redux";
 import { dark, light } from "./assets/theme";
 const Auth = lazy(() => import("./pages/Auth"));
-const Auth1 = lazy(() => import("./pages/Auth1"));
 const Chat = lazy(() => import("./pages/Chat"));
 const ChatDetails = lazy(() => import("./pages/ChatDetails"));
 const FindRandom = lazy(() => import("./pages/FindRandom"));
@@ -24,6 +23,7 @@ const VerifyVoice = lazy(() => import("./pages/VerifyVoice"));
 import NotFound from "./pages/NotFound";
 
 const Navbar = lazy(() => import("./components/Navbar"));
+const BottomNav = lazy(() => import("./components/BottomNav.js"));
 
 import { checkAuth } from "./redux/actions/userActions";
 import PrivateRoute from "./PrivateRoute";
@@ -100,13 +100,14 @@ const App = () => {
               <FindRandom userId={userId} socket={socket} eventEmitter={eventEmitter} />
             </PrivateRoute>
             <Route path="/auth" render={() => <Auth isAuth={isAuth} />} />
-            <Route path="/auth1" render={() => <Auth1 />} />
+
             <Route path="/image" render={() => <ImageUpload userId={userId} />} />
             <Route path="/verify-voice" render={() => <VerifyVoice />} />
             <Route path="/user/verify-email" render={() => <VerifyEmail />} />
             <Route path="/user/reset-password" render={() => <ResetPassword userId={userId} />} />
             <Route component={NotFound} />
           </Switch>
+          <BottomNav isAuth={isAuth} />
         </Suspense>
       </Router>
     </ThemeProvider>

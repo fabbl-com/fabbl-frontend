@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1, 0)
   },
   card: {
-    backgroundColor: "#FDF1F2"
+    background: theme.palette.background.default
   },
   avatar: {
     height: "8rem",

@@ -5,7 +5,7 @@ const randomStyles = (theme) => ({
     backgroundColor: "#CCFBFE"
   },
   searchControl: {
-    marginTop: theme.spacing(6),
+    marginTop: theme.spacing(0),
     // padding: theme.spacing(2, 0),
     display: "flex",
     justifyContent: "space-between"
