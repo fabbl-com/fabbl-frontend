@@ -67,7 +67,7 @@ const chatStyles = (theme) => ({
     position: "relative",
     // paddingTop: theme.spacing(6),
     // paddingBottom: theme.spacing(5)
-    padding: 0
+    padding: theme.spacing(6, 0)
   },
   msgAction: {
     display: "flex",

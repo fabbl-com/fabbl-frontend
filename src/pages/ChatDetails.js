@@ -31,7 +31,8 @@ import {
 } from "@material-ui/icons";
 import { Skeleton } from "@material-ui/lab";
 import { Link, useLocation } from "react-router-dom";
-import { PropTypes } from "prop-types";
+import PropTypes from "prop-types";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 import { chatDetailsStyles } from "../assets/jss";
 import { makeMessageSeen, sendMessage } from "../utils/socket.io";
@@ -43,32 +44,7 @@ import { decode, encode, genDerivedKey } from "../lib/hashAlgorithm";
 
 const useStyles = makeStyles((theme) => chatDetailsStyles(theme));
 
-const ScrollDown = ({ children }) => {
-  const theme = useTheme();
-
-  const handleScrollDown = (e) => {
-    const anchor = (e.target.ownerDocument || document).querySelector("#scroll-to-bottom");
-
-    if (anchor) {
-      anchor.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  };
-
-  return (
-    <Zoom in={true}>
-      <div
-        style={{ position: "fixed", bottom: theme.spacing(7), right: theme.spacing(2), zIndex: 3 }}
-        onClick={handleScrollDown}
-        role="presentation">
-        {children}
-      </div>
-    </Zoom>
-  );
-};
-
-ScrollDown.propTypes = {
-  children: PropTypes.element.isRequired
-};
+const SIZE = 15;
 
 const Message = ({ derivedKey, time, isRead, children, ...props }) => {
   const classes = useStyles(props);
@@ -119,9 +95,9 @@ const Message = ({ derivedKey, time, isRead, children, ...props }) => {
 
 Message.propTypes = {
   children: PropTypes.string.isRequired,
-  derivedKey: PropTypes.object.isRequired,
+  derivedKey: PropTypes.object,
   align: PropTypes.string,
-  time: PropTypes.string,
+  time: PropTypes.any,
   isRead: PropTypes.bool
 };
 
@@ -135,13 +111,17 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const theme = useTheme();
   const dispatch = useDispatch();
   const location = useLocation();
-  const messagesEndRef = useRef();
+  const scrollDownRef = useRef();
   const [derivedKey, setDerivedKey] = useState(null);
   const [publicKey, setPublicKey] = useState(null);
   const [elems, setElems] = useState([]);
   const [customProps, setCustomProps] = useState({ isBlocked: false, friendStatus: "" });
+  const [hasMore, setHasMore] = useState(true);
+  const [showScrollDownButton, setShowScrollDownButton] = useState(false);
+  const [page, setPage] = useState(1);
+  const timelineRef = useRef();
 
-  if (!socket) return <div>Loading...</div>;
+  // if (!socket) return <div>Loading...</div>;
 
   const { loading, receiver, messages, messageId } = useSelector((state) => state.messages);
   const { privateKey } = useSelector((state) => state.user);
@@ -155,21 +135,23 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
 
   useEffect(() => {
     const query = location?.state;
+    if (!query) history.push("/chat");
     setSelectedUserId(query.userId);
     setCustomProps((state) => ({
       ...state,
       isBlocked: query.isBlocked,
       friendStatus: query.friendStatus
     }));
-    socket.emit("get-user-messages", { sender: userId, receiver: query.userId });
     dispatch({ type: SET_USER_MESSAGES_REQUEST });
     socket.on("get-user-messages-response", (data) => {
-      console.log(data);
       const key = data?.receiver?.publicKey;
       if (key) setPublicKey(JSON.parse(key));
-      const msgs = data?.messages?.messages;
-      const _id = data?.messages?._id;
-      dispatch(setUserMessages({ messageId: _id, messages: msgs, receiver: data?.receiver }));
+      const msgs = data?.messages;
+      if (msgs.length === 0) setHasMore(false);
+      else {
+        const _id = data?.messages?._id;
+        dispatch(setUserMessages({ messageId: _id, messages: msgs, receiver: data?.receiver }));
+      }
     });
 
     socket.on("send-message-response", (message) => setMsgs((state) => [...state, message]));
@@ -186,7 +168,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   }, [socket]);
 
   useEffect(() => {
-    if (messages && messages.length > 0) setMsgs((state) => [...messages, ...state]);
+    if (messages && messages.length > 0) setMsgs((state) => [...state, ...messages]);
   }, [messages]);
 
   useEffect(() => {
@@ -197,7 +179,6 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
           break;
         }
       }
-      scrollToBottom();
       setElems((state) =>
         Array(msgs.length)
           .fill()
@@ -251,6 +232,16 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
     }
   }, [msgs, lastRreceived]);
 
+  useEffect(() => {
+    if (selectedUserId)
+      socket.emit("get-user-messages", {
+        sender: userId,
+        receiver: selectedUserId,
+        size: SIZE,
+        page
+      });
+  }, [page, selectedUserId]);
+
   const sendMessageAndUpdate = async (e) => {
     const keyCode = e.which || e.keyCode;
     if (!derivedKey) return;
@@ -274,9 +265,8 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
               createdAt: new Date()
             };
             sendMessage(socket, message);
-            setMsgs((state) => [...state, message]);
+            setMsgs((state) => [message, ...state]);
             setText("");
-            // scroll down
             scrollToBottom();
           } catch (error) {
             console.log(error);
@@ -286,18 +276,8 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
     }
   };
 
-  const scrollToBottom = () => {
-    if (messagesEndRef) {
-      messagesEndRef.current.addEventListener("DOMNodeInserted", (event) => {
-        const { currentTarget: target } = event;
-        target.scroll({ top: target.scrollHeight, behavior: "smooth" });
-      });
-    }
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
+  const scrollToBottom = () => timelineRef.current.scrollTo(0, timelineRef.current.scrollHeight);
+  const handleMenuClose = () => setAnchorEl(null);
 
   const handleFriends = (e) => {
     e.preventDefault();
@@ -319,8 +299,6 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
       else socket.emit("unblock", { sender: userId, receiver: selectedUserId });
     }
   };
-
-  console.log(messagesEndRef?.current?.scrollTop);
 
   const Actions = (
     <Menu
@@ -346,6 +324,11 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
       </MenuItem>
     </Menu>
   );
+
+  const onScroll = (e) => {
+    if (e.target?.scrollTop < -100) setShowScrollDownButton(true);
+    else setShowScrollDownButton(false);
+  };
 
   return (
     <div className={classes.root}>
@@ -423,35 +406,49 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
             <div
               style={{
                 maxWidth: "100%",
-                height: `calc(100vh - ${theme.spacing(10)}px)`,
-                overflowY: "scroll",
-                marginBottom: "0",
-                padding: "6ch 2ch"
-              }}
-              ref={messagesEndRef}>
-              <Typography className={classes.timeSince} variant="body2">
-                {loading ? (
-                  <Skeleton animation="wave" width={200} />
-                ) : (
-                  `Matched At: ${new Date(receiver?.matchAt).toLocaleString()}`
-                )}
-              </Typography>
+                height: "100%"
+              }}>
               {!loading ? (
                 !receiver?.isBlockedBy ? (
-                  msgs
-                    .slice(0)
-                    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-                    .map((msg, i) => (
-                      <div ref={elems[i]} key={i}>
-                        <Message
-                          align={msg.sender === userId ? "left" : "right"}
-                          time={msg.createdAt}
-                          derivedKey={derivedKey}
-                          isRead={msg.isRead}>
-                          {msg.text}
-                        </Message>
-                      </div>
-                    ))
+                  <div
+                    id="scrollableDiv"
+                    style={{
+                      height: `calc(100vh - 180px)`,
+                      overflow: "auto",
+                      display: "flex",
+                      flexDirection: "column-reverse"
+                    }}
+                    ref={timelineRef}>
+                    <InfiniteScroll
+                      ref={scrollDownRef}
+                      onScroll={onScroll}
+                      dataLength={msgs.length}
+                      next={() => setPage(page + 1)}
+                      style={{
+                        display: "flex",
+                        flexDirection: "column-reverse",
+                        padding: "0 2ch"
+                      }}
+                      inverse={true}
+                      hasMore={hasMore}
+                      loader={<h4>Loading...</h4>}
+                      scrollableTarget="scrollableDiv">
+                      {msgs.map((msg, i) => (
+                        <div ref={elems[i]} key={i}>
+                          <Message
+                            align={msg.sender === userId ? "left" : "right"}
+                            time={msg.createdAt}
+                            derivedKey={derivedKey}
+                            isRead={msg.isRead}>
+                            {msg.text}
+                          </Message>
+                        </div>
+                      ))}
+                      <Typography className={classes.timeSince} variant="body2">
+                        {`Matched At: ${new Date(receiver?.matchAt).toLocaleString()}`}
+                      </Typography>
+                    </InfiniteScroll>
+                  </div>
                 ) : (
                   <div style={{ color: "red" }}>You cannot reply to this conversation</div>
                 )
@@ -473,41 +470,51 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                 </div>
               )}
             </div>
-            <div className={classes.msgWrapper}>
-              <form
-                onSubmit={sendMessageAndUpdate}
-                onKeyPress={sendMessageAndUpdate}
-                className={classes.sendMessage}>
-                <div component="form" className={classes.inputRoot}>
-                  <InputBase
-                    className={classes.input}
-                    maxRows={3}
-                    multiline
-                    onChange={(e) => setText(e.target.value)}
-                    value={text}
-                    placeholder="Write your message..."
-                    variant="outlined"
-                  />
-                  <IconButton color="secondary" className={classes.iconButton1}>
-                    <Gif />
-                  </IconButton>
-                  <IconButton color="secondary" className={classes.iconButton1}>
-                    <InsertEmoticon />
-                  </IconButton>
-                </div>
-                <IconButton type="submit" color="primary" className={classes.iconButton2}>
-                  <Send />
-                </IconButton>
-              </form>
-            </div>
           </Container>
+          <div className={classes.msgWrapper}>
+            <form
+              onSubmit={sendMessageAndUpdate}
+              onKeyPress={sendMessageAndUpdate}
+              className={classes.sendMessage}>
+              <div component="form" className={classes.inputRoot}>
+                <InputBase
+                  className={classes.input}
+                  maxRows={3}
+                  multiline
+                  onChange={(e) => setText(e.target.value)}
+                  value={text}
+                  placeholder="Write your message..."
+                  variant="outlined"
+                />
+                <IconButton color="secondary" className={classes.iconButton1}>
+                  <Gif />
+                </IconButton>
+                <IconButton color="secondary" className={classes.iconButton1}>
+                  <InsertEmoticon />
+                </IconButton>
+              </div>
+              <IconButton type="submit" color="primary" className={classes.iconButton2}>
+                <Send />
+              </IconButton>
+            </form>
+          </div>
           <div id="scroll-to-bottom" />
         </Paper>
-        <ScrollDown>
-          <Fab color="secondary" size="small" aria-label="scroll back to bottom">
-            <KeyboardArrowDown />
-          </Fab>
-        </ScrollDown>
+        <Zoom in={showScrollDownButton}>
+          <div
+            style={{
+              position: "fixed",
+              bottom: theme.spacing(7),
+              right: theme.spacing(2),
+              zIndex: 3
+            }}
+            onClick={scrollToBottom}
+            role="presentation">
+            <Fab color="secondary" size="small" aria-label="scroll back to bottom">
+              <KeyboardArrowDown />
+            </Fab>
+          </div>
+        </Zoom>
       </Container>
     </div>
   );
