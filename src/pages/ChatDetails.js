@@ -168,7 +168,11 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
       dispatch(setUserMessages({ messageId: _id, messages: msgs, receiver: data?.receiver }));
     });
 
-    socket.on("send-message-response", (message) => setMsgs((state) => [...state, message]));
+    socket.on("send-message-response", (message) => {
+      console.log(message);
+      setMsgs((state) => [message, ...state]);
+      // dispatch(setUserMessages({ messageId: message.message_id }));
+    });
     socket.on("connection-response", (data) => dispatch(setUserOffline(data)));
     socket.on("block-response", (data) => {
       setCustomProps((state) => ({ ...state, isBlocked: data.isBlocked }));
@@ -187,12 +191,8 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
 
   useEffect(() => {
     if (msgs && msgs.length > 0) {
-      for (let i = msgs.length - 1; i >= 0; i--) {
-        if (msgs[i].sender !== userId) {
-          setLastRreceived(i);
-          break;
-        }
-      }
+      const idx = msgs.findIndex((el) => el.sender !== userId);
+      if (idx !== -1) setLastRreceived(idx);
       setElems((state) =>
         Array(msgs.length)
           .fill()
@@ -205,7 +205,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
     socket.on("read-response", (data) => {
       let index = -1;
       const temp = msgs;
-      for (let i = temp.length - 1; i >= 0; i--) {
+      for (let i = 0; i < temp.length - 1; i++) {
         if (temp[i].sender === data.sender) {
           index = i;
           temp[i].isRead = true;
@@ -223,6 +223,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
       const container = elems[lastRreceived];
       const observer = new IntersectionObserver(
         ([entry]) => {
+          console.log(!msgs[lastRreceived].isRead, entry.isIntersecting);
           if (!msgs[lastRreceived].isRead && entry.isIntersecting) {
             makeMessageSeen(
               socket,
@@ -517,17 +518,15 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                       loader={<h4>Loading...</h4>}
                       scrollableTarget="scrollableDiv">
                       {msgs.map((msg, i) => (
-                        <React.Fragment key={i}>
-                          <div ref={elems[i]}>
-                            <Message
-                              align={msg.sender === userId ? "left" : "right"}
-                              time={msg.createdAt}
-                              derivedKey={derivedKey}
-                              isRead={msg.isRead}>
-                              {msg.text}
-                            </Message>
-                          </div>
-                        </React.Fragment>
+                        <div ref={elems[i]} key={i}>
+                          <Message
+                            align={msg.sender === userId ? "left" : "right"}
+                            time={msg.createdAt}
+                            derivedKey={derivedKey}
+                            isRead={msg.isRead}>
+                            {msg.text}
+                          </Message>
+                        </div>
                       ))}
                       <Typography className={classes.timeSince} variant="body2">
                         {`Matched At: ${new Date(receiver?.matchAt).toLocaleString()}`}
