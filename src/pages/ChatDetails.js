@@ -335,7 +335,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   };
 
   const onEmojiClick = (e, emojiObj) => {
-    setText((state) => state + emojiObj.emoji);
+    setText((state) => state + " " + emojiObj.emoji + " ");
   };
 
   return (

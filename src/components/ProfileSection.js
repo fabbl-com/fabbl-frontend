@@ -1,7 +1,7 @@
 /* eslint-disable no-constant-condition */
 import { useState, useRef, useEffect } from "react";
 
-import { useHistory, useLocation } from "react-router-dom";
+import { useHistory, useLocation, Link } from "react-router-dom";
 
 // material-ui
 import {
@@ -27,7 +27,6 @@ import {
   ListItem
 } from "@material-ui/core";
 import { PropTypes } from "prop-types";
-
 import { ExitToApp, Lock, Person, Settings } from "@material-ui/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/actions/userActions";
@@ -104,6 +103,7 @@ const useStyles = makeStyles((theme) => ({
   titleMd: {
     lineHeight: "1.5 !important"
   },
+
   button: {
     fontSize: "inherit"
   }
@@ -153,13 +153,8 @@ const ProfileSection = ({ userId, isTheme, setTheme }) => {
     setOpen(false);
   };
 
-  const handleListItemClick = (event, route = "") => {
-    setOpen((state) => !state);
+  const handleListItemClick = () => setOpen((state) => !state);
 
-    if (route && route !== "") {
-      history.push({ pathname: route, from: location?.pathname || "/" });
-    }
-  };
   const handleToggle = () => {
     if (!isAuth) {
       // Swal.fire({
@@ -282,39 +277,51 @@ const ProfileSection = ({ userId, isTheme, setTheme }) => {
                   </Card>
                   <Divider light />
                   <List className={classes.list}>
-                    <ListItem
-                      component={Button}
-                      className={classes.listItem}
-                      onClick={(event) => handleListItemClick(event, `profile/${userId}`)}>
-                      <ListItemIcon>
-                        <Person fontSize="small" color="primary" />
-                      </ListItemIcon>
-                      <ListItemText>
-                        <Typography variant="body2">Profile</Typography>
-                      </ListItemText>
-                    </ListItem>
-                    <ListItem
-                      component={Button}
-                      className={classes.listItem}
-                      onClick={(event) => handleListItemClick(event, "/settings")}>
-                      <ListItemIcon>
-                        <Settings fontSize="small" color="primary" />
-                      </ListItemIcon>
-                      <ListItemText>
-                        <Typography variant="body2">Account Settings</Typography>
-                      </ListItemText>
-                    </ListItem>
-                    <ListItem
-                      component={Button}
-                      className={classes.listItem}
-                      onClick={(event) => handleListItemClick(event, `/edit/security-data`)}>
-                      <ListItemIcon>
-                        <Lock fontSize="small" color="primary" />
-                      </ListItemIcon>
-                      <ListItemText>
-                        <Typography variant="body2">Security Data</Typography>
-                      </ListItemText>
-                    </ListItem>
+                    <Link
+                      style={{ width: "100%" }}
+                      to={{ pathname: `/profile/${userId}`, from: location.pathname }}>
+                      <ListItem
+                        component={Button}
+                        className={classes.listItem}
+                        onClick={handleListItemClick}>
+                        <ListItemIcon>
+                          <Person fontSize="small" color="primary" />
+                        </ListItemIcon>
+                        <ListItemText>
+                          <Typography variant="body2">Profile</Typography>
+                        </ListItemText>
+                      </ListItem>
+                    </Link>
+                    <Link
+                      style={{ width: "100%" }}
+                      to={{ pathname: `/settings`, from: location.pathname }}>
+                      <ListItem
+                        component={Button}
+                        className={classes.listItem}
+                        onClick={handleListItemClick}>
+                        <ListItemIcon>
+                          <Settings fontSize="small" color="primary" />
+                        </ListItemIcon>
+                        <ListItemText>
+                          <Typography variant="body2">Account Settings</Typography>
+                        </ListItemText>
+                      </ListItem>
+                    </Link>
+                    <Link
+                      style={{ width: "100%" }}
+                      to={{ pathname: `/edit/security-data`, from: location.pathname }}>
+                      <ListItem
+                        component={Button}
+                        className={classes.listItem}
+                        onClick={handleListItemClick}>
+                        <ListItemIcon>
+                          <Lock fontSize="small" color="primary" />
+                        </ListItemIcon>
+                        <ListItemText>
+                          <Typography variant="body2">Security Data</Typography>
+                        </ListItemText>
+                      </ListItem>
+                    </Link>
                     <ListItem
                       component={Button}
                       className={classes.listItem}

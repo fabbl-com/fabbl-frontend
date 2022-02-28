@@ -10,11 +10,12 @@ const chatStyles = (theme) => ({
   search: {
     position: "relative",
     borderRadius: theme.shape.borderRadius,
-    backgroundColor: "rgba(255, 255, 255, 0.9)",
+    backgroundColor: theme.palette.card.default,
     "&:hover": {
-      backgroundColor: "rgba(255, 255, 255, 0.4)"
+      backgroundColor: theme.palette.background.hover
     },
-    marginLeft: theme.spacing(3)
+    marginLeft: theme.spacing(3),
+    transition: "all 2s"
   },
   searchIcon: {
     position: "absolute",

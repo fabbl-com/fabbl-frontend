@@ -15,18 +15,11 @@ import {
   Zoom,
   Fab,
   InputBase,
-  Menu,
-  MenuItem
+  ClickAwayListener,
+  Grow
 } from "@material-ui/core";
 import moment from "moment";
-import {
-  AccountCircle,
-  Brightness4,
-  BrightnessHigh,
-  KeyboardArrowUp,
-  MoreVert,
-  Search
-} from "@material-ui/icons";
+import { KeyboardArrowUp, Search } from "@material-ui/icons";
 import { Link, useHistory } from "react-router-dom";
 import { PropTypes } from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
@@ -157,11 +150,12 @@ UserCard.propTypes = {
 };
 
 const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
-  const classes = useStyles();
   const theme = useTheme();
+  const classes = useStyles();
   const [isSearchMode, setSearchMode] = useState(false);
   const [users, setUsers] = useState([]);
   const [isFriends, setFriends] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -197,13 +191,25 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
     dispatch(getChatListUsers(data?.messages));
   };
 
+  const search = (users) => {
+    return users.filter(
+      (user) =>
+        searchTerm === "" ||
+        user.displayName.value.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase())
+    );
+  };
+
+  const handleFriends = () => setFriends((state) => !state);
+
+  console.log(isSearchMode);
+
   return (
     <div className={classes.root}>
       <div id="scroll-to-top" />
       <AppBar elevation={1} className={classes.appBar} color="inherit">
         <Toolbar variant="dense">
           <Typography
-            onClick={() => setFriends(false)}
+            onClick={handleFriends}
             style={{
               marginRight: theme.spacing(2),
               cursor: "pointer",
@@ -216,7 +222,7 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
             All
           </Typography>
           <Typography
-            onClick={() => setFriends(true)}
+            onClick={handleFriends}
             style={{ cursor: "pointer", borderBottom: isFriends && "3px solid blue" }}
             color="textSecondary"
             component="h1"
@@ -225,34 +231,44 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
             Friends
           </Typography>
           <div style={{ flexGrow: 1 }} />
-          {isSearchMode ? (
-            <div className={classes.search}>
-              <div className={classes.searchIcon}>
+
+          <ClickAwayListener onClickAway={() => setSearchMode(false)}>
+            {isSearchMode ? (
+              <Grow
+                in={isSearchMode}
+                style={{ transformOrigin: "0 0 0 0" }}
+                {...(isSearchMode ? { timeout: 500 } : {})}>
+                <div className={classes.search}>
+                  <div className={classes.searchIcon}>
+                    <Search />
+                  </div>
+                  <InputBase
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search…"
+                    classes={{
+                      root: classes.inputRoot,
+                      input: classes.inputInput
+                    }}
+                    inputProps={{ "aria-label": "search" }}
+                  />
+                </div>
+              </Grow>
+            ) : (
+              <IconButton
+                onClick={() => setSearchMode(true)}
+                style={{ color: theme.palette.icons.primary }}
+                size="small">
                 <Search />
-              </div>
-              <InputBase
-                placeholder="Search…"
-                classes={{
-                  root: classes.inputRoot,
-                  input: classes.inputInput
-                }}
-                inputProps={{ "aria-label": "search" }}
-              />
-            </div>
-          ) : (
-            <IconButton
-              onClick={() => setSearchMode(true)}
-              style={{ color: theme.palette.icons.primary }}
-              size="small">
-              <Search />
-            </IconButton>
-          )}
+              </IconButton>
+            )}
+          </ClickAwayListener>
         </Toolbar>
       </AppBar>
       <Container className={classes.msgContainer}>
         {!loading ? (
           users.length > 0 ? (
-            users
+            search(users)
               .sort((b, a) => new Date(a.createdAt) - new Date(b.createdAt))
               .map((user, i) => (
                 <Link

@@ -92,7 +92,8 @@ const Profile = ({ userId }) => {
           <Cake fontSize="small" />
           &nbsp;
           <Typography component="h3">
-            {Math.floor(new Date(profile.dob.value) / (365 * 24 * 60 * 60 * 1000))} Years Old
+            {Math.floor((new Date() - new Date(profile.dob.value)) / (365 * 24 * 60 * 60 * 1000))}{" "}
+            Years Old
           </Typography>
         </div>
         <Box mb={1}>
