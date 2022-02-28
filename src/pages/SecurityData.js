@@ -7,7 +7,8 @@ import {
   Button,
   Container,
   TextField,
-  useTheme
+  useTheme,
+  Box
 } from "@material-ui/core";
 import {
   KeyboardBackspace,
@@ -147,6 +148,19 @@ const SecurityData = ({ userId }) => {
           </div>
         </div>
       </div>
+      <Box mt={4} className={classes.delete}>
+        <div style={{ width: "60vw" }}>
+          <Typography component="h3" variant="h3" gutterBottom>
+            Delete Account
+          </Typography>
+          <Typography component="p" variant="caption">
+            Once you delete Your account, there is no going back. Please be certain.
+          </Typography>
+        </div>
+        <Button variant="contained" style={{ height: "2.5rem", backgroundColor: "#ef006f" }}>
+          Delete
+        </Button>
+      </Box>
     </Container>
   );
 };

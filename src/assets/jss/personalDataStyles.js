@@ -81,6 +81,13 @@ const chatStyles = (theme) => ({
     left: 0,
     width: "100%",
     height: "100%"
+  },
+  delete: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingBottom: theme.spacing(10)
   }
 });
 
