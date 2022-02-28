@@ -355,6 +355,8 @@ const PersonalData = ({ userId }) => {
                 size="small"
                 name="bioData"
                 value={formData.bioData}
+                required
+                inputProps={{ maxLength: 200 }}
                 onChange={(e) => onChange(e)}
               />
             </div>
@@ -370,6 +372,8 @@ const PersonalData = ({ userId }) => {
                 size="small"
                 name="usernameData"
                 value={formData.usernameData}
+                required
+                inputProps={{ maxLength: 10 }}
                 onChange={(e) => onChange(e)}
               />
             </div>
