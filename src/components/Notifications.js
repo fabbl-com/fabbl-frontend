@@ -156,7 +156,7 @@ const CustomListItem = ({
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Typography variant="caption" display="block" gutterBottom>
-                {moment({ time }).fromNow()}
+                {moment(time).fromNow()}
               </Typography>
             </Grid>
           </Grid>
