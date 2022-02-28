@@ -14,7 +14,8 @@ import {
   Menu,
   MenuItem,
   Paper,
-  Box
+  Box,
+  useMediaQuery
 } from "@material-ui/core";
 import {
   Block,
@@ -28,7 +29,8 @@ import {
   Stars,
   Done,
   DoneAll,
-  Close
+  Close,
+  Delete
 } from "@material-ui/icons";
 import { Skeleton } from "@material-ui/lab";
 import { Link, useLocation, useHistory } from "react-router-dom";
@@ -38,10 +40,19 @@ import Picker, { SKIN_TONE_MEDIUM_DARK } from "emoji-picker-react";
 import { chatDetailsStyles } from "../assets/jss";
 import { makeMessageSeen, sendMessage } from "../utils/socket.io";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { setUserMessages, setUserOffline, setBlocked } from "../redux/actions/messageActions";
+import {
+  setUserMessages,
+  setUserOffline,
+  setBlocked,
+  deleteMessage
+} from "../redux/actions/messageActions";
 import { ProfileBadge } from "../components";
-import { SET_USER_MESSAGES_REQUEST } from "../redux/constants/messageActionTypes";
+import {
+  SET_USER_MESSAGES_REQUEST,
+  SET_EMPTY_MESSAGE
+} from "../redux/constants/messageActionTypes";
 import { decode, encode, genDerivedKey } from "../lib/hashAlgorithm";
+import Swal from "sweetalert2";
 
 const useStyles = makeStyles((theme) => chatDetailsStyles(theme));
 
@@ -123,6 +134,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const [page, setPage] = useState(1);
   const [isEmoji, setEmoji] = useState(false);
   const timelineRef = useRef();
+  const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
 
   // if (!socket) return <div>Loading...</div>;
 
@@ -147,14 +159,13 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
     }));
     dispatch({ type: SET_USER_MESSAGES_REQUEST });
     socket.on("get-user-messages-response", (data) => {
+      console.log(data);
       const key = data?.receiver?.publicKey;
       if (key) setPublicKey(JSON.parse(key));
       const msgs = data?.messages;
       if (msgs.length === 0) setHasMore(false);
-      else {
-        const _id = data?.messages?._id;
-        dispatch(setUserMessages({ messageId: _id, messages: msgs, receiver: data?.receiver }));
-      }
+      const _id = data?.messages.length > 0 ? data?.messages[0]?.messageId : null;
+      dispatch(setUserMessages({ messageId: _id, messages: msgs, receiver: data?.receiver }));
     });
 
     socket.on("send-message-response", (message) => setMsgs((state) => [...state, message]));
@@ -247,6 +258,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
 
   const sendMessageAndUpdate = async (e) => {
     const keyCode = e.which || e.keyCode;
+    console.log(keyCode, e.type, derivedKey);
     if (!derivedKey) return;
     if (e.type === "submit" || (e.type === "keypress" && keyCode === 13 && !e.shiftKey)) {
       e.preventDefault();
@@ -304,6 +316,63 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
     }
   };
 
+  const handleDelete = (e) => {
+    e.preventDefault();
+    handleMenuClose();
+    Swal.fire({
+      title: `Type <strong style="background: #eee">DELETE</strong> to delete all the messages`,
+      input: "text",
+      inputAttributes: {
+        autocapitalize: "off"
+      },
+      showCancelButton: true,
+      confirmButtonText: "Delete",
+      showLoaderOnConfirm: true,
+      customClass: {
+        confirmButton: matchesXs && `${classes.button}`,
+        cancelButton: matchesXs && `${classes.button}`,
+        popup: matchesXs && `${classes.popup}`,
+        title: matchesXs && `${classes.title}`,
+        input: matchesXs && `${classes.sweetalertInput}`
+      },
+      preConfirm: async (text) => {
+        console.log(text);
+        if (text !== "DELETE") Swal.showValidationMessage(`Type DELETE to continue`);
+        else {
+          return fetch(`/delete-message/${messageId}`, { method: "DELETE" })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(response.statusText);
+              }
+              return response.json();
+            })
+            .catch((error) => {
+              Swal.showValidationMessage(`Request failed: ${error}`);
+            });
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+      console.log(result);
+      if (result.isConfirmed) {
+        setMsgs([]);
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Messages are deleted successfully!",
+          showConfirmButton: false,
+          timer: 1500,
+          customClass: {
+            button: matchesXs && `${classes.button}`,
+            popup: matchesXs && `${classes.popup}`,
+            icon: matchesXs && `${classes.icon}`,
+            title: matchesXs ? `${classes.title}` : `${classes.titleMd}`
+          }
+        });
+      }
+    });
+  };
+
   const Actions = (
     <Menu
       classes={{
@@ -318,6 +387,12 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
         <Typography>Add to Friends</Typography>
         <IconButton className={classes.menuIcons} color="primary">
           <PersonAdd />
+        </IconButton>
+      </MenuItem>
+      <MenuItem className={classes.menuItem} onClick={handleDelete}>
+        <Typography>Delete Conversations</Typography>
+        <IconButton className={classes.menuIcons} color="primary">
+          <Delete />
         </IconButton>
       </MenuItem>
       <MenuItem className={classes.menuItem} onClick={handleBlock}>
@@ -442,15 +517,17 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                       loader={<h4>Loading...</h4>}
                       scrollableTarget="scrollableDiv">
                       {msgs.map((msg, i) => (
-                        <div ref={elems[i]} key={i}>
-                          <Message
-                            align={msg.sender === userId ? "left" : "right"}
-                            time={msg.createdAt}
-                            derivedKey={derivedKey}
-                            isRead={msg.isRead}>
-                            {msg.text}
-                          </Message>
-                        </div>
+                        <React.Fragment key={i}>
+                          <div ref={elems[i]}>
+                            <Message
+                              align={msg.sender === userId ? "left" : "right"}
+                              time={msg.createdAt}
+                              derivedKey={derivedKey}
+                              isRead={msg.isRead}>
+                              {msg.text}
+                            </Message>
+                          </div>
+                        </React.Fragment>
                       ))}
                       <Typography className={classes.timeSince} variant="body2">
                         {`Matched At: ${new Date(receiver?.matchAt).toLocaleString()}`}
@@ -491,7 +568,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
               onSubmit={sendMessageAndUpdate}
               onKeyPress={sendMessageAndUpdate}
               className={classes.sendMessage}>
-              <div component="form" className={classes.inputRoot}>
+              <div className={classes.inputRoot}>
                 <InputBase
                   className={classes.input}
                   maxRows={3}
