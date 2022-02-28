@@ -133,12 +133,14 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const [showScrollDownButton, setShowScrollDownButton] = useState(false);
   const [page, setPage] = useState(1);
   const [isEmoji, setEmoji] = useState(false);
+  const [messageId, setMessageId] = useState("");
+  const [sender, setSender] = useState(null);
   const timelineRef = useRef();
   const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
 
   // if (!socket) return <div>Loading...</div>;
 
-  const { loading, receiver, messages, messageId } = useSelector((state) => state.messages);
+  const { loading, receiver, messages } = useSelector((state) => state.messages);
   const { privateKey } = useSelector((state) => state.user);
 
   useEffect(async () => {
@@ -164,14 +166,15 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
       if (key) setPublicKey(JSON.parse(key));
       const msgs = data?.messages;
       if (msgs.length === 0) setHasMore(false);
-      const _id = data?.messages.length > 0 ? data?.messages[0]?.messageId : null;
-      dispatch(setUserMessages({ messageId: _id, messages: msgs, receiver: data?.receiver }));
+      const _id = msgs.length > 0 ? msgs[0]?.messageId : null;
+      setMessageId(_id);
+      dispatch(setUserMessages({ messages: msgs, receiver: data?.receiver }));
     });
 
     socket.on("send-message-response", (message) => {
       console.log(message);
+      setMessageId(message.message_id);
       setMsgs((state) => [message, ...state]);
-      // dispatch(setUserMessages({ messageId: message.message_id }));
     });
     socket.on("connection-response", (data) => dispatch(setUserOffline(data)));
     socket.on("block-response", (data) => {
@@ -182,11 +185,19 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
       setCustomProps((state) => ({ ...state, friendStatus: data.status || "" }))
     );
 
+    socket.on("read-response", (data) => {
+      setSender(data.sender);
+      console.log(data.sender, selectedUserId, sender, msgs);
+    });
+
     return () => socket.off();
   }, [socket]);
 
   useEffect(() => {
-    if (messages && messages.length > 0) setMsgs((state) => [...state, ...messages]);
+    if (messages && messages.length > 0) {
+      if (!messageId) setMessageId(messages[0].messageId);
+      setMsgs((state) => [...state, ...messages]);
+    }
   }, [messages]);
 
   useEffect(() => {
@@ -202,21 +213,19 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   }, [msgs]);
 
   useEffect(() => {
-    socket.on("read-response", (data) => {
-      let index = -1;
-      const temp = msgs;
-      for (let i = 0; i < temp.length - 1; i++) {
-        if (temp[i].sender === data.sender) {
-          index = i;
-          temp[i].isRead = true;
-          break;
-        }
+    let index = -1;
+    const temp = msgs;
+    for (let i = 0; i < temp.length - 1; i++) {
+      if (temp[i].sender === sender) {
+        index = i;
+        temp[i].isRead = true;
+        break;
       }
-      if (index !== -1 && temp && temp.length > 0) {
-        setMsgs(temp);
-      }
-    });
-  }, [socket, msgs]);
+    }
+    if (index !== -1 && temp && temp.length > 0) {
+      setMsgs(temp);
+    }
+  }, [sender, msgs]);
 
   useEffect(() => {
     if (lastRreceived >= 0) {
