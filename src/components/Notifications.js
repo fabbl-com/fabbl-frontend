@@ -219,6 +219,7 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
   const classes = useStyles();
   const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
   const [unreadCount, setUnreadCount] = useState(unread.length);
+  const [isViewAll, setViewAll] = useState(false);
 
   useEffect(() => {
     setUnreadCount(unread.length);
@@ -247,9 +248,7 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
     prevOpen.current = open;
   }, [open]);
 
-  const handleChange = (event) => {
-    if (event?.target.value) setValue(event?.target.value);
-  };
+  const handleChange = (event) => setValue(event.target.value);
 
   const handleConfirm = (e, { id, notificationId }) => {
     console.log(userId, id, notificationId);
@@ -281,6 +280,8 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
 
     return () => socket && socket.off();
   }, [socket]);
+
+  const filterNotification = (data) => data.filter((el) => value == 0 || !el.isRead);
 
   return (
     <>
@@ -367,46 +368,45 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
                         )}
                       </Grid>
                     </Grid>
-
+                    <Grid container direction="column" spacing={2}>
+                      <Grid item xs={12}>
+                        <Box
+                          style={{
+                            paddingLeft: "2ch",
+                            paddingRight: "2ch",
+                            paddingTop: "0.25ch",
+                            borderRadius: "2ch"
+                          }}>
+                          <TextField
+                            id="outlined-select-currency-native"
+                            select
+                            fullWidth
+                            variant="outlined"
+                            value={value}
+                            onChange={handleChange}
+                            className={classes.border}
+                            SelectProps={{
+                              native: true
+                            }}>
+                            <option value={0}>All Notification</option>
+                            <option value={1}>Unread</option>
+                          </TextField>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Divider light />
+                      </Grid>
+                    </Grid>
                     <Grid item xs={12}>
                       <div
                         style={{
-                          maxHeight: `calc(100vh - 200px)`,
-                          overflow: "hidden scroll"
+                          maxHeight: isViewAll ? `calc(100vh - 200px)` : `400px`,
+                          overflow: !isViewAll ? "hidden" : "hidden scroll"
                         }}>
-                        <Grid container direction="column" spacing={2}>
-                          <Grid item xs={12}>
-                            <Box
-                              style={{
-                                paddingLeft: "2ch",
-                                paddingRight: "2ch",
-                                paddingTop: "0.25ch",
-                                borderRadius: "2ch"
-                              }}>
-                              <TextField
-                                id="outlined-select-currency-native"
-                                select
-                                fullWidth
-                                variant="outlined"
-                                value={value}
-                                onChange={handleChange}
-                                className={classes.border}
-                                SelectProps={{
-                                  native: true
-                                }}>
-                                <option value={0}>All Notification</option>
-                                <option value={1}>Unread</option>
-                              </TextField>
-                            </Box>
-                          </Grid>
-                          <Grid item xs={12}>
-                            <Divider light />
-                          </Grid>
-                        </Grid>
                         <List className={classes.list}>
-                          <PerfectScrollbar data-mdb-perfect-scrollbar="true">
+                          <PerfectScrollbar data-mdb-perfect-scrollbar={isViewAll}>
                             {notifications && notifications.length > 0 ? (
-                              notifications
+                              filterNotification(notifications)
                                 .sort((b, a) => new Date(a.createdAt) - new Date(b.createdAt))
                                 .map((el, index) => (
                                   <Fragment key={index}>
@@ -442,8 +442,12 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
                   </Grid>
                   <Divider light />
                   <CardActions style={{ padding: "1.25ch", justifyContent: "center" }}>
-                    <Button size="small" color="primary" disableElevation>
-                      View All
+                    <Button
+                      onClick={() => setViewAll((state) => !state)}
+                      size="small"
+                      color="primary"
+                      disableElevation>
+                      {!isViewAll ? "View All" : "Hide"}
                     </Button>
                   </CardActions>
                 </Card>
