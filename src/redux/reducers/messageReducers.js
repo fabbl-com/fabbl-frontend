@@ -16,7 +16,11 @@ import {
   SET_USER_OFFLINE,
   SET_CHAT_LIST_USER_OFFLINE,
   SET_FRIENDS,
-  SET_BLOCKED
+  SET_BLOCKED,
+  DELETE_MESSAGE_REQUEST,
+  DELETE_MESSAGE_SUCCESS,
+  DELETE_MESSAGE_FAIL,
+  DELETE_ALL_MESSAGES_SUCCESS
 } from "../constants/messageActionTypes";
 
 const initialState = {
@@ -27,7 +31,8 @@ const initialState = {
   randomUsers: [],
   isFriends: false,
   isBlockedBy: false,
-  receiver: {}
+  receiver: {},
+  isDeleted: false
 };
 
 export default (state = initialState, action) => {
@@ -37,8 +42,11 @@ export default (state = initialState, action) => {
     case SET_USER_MESSAGES_REQUEST:
     case SET_RANDOM_USERS_REQUEST:
       return { ...state, loading: true, messages: [], randomUsers: [] };
+    case DELETE_MESSAGE_REQUEST:
+      return { ...state, isDeleted: true };
     case GET_MESSAGES_SUCCESS:
     case SET_USER_MESSAGES_SUCCESS:
+    case DELETE_MESSAGE_SUCCESS:
       return {
         ...state,
         ...action.payload,

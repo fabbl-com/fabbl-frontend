@@ -10,7 +10,10 @@ import {
   SET_USER_OFFLINE,
   SET_CHAT_LIST_USER_OFFLINE,
   SET_FRIENDS,
-  SET_BLOCKED
+  SET_BLOCKED,
+  DELETE_MESSAGE_REQUEST,
+  DELETE_MESSAGE_SUCCESS,
+  DELETE_MESSAGE_FAIL
 } from "../constants/messageActionTypes";
 
 export const getChatListUsers = (data) => async (dispatch) => {
@@ -48,10 +51,28 @@ export const setChatListUserOffline = (data) => async (dispatch) => {
   dispatch({ type: SET_CHAT_LIST_USER_OFFLINE, payload: data });
 };
 
-export const setFriends = (data) => async (dispacth) => {
-  dispacth({ type: SET_FRIENDS, payload: data });
+export const setFriends = (data) => async (dispatch) => {
+  dispatch({ type: SET_FRIENDS, payload: data });
 };
 
-export const setBlocked = (data) => async (dispacth) => {
-  dispacth({ type: SET_BLOCKED, payload: data });
+export const setBlocked = (data) => async (dispatch) => {
+  dispatch({ type: SET_BLOCKED, payload: data });
+};
+
+export const deleteMessage = (messageId) => async (dispatch) => {
+  dispatch({ type: DELETE_MESSAGE_REQUEST });
+  try {
+    const { data } = await Axios.delete(`/delete-message/${messageId}`);
+    dispatch({ type: DELETE_MESSAGE_SUCCESS, payload: data });
+  } catch (error) {
+    console.log(error);
+    dispatch({
+      type: DELETE_MESSAGE_FAIL,
+      payload: {
+        code: error.response.status,
+        message:
+          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+      }
+    });
+  }
 };

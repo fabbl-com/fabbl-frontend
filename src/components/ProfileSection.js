@@ -72,10 +72,11 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer"
   },
   card2: {
-    background: theme.palette.background.default,
+    background: theme.palette.background.disabled,
     borderRadius: "12px",
     marginTop: "2ch",
     marginBottom: "2ch"
+    // boxShadow: theme.shadows[8]
   },
   list: {
     display: "flex",
@@ -103,7 +104,6 @@ const useStyles = makeStyles((theme) => ({
   titleMd: {
     lineHeight: "1.5 !important"
   },
-
   button: {
     fontSize: "inherit"
   }

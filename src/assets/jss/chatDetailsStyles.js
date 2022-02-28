@@ -184,6 +184,24 @@ const chatStyles = (theme) => ({
   },
   iconButton2: {
     padding: 7
+  },
+  popup: {
+    width: "auto !important"
+  },
+  icon: {
+    fontSize: "10px"
+  },
+  title: {
+    fontSize: "1rem !important"
+  },
+  titleMd: {
+    lineHeight: "1.5 !important"
+  },
+  button: {
+    fontSize: `${theme.spacing(1.5)}px !important`
+  },
+  sweetalertInput: {
+    fontSize: "0.875rem !important"
   }
 });
 
