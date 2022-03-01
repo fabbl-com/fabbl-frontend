@@ -27,6 +27,7 @@ import { getUserProfile, updateEmail, updatePassword } from "../redux/actions/us
 import { LOGOUT_SUCCESS } from "../redux/constants/userActionTypes";
 import { personalDataStyles } from "../assets/jss";
 import { strengthColor, strengthIndicator } from "../utils/paswordStrenth";
+import PasswordStrength from "../components/PasswordStrength";
 import { PropTypes } from "prop-types";
 
 const useStyles = makeStyles((theme) => personalDataStyles(theme));
@@ -42,7 +43,7 @@ const SecurityData = ({ userId }) => {
   const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
   const { profile, loading } = useSelector((state) => state.user);
 
-  console.log(profile);
+  console.log(level);
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -200,7 +201,7 @@ const SecurityData = ({ userId }) => {
                   name={el.prop}
                   helperText={
                     el.placeholder === "Confirm Password" &&
-                    formData.password3.length > 0 &&
+                    formData.password3?.length > 0 &&
                     formData.password3 !== formData.password2 &&
                     "Password does not match"
                   }
@@ -232,25 +233,7 @@ const SecurityData = ({ userId }) => {
               </div>
             </React.Fragment>
           ))}
-          {strength !== 0 && (
-            <FormControl fullWidth>
-              <Box sx={{ mb: 2 }}>
-                <Grid container spacing={2} alignItems="center">
-                  <Grid item>
-                    <Box
-                      style={{ backgroundColor: level.color }}
-                      sx={{ width: 85, height: 8, borderRadius: "7px" }}
-                    />
-                  </Grid>
-                  <Grid item>
-                    <Typography variant="subtitle1" fontSize="0.75rem">
-                      {level?.label}
-                    </Typography>
-                  </Grid>
-                </Grid>
-              </Box>
-            </FormControl>
-          )}
+          {strength !== 0 && <PasswordStrength level={level} />}
           <div className={classes.fullWidth}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div />
