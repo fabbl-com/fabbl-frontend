@@ -10,7 +10,8 @@ import {
   useTheme,
   Box,
   FormControl,
-  Grid
+  Grid,
+  useMediaQuery
 } from "@material-ui/core";
 import {
   KeyboardBackspace,
@@ -19,9 +20,11 @@ import {
   VisibilityOff
 } from "@material-ui/icons";
 import { useLocation, useHistory } from "react-router-dom";
+import Swal from "sweetalert2";
 import classNames from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserProfile, updateEmail, updatePassword } from "../redux/actions/userActions";
+import { LOGOUT_SUCCESS } from "../redux/constants/userActionTypes";
 import { personalDataStyles } from "../assets/jss";
 import { strengthColor, strengthIndicator } from "../utils/paswordStrenth";
 import { PropTypes } from "prop-types";
@@ -36,6 +39,7 @@ const SecurityData = ({ userId }) => {
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
+  const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
   const { profile, loading } = useSelector((state) => state.user);
 
   console.log(profile);
@@ -68,6 +72,67 @@ const SecurityData = ({ userId }) => {
     setStrength(temp);
     setLevel(strengthColor(temp));
   };
+
+  const handleDelete = (e) => {
+    e.preventDefault();
+    Swal.fire({
+      title: `Type <strong style="background: #eee">${profile.displayName.value}</strong> to delete your account`,
+      input: "text",
+      inputAttributes: {
+        autocapitalize: "off"
+      },
+      showCancelButton: true,
+      confirmButtonText: "Delete",
+      showLoaderOnConfirm: true,
+      customClass: {
+        confirmButton: matchesXs && `${classes.sweetalertButton}`,
+        cancelButton: matchesXs && `${classes.sweetalertButton}`,
+        popup: matchesXs && `${classes.popup}`,
+        title: matchesXs && `${classes.title}`,
+        input: matchesXs && `${classes.sweetalertInput}`
+      },
+      preConfirm: async (text) => {
+        console.log(text);
+        if (text !== profile.displayName.value)
+          Swal.showValidationMessage(`Type ${profile.displayName.value} to continue`);
+        else {
+          return fetch(`/user/delete/${userId}`, { method: "DELETE" })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error(response.statusText);
+              }
+              return response.json();
+            })
+            .catch((error) => {
+              Swal.showValidationMessage(`Request failed: ${error}`);
+            });
+        }
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+      console.log(result);
+      if (result.isConfirmed) {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Account deleted successfully!",
+          showConfirmButton: true,
+          customClass: {
+            button: matchesXs && `${classes.button}`,
+            popup: matchesXs && `${classes.popup}`,
+            icon: matchesXs && `${classes.icon}`,
+            title: matchesXs ? `${classes.title}` : `${classes.titleMd}`
+          }
+        }).then((result) => {
+          if (result.isConfirmed) {
+            dispatch({ type: LOGOUT_SUCCESS, payload: { success: true, isLoggedOut: true } });
+          }
+        });
+      }
+    });
+  };
+
+  const canDelete = (new Date() - new Date(profile.createdAt)) / (1000 * 60 * 60 * 24) >= 30;
 
   if (loading) return <div>loading</div>;
   return (
@@ -200,16 +265,26 @@ const SecurityData = ({ userId }) => {
           </div>
         </form>
       </div>
-      <Box mt={4} className={classes.delete}>
-        <div style={{ width: "60vw" }}>
+      <Box mt={1} className={classes.delete}>
+        <div style={{ width: "60%" }}>
           <Typography component="h3" variant="h3" gutterBottom>
             Delete Account
           </Typography>
           <Typography component="p" variant="caption">
-            Once you delete Your account, there is no going back. Please be certain.
+            {!canDelete
+              ? "You can delete your acount after 30 days of registration"
+              : "Once you delete Your account, there is no going back. Please be certain."}
           </Typography>
         </div>
-        <Button variant="contained" style={{ height: "2.5rem", backgroundColor: "#ef006f" }}>
+        <Button
+          disabled={canDelete}
+          onClick={handleDelete}
+          variant="contained"
+          style={{
+            height: "2.5rem",
+            backgroundColor: canDelete ? "#ef006f" : "#aaa",
+            color: "#fff"
+          }}>
           Delete
         </Button>
       </Box>
