@@ -9,6 +9,8 @@ import {
   TextField,
   useTheme,
   Box,
+  FormControl,
+  Grid,
   useMediaQuery
 } from "@material-ui/core";
 import {
@@ -24,6 +26,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { getUserProfile, updateEmail, updatePassword } from "../redux/actions/userActions";
 import { LOGOUT_SUCCESS } from "../redux/constants/userActionTypes";
 import { personalDataStyles } from "../assets/jss";
+import { strengthColor, strengthIndicator } from "../utils/paswordStrenth";
+import PasswordStrength from "../components/PasswordStrength";
 import { PropTypes } from "prop-types";
 
 const useStyles = makeStyles((theme) => personalDataStyles(theme));
@@ -31,13 +35,15 @@ const useStyles = makeStyles((theme) => personalDataStyles(theme));
 const SecurityData = ({ userId }) => {
   const classes = useStyles();
   const theme = useTheme();
+  const [strength, setStrength] = useState(0);
+  const [level, setLevel] = useState();
   const history = useHistory();
   const location = useLocation();
   const dispatch = useDispatch();
   const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
   const { profile, loading } = useSelector((state) => state.user);
 
-  console.log(profile);
+  console.log(level);
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -60,6 +66,12 @@ const SecurityData = ({ userId }) => {
   const goBack = (e) => {
     e.preventDefault();
     history.push(location.from);
+  };
+
+  const handlePasswordStrength = (value) => {
+    const temp = strengthIndicator(value);
+    setStrength(temp);
+    setLevel(strengthColor(temp));
   };
 
   const handleDelete = (e) => {
@@ -144,74 +156,97 @@ const SecurityData = ({ userId }) => {
           &nbsp;
           <CheckCircleOutlined fontSize="small" />
         </div>
-        <div className={classes.fullWidth}>
-          <Typography component="h6" variant="h6">
-            Email
-          </Typography>
-          <TextField
-            className={classNames(classes.textField)}
-            placeholder="Email"
-            variant="outlined"
-            fullWidth
-            size="small"
-            defaultValue={profile.email}
-            name="email"
-            onChange={(e) => onChange(e)}
-          />
-        </div>
-        <div className={classes.fullWidth}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginTop: "-1ch" }}>
-            <div />
-            <Button variant="contained" color="secondary" onClick={handleClick}>
-              Update Email
-            </Button>
+        <form className={classes.fullWidth}>
+          <div>
+            <Typography component="h6" variant="h6">
+              Email
+            </Typography>
+            <TextField
+              className={classNames(classes.textField)}
+              placeholder="Email"
+              variant="outlined"
+              fullWidth
+              size="small"
+              defaultValue={profile.email}
+              name="email"
+              helperText={formData.email === "" && "email is required"}
+              FormHelperTextProps={{ error: true }}
+              required
+              onChange={(e) => onChange(e)}
+            />
           </div>
-        </div>
-        {[
-          { placeholder: "Old Password", prop: "password1" },
-          { placeholder: "New Password", prop: "password2" },
-          { placeholder: "Confirm Password", prop: "password3" }
-        ].map((el, i) => (
-          <React.Fragment key={i}>
-            <div className={classes.fullWidth}>
-              <Typography component="h6" variant="h6">
-                {el.placeholder}
-              </Typography>
-              <TextField
-                fullWidth
-                placeholder={el.placeholder}
-                name={el.prop}
-                onChange={(e) => onChange(e)}
-                type={showPassword ? "text" : "password"}
-                variant="outlined"
-                size="small"
-                className={classes.textField}
-                InputProps={{
-                  endAdornment: (
-                    <IconButton
-                      onClick={() => {
-                        setShowPassword(!showPassword);
-                      }}>
-                      {showPassword ? (
-                        <Visibility style={{ color: theme.palette.text.secondary }} />
-                      ) : (
-                        <VisibilityOff style={{ color: theme.palette.text.secondary }} />
-                      )}
-                    </IconButton>
-                  )
-                }}
-              />
+          <div className={classes.fullWidth}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div />
+              <Button type="submit" variant="contained" color="secondary" onClick={handleClick}>
+                Update Email
+              </Button>
             </div>
-          </React.Fragment>
-        ))}
-        <div className={classes.fullWidth}>
-          <div style={{ display: "flex", justifyContent: "space-between", marginTop: "-1ch" }}>
-            <div />
-            <Button variant="contained" color="secondary" onClick={handelPasswordChange}>
-              Update Password
-            </Button>
           </div>
-        </div>
+        </form>
+        <form className={classes.fullWidth}>
+          {[
+            { placeholder: "Old Password", prop: "password1" },
+            { placeholder: "New Password", prop: "password2" },
+            { placeholder: "Confirm Password", prop: "password3" }
+          ].map((el, i) => (
+            <React.Fragment key={i}>
+              <div className={classes.fullWidth}>
+                <Typography component="h6" variant="h6">
+                  {el.placeholder}
+                </Typography>
+                <TextField
+                  fullWidth
+                  placeholder={el.placeholder}
+                  name={el.prop}
+                  helperText={
+                    el.placeholder === "Confirm Password" &&
+                    formData.password3?.length > 0 &&
+                    formData.password3 !== formData.password2 &&
+                    "Password does not match"
+                  }
+                  FormHelperTextProps={{ error: true }}
+                  onChange={(e) => {
+                    onChange(e);
+                    if (el.placeholder === "New Password") handlePasswordStrength(e.target.value);
+                  }}
+                  type={showPassword ? "text" : "password"}
+                  variant="outlined"
+                  size="small"
+                  required
+                  className={classes.textField}
+                  InputProps={{
+                    endAdornment: (
+                      <IconButton
+                        onClick={() => {
+                          setShowPassword(!showPassword);
+                        }}>
+                        {showPassword ? (
+                          <Visibility style={{ color: theme.palette.text.secondary }} />
+                        ) : (
+                          <VisibilityOff style={{ color: theme.palette.text.secondary }} />
+                        )}
+                      </IconButton>
+                    )
+                  }}
+                />
+              </div>
+            </React.Fragment>
+          ))}
+          {strength !== 0 && <PasswordStrength level={level} />}
+          <div className={classes.fullWidth}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div />
+              <Button
+                type="submit"
+                variant="contained"
+                color="secondary"
+                onClick={handelPasswordChange}>
+                Update Password
+              </Button>
+            </div>
+          </div>
+        </form>
       </div>
       <Box mt={1} className={classes.delete}>
         <div style={{ width: "60%" }}>

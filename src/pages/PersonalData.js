@@ -341,8 +341,8 @@ const PersonalData = ({ userId }) => {
           <CheckCircleOutlined fontSize="small" />
         </div>
         {!loading ? (
-          <form onSubmit={handleSubmit}>
-            <div className={classes.fullWidth}>
+          <form onSubmit={handleSubmit} className={classes.fullWidth}>
+            <div>
               <Typography component="h6" variant="h6">
                 Headline
               </Typography>
@@ -356,7 +356,13 @@ const PersonalData = ({ userId }) => {
                 name="bioData"
                 value={formData.bioData}
                 required
-                inputProps={{ maxLength: 200 }}
+                helperText={
+                  formData.bioData !== " " &&
+                  !formData.bioData.match(`^[a-zA-Z_$][a-zA-Z_$0-9]*$`) &&
+                  "Headline must be alphanumeric in 50-200 chars"
+                }
+                FormHelperTextProps={{ error: true }}
+                inputProps={{ maxLength: 200, pattern: `^[a-zA-Z_$][a-zA-Z_$0-9]*$` }}
                 onChange={(e) => onChange(e)}
               />
             </div>
@@ -373,7 +379,13 @@ const PersonalData = ({ userId }) => {
                 name="usernameData"
                 value={formData.usernameData}
                 required
-                inputProps={{ maxLength: 10 }}
+                helperText={
+                  formData.usernameData !== " " &&
+                  !formData.usernameData.match("^[a-zA-Z_$][a-zA-Z_$0-9]*$") &&
+                  "DisplayName must be alphanumeric in 6-10 chars"
+                }
+                inputProps={{ maxLength: 10, pattern: "[a-zA-Z0-9_-]{5,10}" }}
+                FormHelperTextProps={{ error: true }}
                 onChange={(e) => onChange(e)}
               />
             </div>

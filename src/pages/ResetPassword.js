@@ -21,6 +21,8 @@ import PropTypes from "prop-types";
 import { resetPassword } from "../redux/actions/userActions";
 import Logo from "../assets/logo/Logo";
 import { FacebookIcon, GoogleIcon } from "../assets/icons";
+import { strengthColor, strengthIndicator } from "../utils/paswordStrenth";
+import PasswordStrength from "../components/PasswordStrength";
 import Swal from "sweetalert2";
 
 const useStyles = makeStyles((theme) => ({
@@ -42,6 +44,8 @@ const ResetPassword = () => {
   const matchDownSM = useMediaQuery(theme.breakpoints.down("md"));
   const [showPassword, setShowPassword] = useState(false);
   const [user, setUser] = useState({ password1: "", password2: "" });
+  const [strength, setStrength] = useState(0);
+  const [level, setLevel] = useState();
   const dispatch = useDispatch();
   const history = useHistory();
   const classes = useStyles();
@@ -71,6 +75,11 @@ const ResetPassword = () => {
         dispatch(resetPassword({ token, password: user.password2 }));
       }
     }
+  };
+  const handlePasswordStrength = (value) => {
+    const temp = strengthIndicator(value);
+    setStrength(temp);
+    setLevel(strengthColor(temp));
   };
 
   return (
@@ -207,9 +216,10 @@ const ResetPassword = () => {
                           label="Password"
                           type={showPassword ? "text" : "password"}
                           vaule={user?.password1}
-                          onChange={(e) =>
-                            setUser((state) => ({ ...state, password1: e.target.value }))
-                          }
+                          onChange={(e) => {
+                            setUser((state) => ({ ...state, password1: e.target.value }));
+                            handlePasswordStrength(e.target.value);
+                          }}
                           margin="normal"
                           InputProps={{
                             endAdornment: (
@@ -238,6 +248,12 @@ const ResetPassword = () => {
                           label="Confirm Password"
                           type={showPassword ? "text" : "password"}
                           vaule={user?.password2}
+                          helperText={
+                            user?.password2?.length > 0 &&
+                            user?.password2 !== user?.password1 &&
+                            "Password does not match"
+                          }
+                          FormHelperTextProps={{ error: true }}
                           onChange={(e) =>
                             setUser((state) => ({ ...state, password2: e.target.value }))
                           }
@@ -261,7 +277,7 @@ const ResetPassword = () => {
                             )
                           }}
                         />
-
+                        {strength !== 0 && <PasswordStrength level={level} />}
                         <Box style={{ marginTop: "3ch" }}>
                           <Button
                             color="secondary"

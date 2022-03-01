@@ -13,8 +13,7 @@ import {
   Card,
   Divider,
   useTheme,
-  makeStyles,
-  FormControl
+  makeStyles
 } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation, Link } from "react-router-dom";
@@ -25,7 +24,7 @@ import { login, register, sendResetPasswordEmail } from "../redux/actions/userAc
 import Logo from "../assets/logo/Logo";
 import { FacebookIcon, GoogleIcon } from "../assets/icons";
 import { strengthColor, strengthIndicator } from "../utils/paswordStrenth";
-
+import PasswordStrength from "../components/PasswordStrength";
 const useStyles = makeStyles((theme) => ({
   btn: {
     borderRadius: theme.spacing(1),
@@ -322,25 +321,7 @@ const Auth = ({ isAuth }) => {
                             </Typography>
                           )}
                         </Grid>
-                        {isRegister && strength !== 0 && (
-                          <FormControl fullWidth>
-                            <Box sx={{ mb: 2 }}>
-                              <Grid container spacing={2} alignItems="center">
-                                <Grid item>
-                                  <Box
-                                    style={{ backgroundColor: level.color }}
-                                    sx={{ width: 85, height: 8, borderRadius: "7px" }}
-                                  />
-                                </Grid>
-                                <Grid item>
-                                  <Typography variant="subtitle1" fontSize="0.75rem">
-                                    {level?.label}
-                                  </Typography>
-                                </Grid>
-                              </Grid>
-                            </Box>
-                          </FormControl>
-                        )}
+                        {isRegister && strength !== 0 && <PasswordStrength level={level} />}
                         {/* <Box>
                             <FormHelperText error>errors</FormHelperText>
                           </Box> */}
