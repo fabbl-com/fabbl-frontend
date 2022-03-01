@@ -109,7 +109,7 @@ export const light = responsiveFontSizes(
       card: {
         default: "#fff"
       },
-      divider: "#999",
+      divider: "#333",
       action: {
         focus: "#eee"
       }
@@ -210,7 +210,7 @@ export const dark = responsiveFontSizes(
       card: {
         default: "#25274d"
       },
-      divider: "#999",
+      divider: "#eee",
       action: {
         focus: "#eee"
       }

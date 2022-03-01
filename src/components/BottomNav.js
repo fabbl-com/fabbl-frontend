@@ -42,48 +42,48 @@ export default function BottomNav({ isAuth }) {
       className={classes.root}>
       <BottomNavigationAction
         label={
-          <Link to={"/"}>
+          <Link to={{ pathname: "/", from: location.pathname }}>
             <Typography variant="caption">Home</Typography>
           </Link>
         }
         icon={
-          <Link to={"/"}>
+          <Link to={{ pathname: "/", from: location.pathname }}>
             <Home className={classes.icon} fontSize="small" />
           </Link>
         }
       />
       <BottomNavigationAction
         label={
-          <Link to={"/find"}>
+          <Link to={{ pathname: "/find", from: location.pathname }}>
             <Typography variant="caption">Explore</Typography>
           </Link>
         }
         icon={
-          <Link to={"/find"}>
+          <Link to={{ pathname: "/find", from: location.pathname }}>
             <Explore fontSize="small" />
           </Link>
         }
       />
       <BottomNavigationAction
         label={
-          <Link to={"/chat"}>
+          <Link to={{ pathname: "/chat", from: location.pathname }}>
             <Typography variant="caption">Matches</Typography>
           </Link>
         }
         icon={
-          <Link to={"/chat"}>
+          <Link to={{ pathname: "/chat", from: location.pathname }}>
             <Favorite fontSize="small" />
           </Link>
         }
       />
       <BottomNavigationAction
         label={
-          <Link to={"/edit/personal-data"}>
+          <Link to={{ pathname: "/edit/personal-data", from: location.pathname }}>
             <Typography variant="caption">Profile</Typography>
           </Link>
         }
         icon={
-          <Link to={"/edit/personal-data"}>
+          <Link to={{ pathname: "/edit/personal-data", from: location.pathname }}>
             <Person fontSize="small" />
           </Link>
         }

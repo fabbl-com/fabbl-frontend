@@ -192,6 +192,7 @@ import { personalDataStyles } from "../assets/jss";
 import { updateProfile, uploadAvatar } from "../redux/actions/userActions";
 import { withStyles } from "@material-ui/styles";
 import { PropTypes } from "prop-types";
+import { useHistory, useLocation } from "react-router-dom";
 const useStyles = makeStyles((theme) => personalDataStyles(theme));
 
 const BootstrapInput = withStyles((theme) => ({
@@ -234,7 +235,8 @@ const PersonalData = ({ userId }) => {
   const dispatch = useDispatch();
   const { loading, profile } = useSelector((state) => state.user);
   const [image, setImage] = useState(null);
-  // console.log(profile);
+  const history = useHistory();
+  const location = useLocation();
   const [gender, setGender] = useState(0);
   const [disableGenderUpdate, setDisableGenderUpdate] = useState(true);
   const [formData, setFormData] = useState({
@@ -287,10 +289,16 @@ const PersonalData = ({ userId }) => {
 
   const checkDisable = useCallback(() => formData?.hobbiesData.length >= 5, [formData]);
 
+  const goBack = (e) => {
+    e.preventDefault();
+    console.log(location);
+    history.push(location.from || "/");
+  };
+
   return (
     <Container className={classes.root}>
       <div className={classes.profileHeader}>
-        <IconButton color="primary">
+        <IconButton onClick={goBack} color="primary">
           <KeyboardBackspace />
         </IconButton>
         <Typography component="h6" variant="h6">

@@ -15,7 +15,9 @@ import {
   MenuItem,
   Paper,
   Box,
-  useMediaQuery
+  useMediaQuery,
+  Divider,
+  Button
 } from "@material-ui/core";
 import {
   Block,
@@ -53,6 +55,7 @@ import {
 } from "../redux/constants/messageActionTypes";
 import { decode, encode, genDerivedKey } from "../lib/hashAlgorithm";
 import Swal from "sweetalert2";
+import { formatTime } from "../utils/time";
 
 const useStyles = makeStyles((theme) => chatDetailsStyles(theme));
 
@@ -94,7 +97,11 @@ const Message = ({ derivedKey, time, isRead, children, ...props }) => {
 
             {props.align === "left" && (
               <Box align="left" mb={-5}>
-                {isRead ? <DoneAll fontSize="small" /> : <Done fontSize="small" />}
+                {isRead ? (
+                  <DoneAll style={{ color: "#42C2FF" }} fontSize="small" />
+                ) : (
+                  <Done fontSize="small" />
+                )}
               </Box>
             )}
           </div>
@@ -135,6 +142,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   const [isEmoji, setEmoji] = useState(false);
   const [messageId, setMessageId] = useState("");
   const [sender, setSender] = useState(null);
+  const [prevTime, setPrevTime] = useState("");
   const timelineRef = useRef();
   const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -458,7 +466,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                   </ProfileBadge>
                 </Link>
                 <div className={classes.username}>
-                  <Typography align="left" component="h1" variant="h6">
+                  <Typography style={{ display: "flex" }} component="h1" variant="h6">
                     {loading ? (
                       <Skeleton varint="rect" animation="wave" width={180} />
                     ) : (
@@ -466,9 +474,9 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                     )}
                     {!loading &&
                       (customProps.friendStatus === "friends" ? (
-                        <Stars fontSize="small" />
+                        <Stars style={{ color: "#FFC300", marginLeft: "0.2ch" }} fontSize="small" />
                       ) : receiver?.isBlocked ? (
-                        <Block fontSize="small" />
+                        <Block style={{ color: "#FF1818", marginLeft: "0.2ch" }} fontSize="small" />
                       ) : (
                         ""
                       ))}
@@ -519,27 +527,100 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                       next={() => setPage(page + 1)}
                       style={{
                         display: "flex",
-                        flexDirection: "column-reverse",
-                        padding: "0 2ch"
+                        flexDirection: "column-reverse"
                       }}
                       inverse={true}
                       hasMore={hasMore}
                       loader={<h4>Loading...</h4>}
                       scrollableTarget="scrollableDiv">
                       {msgs.map((msg, i) => (
-                        <div ref={elems[i]} key={i}>
-                          <Message
-                            align={msg.sender === userId ? "left" : "right"}
-                            time={msg.createdAt}
-                            derivedKey={derivedKey}
-                            isRead={msg.isRead}>
-                            {msg.text}
-                          </Message>
-                        </div>
+                        <React.Fragment key={i}>
+                          <div style={{ padding: "0 2ch" }} ref={elems[i]}>
+                            <Message
+                              align={msg.sender === userId ? "left" : "right"}
+                              time={msg.createdAt}
+                              derivedKey={derivedKey}
+                              isRead={msg.isRead}>
+                              {msg.text}
+                            </Message>
+                          </div>
+                          {i === msgs.length - 1 ? (
+                            <Box
+                              style={{
+                                alignItems: "center",
+                                display: "flex"
+                              }}>
+                              <Divider
+                                light
+                                style={{ marginLeft: "0.5ch", flexGrow: 1 }}
+                                orientation="horizontal"
+                              />
+                              <Typography style={{ margin: "1ch 0" }} variant="body2">
+                                {formatTime(msg.createdAt).value}
+                              </Typography>
+                              <Divider
+                                light
+                                style={{ marginRight: "0.5ch", flexGrow: 1 }}
+                                orientation="horizontal"
+                              />
+                            </Box>
+                          ) : (
+                            formatTime(msgs[i + 1].createdAt).value !==
+                              formatTime(msg.createdAt).value && (
+                              <Box
+                                style={{
+                                  alignItems: "center",
+                                  display: "flex"
+                                }}>
+                                <Divider
+                                  light
+                                  style={{ marginLeft: "0.5ch", flexGrow: 1 }}
+                                  orientation="horizontal"
+                                />
+                                <Typography style={{ margin: "1ch 0" }} variant="body2">
+                                  {formatTime(msg.createdAt).value}
+                                </Typography>
+                                <Divider
+                                  light
+                                  style={{ marginRight: "0.5ch", flexGrow: 1 }}
+                                  orientation="horizontal"
+                                />
+                              </Box>
+                            )
+                          )}
+                        </React.Fragment>
                       ))}
-                      <Typography className={classes.timeSince} variant="body2">
-                        {`Matched At: ${new Date(receiver?.matchAt).toLocaleString()}`}
-                      </Typography>
+                      <Box
+                        style={{
+                          alignItems: "center",
+                          display: "flex"
+                        }}>
+                        <Divider
+                          light
+                          style={{ marginLeft: "0.5ch", flexGrow: 1 }}
+                          orientation="horizontal"
+                        />
+                        <Button
+                          variant="outlined"
+                          style={{
+                            cursor: "unset",
+                            margin: "2ch 0",
+                            padding: "0.2ch 1ch",
+                            borderColor: `${theme.palette.text.secondary}`,
+                            color: `${theme.palette.text.secondary}`,
+                            fontWeight: 500,
+                            borderRadius: "12px"
+                          }}
+                          disableRipple
+                          disabled>
+                          {`Matched At: ${formatTime(receiver?.matchAt).value}`}
+                        </Button>
+                        <Divider
+                          light
+                          style={{ marginRight: "0.5ch", flexGrow: 1 }}
+                          orientation="horizontal"
+                        />
+                      </Box>
                     </InfiniteScroll>
                   </div>
                 ) : (
