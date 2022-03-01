@@ -25,6 +25,7 @@ const NotFound = () => {
         ref={container}></div>
       <div
         style={{
+          fontSize: "2rem",
           color: "white",
           position: "fixed",
           width: "100%",
@@ -36,7 +37,7 @@ const NotFound = () => {
         <center>
           <h2>404</h2>
           <br />
-          <h1>Page Not Found</h1>
+          <h1 style={{ marginTop: "1ch" }}>Page Not Found</h1>
         </center>
       </div>
     </>
