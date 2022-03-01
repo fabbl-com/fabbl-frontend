@@ -12,7 +12,8 @@ const chatStyles = (theme) => ({
     display: "flex",
     alignItems: "center",
     flexDirection: "column",
-    marginTop: theme.spacing(2)
+    marginTop: theme.spacing(2),
+    width: "100%"
   },
   avatar: {
     height: theme.spacing(12),
