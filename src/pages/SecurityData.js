@@ -65,7 +65,7 @@ const SecurityData = ({ userId }) => {
 
   const goBack = (e) => {
     e.preventDefault();
-    history.push(location.from);
+    history.push(location.from || "/");
   };
 
   const handlePasswordStrength = (value) => {

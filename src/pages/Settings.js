@@ -81,7 +81,7 @@ const Settings = ({ userId, isTheme, setTheme }) => {
 
   const goBack = (e) => {
     e.preventDefault();
-    history.push(location.from);
+    history.push(location.from || "/");
   };
 
   return (

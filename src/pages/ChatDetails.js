@@ -97,7 +97,11 @@ const Message = ({ derivedKey, time, isRead, children, ...props }) => {
 
             {props.align === "left" && (
               <Box align="left" mb={-5}>
-                {isRead ? <DoneAll fontSize="small" /> : <Done fontSize="small" />}
+                {isRead ? (
+                  <DoneAll style={{ color: "#42C2FF" }} fontSize="small" />
+                ) : (
+                  <Done fontSize="small" />
+                )}
               </Box>
             )}
           </div>
@@ -462,7 +466,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                   </ProfileBadge>
                 </Link>
                 <div className={classes.username}>
-                  <Typography align="left" component="h1" variant="h6">
+                  <Typography style={{ display: "flex" }} component="h1" variant="h6">
                     {loading ? (
                       <Skeleton varint="rect" animation="wave" width={180} />
                     ) : (
@@ -470,9 +474,9 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                     )}
                     {!loading &&
                       (customProps.friendStatus === "friends" ? (
-                        <Stars fontSize="small" />
+                        <Stars style={{ color: "#FFC300", marginLeft: "0.2ch" }} fontSize="small" />
                       ) : receiver?.isBlocked ? (
-                        <Block fontSize="small" />
+                        <Block style={{ color: "#FF1818", marginLeft: "0.2ch" }} fontSize="small" />
                       ) : (
                         ""
                       ))}

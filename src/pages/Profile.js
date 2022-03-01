@@ -49,7 +49,7 @@ const Profile = ({ userId }) => {
   console.log(profile);
   const goBack = (e) => {
     e.preventDefault();
-    history.push(location.from);
+    history.push(location.from || "/");
   };
 
   if (loading) return <div>loading</div>;
