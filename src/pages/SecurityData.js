@@ -178,7 +178,12 @@ const SecurityData = ({ userId }) => {
           <div className={classes.fullWidth}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div />
-              <Button type="submit" variant="contained" color="secondary" onClick={handleClick}>
+              <Button
+                type="submit"
+                aria-label="update email"
+                variant="contained"
+                color="secondary"
+                onClick={handleClick}>
                 Update Email
               </Button>
             </div>
@@ -240,6 +245,7 @@ const SecurityData = ({ userId }) => {
               <Button
                 type="submit"
                 variant="contained"
+                aria-label="Update password"
                 color="secondary"
                 onClick={handelPasswordChange}>
                 Update Password
@@ -261,6 +267,7 @@ const SecurityData = ({ userId }) => {
         </div>
         <Button
           disabled={canDelete}
+          aria-label="delete"
           onClick={handleDelete}
           variant="contained"
           style={{

@@ -189,6 +189,7 @@ const VoiceUpload = () => {
       </Box>
       <Button
         className={classes.mic}
+        aria-label="mic"
         onClick={() => {
           handelRecoding();
         }}>
@@ -203,6 +204,7 @@ const VoiceUpload = () => {
         Tap to record{" "}
       </Typography>
       <Button
+        aria-label="verify"
         onClick={handleAudio}
         disabled={!audio}
         type="submit"

@@ -15,7 +15,13 @@ const useStyles = makeStyles((theme) => ({
 const Tags = ({ tags }) => {
   const classes = useStyles();
   return tags.map((tag, index) => (
-    <Button disableRipple variant="text" size="small" className={classes.tags} key={index}>
+    <Button
+      disableRipple
+      aria-label="tag"
+      variant="text"
+      size="small"
+      className={classes.tags}
+      key={index}>
       {tag}
     </Button>
   ));

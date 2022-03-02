@@ -150,6 +150,7 @@ const ImageUpload = ({ userId }) => {
             <Button
               type="submit"
               variant="contained"
+              aria-label="upload"
               onClick={() => {
                 setUpload(!isUpload);
               }}>
@@ -158,7 +159,9 @@ const ImageUpload = ({ userId }) => {
           </Grid>
           {isUpload || (
             <Grid item>
-              <Button onClick={() => history.push("/verify-voice")}>Skip</Button>
+              <Button aria-label="skip" onClick={() => history.push("/verify-voice")}>
+                Skip
+              </Button>
             </Grid>
           )}
         </Grid>

@@ -174,6 +174,7 @@ const CustomListItem = ({
                   style={{
                     backgroundColor: theme.palette.primary
                   }}
+                  aria-label="Accept"
                   onClick={handleConfirm}
                   variant="contained"
                   disableElevation
@@ -186,6 +187,7 @@ const CustomListItem = ({
                   style={{
                     backgroundColor: theme.palette.error.light
                   }}
+                  aria-label="decline"
                   onClick={handleDecline}
                   variant="contained"
                   disableElevation
@@ -287,7 +289,7 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
     <>
       <Box className={classes.box}>
         <Badge badgeContent={unreadCount} max={9} color="secondary">
-          <ButtonBase className={classes.iconWrapper}>
+          <ButtonBase className={classes.iconWrapper} aria-label="icon">
             <Avatar
               variant="rounded"
               className={classes.iconAvatar}
@@ -445,6 +447,7 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
                     <Button
                       onClick={() => setViewAll((state) => !state)}
                       size="small"
+                      aria-label="view"
                       color="primary"
                       disableElevation>
                       {!isViewAll ? "View All" : "Hide"}

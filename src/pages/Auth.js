@@ -165,6 +165,7 @@ const Auth = ({ isAuth }) => {
                               type="submit"
                               size="large"
                               variant="outlined"
+                              aria-label="google"
                               startIcon={<GoogleIcon />}
                               className={classes.btn}>
                               Sign in with Google
@@ -178,6 +179,7 @@ const Auth = ({ isAuth }) => {
                               fullWidth
                               size="large"
                               variant="outlined"
+                              aria-label="facebook"
                               startIcon={<FacebookIcon />}
                               className={classes.btn}>
                               Sign in with Facebook
@@ -194,6 +196,7 @@ const Auth = ({ isAuth }) => {
 
                             <Button
                               variant="outlined"
+                              aria-label="or"
                               style={{
                                 cursor: "unset",
                                 margin: "2ch",
@@ -329,6 +332,7 @@ const Auth = ({ isAuth }) => {
                           <Button
                             color="secondary"
                             disableElevation
+                            aria-label="enter"
                             fullWidth
                             size="large"
                             type="submit"

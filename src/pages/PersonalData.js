@@ -509,6 +509,7 @@ const PersonalData = ({ userId }) => {
                 }}>
                 <Button
                   className={classes.button}
+                  aria-label="verify"
                   color="primary"
                   variant="contained"
                   disabled={disableGenderUpdate}>
@@ -517,6 +518,7 @@ const PersonalData = ({ userId }) => {
                 <Button
                   className={classes.button}
                   variant="contained"
+                  aria-label="update"
                   color="secondary"
                   type="submit"
                   disabled={!disableGenderUpdate}>

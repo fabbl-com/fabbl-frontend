@@ -194,18 +194,21 @@ const FindRandom = ({ userId, socket }) => {
           <div className={classes.action}>
             <Button
               disabled={!canGoBack}
+              aria-label="back"
               className={classNames(classes.btn, classes.btn_repeat)}
               onClick={() => goBack()}>
               <Replay />
             </Button>
             <Button
               disabled={!canSwipe}
+              aria-label="left"
               className={classNames(classes.btn, classes.btn_close)}
               onClick={() => swipe("left")}>
               <Close />
             </Button>
             <Button
               disabled={!canSwipe}
+              aria-label="right"
               className={classNames(classes.btn, classes.btn_like)}
               onClick={() => swipe("right")}>
               <Favorite className={classes.like} />

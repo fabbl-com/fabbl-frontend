@@ -602,6 +602,7 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
                         />
                         <Button
                           variant="outlined"
+                          aria-label="matched at"
                           style={{
                             cursor: "unset",
                             margin: "2ch 0",

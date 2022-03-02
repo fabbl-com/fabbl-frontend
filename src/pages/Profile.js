@@ -115,6 +115,7 @@ const Profile = ({ userId }) => {
             {profile.hobby.value.map((tag, i) => (
               <Button
                 disableRipple
+                aria-label="tag"
                 style={{ backgroundColor: tagsColor[i % tagsColor.length], color: "#eee" }}
                 size="small"
                 className={classes.tags}
@@ -126,7 +127,11 @@ const Profile = ({ userId }) => {
         </div>
 
         {id === userId || (
-          <Button className={classes.favorite} variant="contained" color="secondary">
+          <Button
+            className={classes.favorite}
+            variant="contained"
+            color="secondary"
+            aria-label="add friend">
             Add To Friends &nbsp;&nbsp;&nbsp;
             <FavoriteBorder />
           </Button>

@@ -242,7 +242,7 @@ const Settings = ({ userId, isTheme, setTheme }) => {
           </div>
         </div>
         <Box align="center" mb={2} mt={1}>
-          <Button variant="contained" color="secondary" type="submit">
+          <Button variant="contained" color="secondary" type="submit" aria-label="delete">
             Update Profile
           </Button>
         </Box>

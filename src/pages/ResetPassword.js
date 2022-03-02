@@ -151,6 +151,7 @@ const ResetPassword = () => {
                           <form action="http://localhost:4000/auth/google">
                             <Button
                               fullWidth
+                              aria-label="sign in with google"
                               type="submit"
                               size="large"
                               variant="outlined"
@@ -167,6 +168,7 @@ const ResetPassword = () => {
                               fullWidth
                               size="large"
                               variant="outlined"
+                              aria-label="Sign in with Facebook"
                               startIcon={<FacebookIcon />}
                               className={classes.btn}>
                               Sign in with Facebook
@@ -183,6 +185,7 @@ const ResetPassword = () => {
 
                             <Button
                               variant="outlined"
+                              aria-label="or"
                               style={{
                                 cursor: "unset",
                                 margin: "2ch",
@@ -282,6 +285,7 @@ const ResetPassword = () => {
                           <Button
                             color="secondary"
                             disableElevation
+                            aria-label="reset password"
                             fullWidth
                             size="large"
                             type="submit"

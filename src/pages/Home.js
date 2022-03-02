@@ -74,7 +74,7 @@ const Home = () => {
       <Typography variant="h1" component="h2">
         Fabbl
       </Typography>
-      <Typography component="h1" variant="subtitle1" align="left">
+      <Typography component="h2" variant="subtitle1" align="left">
         The annonymous messaging app
       </Typography>
       <br />
@@ -83,14 +83,14 @@ const Home = () => {
           Welcome To Our Community
         </Typography>
         <div className={classes.animation} ref={container}></div>
-        <Typography variant="subtitle2" gutterBottom>
+        <Typography variant="h4" gutterBottom>
           Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur Lorem
           ipsum dolor sit amet, consectetur
         </Typography>
       </div>
       <br />
       <Link to="/find">
-        <Button variant="contained" color="secondary">
+        <Button variant="contained" color="secondary" aria-label="get started">
           Get Started
         </Button>
       </Link>

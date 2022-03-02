@@ -197,16 +197,17 @@ const ProfileSection = ({ userId, isTheme, setTheme }) => {
           <Avatar
             src={profile?.avatar?.value}
             color="secondary"
+            alt="avatar"
             className={classes.avatar}
             aria-controls={open && "menu-list-grow"}
-            aria-haspopup="true"
+            aria-haspopup="menu"
           />
         }
         label={<Settings fontSize="small" />}
         variant="outlined"
         ref={anchorRef}
         aria-controls={open && "menu-list-grow"}
-        aria-haspopup="true"
+        aria-haspopup="menu"
         onClick={handleToggle}
         color="primary"
       />
