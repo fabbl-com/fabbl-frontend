@@ -16,7 +16,6 @@ const genKeys = async () => {
 };
 
 const genDerivedKey = async (publicKeyJwk, privateKeyJwk) => {
-  console.log(publicKeyJwk);
   const publicKey = await window.crypto.subtle.importKey(
     "jwk",
     publicKeyJwk,

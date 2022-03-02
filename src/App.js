@@ -48,10 +48,15 @@ const App = () => {
     if (userId) {
       newSocket = io(ENDPOINT, { reconnectionDelayMax: 10000, query: `userId=${userId}` });
       setSocket(newSocket);
+      newSocket.on("connect_error", (err) => console.log(err.message));
+      newSocket.on("error", (err) => console.log(err.message));
     }
 
-    dispatch(checkAuth());
     return () => newSocket && newSocket.off();
+  }, [userId]);
+
+  useEffect(() => {
+    dispatch(checkAuth());
   }, []);
 
   // console.log(isAuth);
