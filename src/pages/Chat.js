@@ -76,7 +76,6 @@ const UserCard = ({ online, displayName, url, time, message, unread, privateKey,
       if (privateKey && publicKey) {
         const pKey = JSON.parse(publicKey);
         const key = await genDerivedKey(pKey, privateKey);
-        console.log(pKey, privateKey, key);
         setDerivedKey(key);
       }
     };
@@ -86,7 +85,6 @@ const UserCard = ({ online, displayName, url, time, message, unread, privateKey,
   useEffect(() => {
     const work = async () => {
       const msg = await decode(message, derivedKey);
-      console.log(msg);
       setMsg(msg);
     };
     if (message && derivedKey) work();
@@ -167,11 +165,11 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
 
   useEffect(() => {
     getChatList(socket, eventEmitter, userId, dispatch);
-    eventEmitter.on("chat-list-response", chatListListener);
+    eventEmitter.on("get-chat-list-response", getChatListListener);
 
     return () => {
       socket.off();
-      eventEmitter.removeListener("chat-list-response", chatListListener);
+      eventEmitter.removeListener("get-chat-list-response", getChatListListener);
     };
   }, [userId, socket, eventEmitter]);
 
@@ -187,7 +185,7 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
     else setUsers(chatListUsers);
   }, [isFriends, friends.length]);
 
-  const chatListListener = (data) => {
+  const getChatListListener = (data) => {
     dispatch(getChatListUsers(data?.messages));
   };
 
@@ -200,8 +198,6 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
   };
 
   const handleFriends = () => setFriends((state) => !state);
-
-  console.log(isSearchMode);
 
   return (
     <div className={classes.root}>

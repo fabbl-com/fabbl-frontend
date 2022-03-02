@@ -157,14 +157,13 @@ export default (state = initialState, action) => {
     case GET_ALL_USERS_FAIL:
     case SET_LIKES_FAIL:
     case USER_UPLOAD_AVATAR_FAIL:
-    case LOGOUT_FAIL:
       return {
         ...state,
         loading: false,
         error: action.payload
       };
     case UPDATE_PROFILE_FAIL:
-    case CHECK_AUTH_FAIL:
+      // case CHECK_AUTH_FAIL:
       return {
         ...state,
         isAuth: false,
@@ -217,7 +216,8 @@ export default (state = initialState, action) => {
         notifications: notif
       };
     case LOGOUT_SUCCESS:
-      window.href = "/";
+    case LOGOUT_FAIL:
+    case CHECK_AUTH_FAIL:
       localStorage.removeItem("userInfo");
       localStorage.removeItem("notifications");
       localStorage.removeItem("userId");
@@ -225,14 +225,14 @@ export default (state = initialState, action) => {
       localStorage.removeItem("privateKey");
       localStorage.removeItem("publicKey");
       return {
-        ...state,
         isAuth: false,
         loading: false,
         profile: {},
         notifications: [],
         isEmailVerified: false,
         userId: "",
-        ...action.payload
+        authChecking: false
+        // ...action.payload
       };
     case SET_KEYS:
       localStorage.setItem("privateKey", JSON.stringify(action.payload.privateKey));
