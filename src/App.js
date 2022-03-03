@@ -29,7 +29,7 @@ import { checkAuth } from "./redux/actions/userActions";
 import PrivateRoute from "./PrivateRoute";
 const events = require("events");
 
-const ENDPOINT = "http://localhost:4000";
+const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 
 const App = () => {
   const _isTheme = localStorage.getItem("theme")
@@ -113,7 +113,7 @@ const App = () => {
             <PrivateRoute isAuth={isAuth} path="/find">
               <FindRandom userId={userId} socket={socket} eventEmitter={eventEmitter} />
             </PrivateRoute>
-            <Route path="/auth" render={() => <Auth isAuth={isAuth} />} />
+            <Route path="/auth" render={() => <Auth />} />
             <Route path="/image" render={() => <ImageUpload userId={userId} />} />
             <Route path="/verify-voice" render={() => <VerifyVoice />} />
             <Route path="/user/verify-email" render={() => <VerifyEmail />} />

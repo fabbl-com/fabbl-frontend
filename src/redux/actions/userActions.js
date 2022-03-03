@@ -1,5 +1,5 @@
-import axios from "axios";
 import { genKeys } from "../../lib/hashAlgorithm";
+import Axios from "../api";
 
 import {
   USER_REGISTER_FAIL,
@@ -39,11 +39,6 @@ import {
   SET_KEYS_1
 } from "../constants/userActionTypes";
 
-const Axios = axios.create({
-  withCredentials: true,
-  baseURL: "https://fabbl-backend.herokuapp.com"
-});
-
 export const register = (user) => async (dispatch) => {
   dispatch({ type: USER_REGISTER_REQUEST });
   try {
@@ -68,6 +63,10 @@ export const login = (user) => async (dispatch) => {
     const { data } = await Axios.post("/auth/login", user);
     console.log(data);
     dispatch({ type: USER_SIGNIN_SUCCESS, payload: data });
+    dispatch({
+      type: SET_KEYS_1,
+      payload: { privateKey: data?.profile?.privateKey, publicKey: data?.profile?.publicKey }
+    });
   } catch (error) {
     console.log(error);
     dispatch({
@@ -151,13 +150,8 @@ export const updateProfile =
   ({ data, userId }) =>
   async (dispatch) => {
     // dispatch({ type: USER_REGISTER_REQUEST });
-    const accessToken = localStorage.getItem("accessToken");
     try {
-      const res = await Axios.post(`/user/profile/personal/${userId}`, data, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
+      const res = await Axios.post(`/user/profile/personal/${userId}`, data);
       dispatch({
         type: UPDATE_PROFILE_SUCCESS,
         payload: res.data?.profile
@@ -179,7 +173,6 @@ export const checkAuth = () => async (dispatch) => {
   try {
     const publicKey = localStorage.getItem("publicKey");
     const privateKey = localStorage.getItem("privateKey");
-    const accessToken = localStorage.getItem("accessToken");
 
     const keys = await genKeys();
 
@@ -188,11 +181,7 @@ export const checkAuth = () => async (dispatch) => {
       privateKey: privateKey ? null : keys?.privateKey
     };
 
-    const { data } = await Axios.post("/auth/check", body, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    });
+    const { data } = await Axios.post("/auth/check", body);
     console.log(data, keys);
     dispatch({ type: CHECK_AUTH_SUCCESS, payload: data });
     if (data?.isKeysUpdated) {
@@ -220,12 +209,7 @@ export const updateProfilePref =
   ({ data, userId }) =>
   async (dispatch) => {
     try {
-      const accessToken = localStorage.getItem("accessToken");
-      const res = await Axios.post(`/user/profile/${userId}`, data, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
+      const res = await Axios.post(`/user/profile/${userId}`, data);
       dispatch({
         type: UPDATE_PROFILE_PREF,
         payload: res.data
@@ -245,12 +229,7 @@ export const updateProfilePref =
 
 export const getUserProfile = (userId) => async (dispatch) => {
   try {
-    const accessToken = localStorage.getItem("accessToken");
-    const res = await Axios.get(`/user/profile/${userId}`, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    });
+    const res = await Axios.get(`/user/profile/${userId}`);
     dispatch({
       type: GET_USER_PROFILE,
       payload: res.data
@@ -272,13 +251,8 @@ export const updateEmail =
   ({ data, id }) =>
   async (dispatch) => {
     try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      };
       console.log(data);
-      await Axios.post(`/user/send-update-email/${id}`, { email: data }, config);
+      await Axios.post(`/user/send-update-email/${id}`, { email: data });
       dispatch({
         type: UPDATE_EMAIL_SUCCESS
       });
@@ -299,13 +273,8 @@ export const updatePassword =
   ({ data, id }) =>
   async (dispatch) => {
     try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      };
       console.log(data);
-      await Axios.post(`/user/update-password/${id}`, data, config);
+      await Axios.post(`/user/update-password/${id}`, data);
       dispatch({
         type: UPDATE_PASSWORD_SUCCESS
       });
@@ -378,12 +347,7 @@ export const resetPassword =
 export const logout = () => async (dispatch) => {
   // dispatch({ type: LOGOUT_REQUEST });
   try {
-    const accessToken = localStorage.getItem("accessToken");
-    const { data } = await Axios.post("/auth/logout", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`
-      }
-    });
+    const { data } = await Axios.post("/auth/logout");
     console.log(data);
     dispatch({ type: LOGOUT_SUCCESS, payload: data });
   } catch (error) {

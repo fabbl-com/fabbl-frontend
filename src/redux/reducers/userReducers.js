@@ -136,6 +136,7 @@ export default (state = initialState, action) => {
         isAuth: true,
         authChecking: false,
         accessToken: action.payload.accessToken,
+        userId: action.payload.profile._id,
         ...action.payload
       };
     case USER_SIGNIN_FAIL:

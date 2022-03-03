@@ -38,7 +38,9 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const Auth = ({ isAuth }) => {
+const ENDPOINT = process.env.REACT_APP_ENDPOINT;
+
+const Auth = () => {
   const theme = useTheme();
 
   const matchDownSM = useMediaQuery(theme.breakpoints.down("md"));
@@ -53,14 +55,9 @@ const Auth = ({ isAuth }) => {
   const history = useHistory();
   const classes = useStyles();
 
-  if (isAuth) {
-    if (!isRegister) history.push(location?.state?.from?.pathname);
-    else history.push("/image");
-  }
+  const { isAuth, error, success } = useSelector((state) => state.user);
 
-  const { error, success } = useSelector((state) => state.user);
-
-  if (success) history.push(location?.state?.from?.pathname);
+  if (isAuth && success) history.push(location?.state?.from?.pathname || "/");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -159,7 +156,7 @@ const Auth = ({ isAuth }) => {
                     <Grid item xs={12}>
                       <Grid container direction="column" justifyContent="center" spacing={2}>
                         <Grid item xs={12}>
-                          <form action="http://localhost:4000/auth/google">
+                          <form action={`${ENDPOINT}/auth/google`}>
                             <Button
                               fullWidth
                               type="submit"
@@ -173,7 +170,7 @@ const Auth = ({ isAuth }) => {
                           </form>
                         </Grid>
                         <Grid item xs={12}>
-                          <form action="http://localhost:4000/auth/facebook">
+                          <form action={`${ENDPOINT}/auth/facebook`}>
                             <Button
                               type="submit"
                               fullWidth
