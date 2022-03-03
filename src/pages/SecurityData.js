@@ -238,7 +238,7 @@ const SecurityData = ({ userId }) => {
               </div>
             </React.Fragment>
           ))}
-          {strength !== 0 && <PasswordStrength level={level} />}
+
           <div className={classes.fullWidth}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div />
@@ -251,6 +251,7 @@ const SecurityData = ({ userId }) => {
                 Update Password
               </Button>
             </div>
+            {strength !== 0 && <PasswordStrength level={level} />}
           </div>
         </form>
       </div>

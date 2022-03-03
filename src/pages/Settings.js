@@ -12,7 +12,9 @@ import {
   Select,
   MenuItem,
   Button,
-  Box
+  Box,
+  useTheme,
+  Badge
 } from "@material-ui/core";
 import {
   KeyboardBackspace,
@@ -39,6 +41,7 @@ const useStyles = makeStyles((theme) => settingsStyles(theme));
 const Settings = ({ userId, isTheme, setTheme }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
+  const theme = useTheme();
   const history = useHistory();
   const location = useLocation();
   const profile = useSelector((state) => state.user?.userInfo);
@@ -85,7 +88,7 @@ const Settings = ({ userId, isTheme, setTheme }) => {
   };
 
   return (
-    <Container className={classes.root}>
+    <Container maxWidth="lg" className={classes.root}>
       <div className={classes.profileHeader}>
         <IconButton onClick={goBack} color="primary">
           <KeyboardBackspace />
@@ -178,28 +181,38 @@ const Settings = ({ userId, isTheme, setTheme }) => {
                 &nbsp;&nbsp;&nbsp;
                 <Typography>{el.title}</Typography>
                 <div style={{ flexGrow: 1 }} />
-                <FormControl size="small" variant="outlined">
-                  <Select
-                    name={el.name}
-                    defaultValue={1}
-                    onChange={onChange}
-                    classes={{
-                      select: classes.visibility
-                    }}>
-                    <MenuItem value={1}>
-                      <Public fontSize="small" />
-                      &nbsp;&nbsp;&nbsp; Public
-                    </MenuItem>
-                    <MenuItem value={2}>
-                      <Group fontSize="small" />
-                      &nbsp;&nbsp;&nbsp; Only friends
-                    </MenuItem>
-                    <MenuItem value={3}>
-                      <Person fontSize="small" />
-                      &nbsp;&nbsp;&nbsp; Only me
-                    </MenuItem>
-                  </Select>
-                </FormControl>
+                <Badge
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "center"
+                  }}
+                  badgeContent={"Upcoming"}
+                  color="primary">
+                  <FormControl size="small" variant="outlined">
+                    <Select
+                      name={el.name}
+                      defaultValue={1}
+                      disabled
+                      onChange={onChange}
+                      classes={{
+                        select: classes.visibility,
+                        disabled: classes.disabled
+                      }}>
+                      <MenuItem value={1}>
+                        <Public fontSize="small" />
+                        &nbsp;&nbsp;&nbsp; Public
+                      </MenuItem>
+                      <MenuItem value={2}>
+                        <Group fontSize="small" />
+                        &nbsp;&nbsp;&nbsp; Only friends
+                      </MenuItem>
+                      <MenuItem value={3}>
+                        <Person fontSize="small" />
+                        &nbsp;&nbsp;&nbsp; Only me
+                      </MenuItem>
+                    </Select>
+                  </FormControl>
+                </Badge>
               </div>
             ))}
           </div>
@@ -221,21 +234,31 @@ const Settings = ({ userId, isTheme, setTheme }) => {
                   &nbsp;&nbsp;&nbsp;
                   <Typography>{el.title}</Typography>
                   <div style={{ flexGrow: 1 }} />
-                  <FormControl size="small" variant="outlined">
-                    <Select
-                      name={el.name}
-                      defaultValue={1}
-                      onChange={onChange}
-                      native
-                      classes={{
-                        select: classes.visibility
-                      }}>
-                      <option value={1}>10 min</option>
-                      <option value={2}>15 min</option>
-                      <option value={3}>custom</option>
-                      <option value={4}>Never</option>
-                    </Select>
-                  </FormControl>
+                  <Badge
+                    anchorOrigin={{
+                      vertical: "top",
+                      horizontal: "center"
+                    }}
+                    badgeContent={"Upcoming"}
+                    color="primary">
+                    <FormControl size="small" variant="outlined">
+                      <Select
+                        name={el.name}
+                        defaultValue={1}
+                        disabled
+                        onChange={onChange}
+                        native
+                        classes={{
+                          select: classes.visibility,
+                          disabled: classes.disabled
+                        }}>
+                        <option value={1}>10 min</option>
+                        <option value={2}>15 min</option>
+                        <option value={3}>custom</option>
+                        <option value={4}>Never</option>
+                      </Select>
+                    </FormControl>
+                  </Badge>
                 </div>
               ))}
             </div>

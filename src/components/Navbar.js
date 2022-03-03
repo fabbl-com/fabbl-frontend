@@ -13,7 +13,10 @@ import ButtonWrapper from "./ButtonWrapper";
 const useStyles = makeStyles((theme) => ({
   appBar: {
     backgroundColor: "#2e9cca",
-    color: "#fff"
+    color: "#fff",
+    [theme.breakpoints.up("md")]: {
+      padding: " 0 7%"
+    }
   },
   menu: {
     backgroundColor: theme.palette.background.default,

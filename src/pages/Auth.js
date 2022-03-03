@@ -86,7 +86,7 @@ const Auth = ({ isAuth }) => {
   return (
     <div
       style={{
-        backgroundColor: theme.palette.primary.light,
+        backgroundColor: "rgba(46, 156, 202, .9)",
         minHeight: "100vh",
         marginTop: "3rem"
       }}>
