@@ -129,11 +129,13 @@ export default (state = initialState, action) => {
         "notifications",
         JSON.stringify({ notifications: action.payload.notifications })
       );
+      localStorage.setItem("accessToken", action.payload.accessToken);
       return {
         ...state,
         loading: false,
         isAuth: true,
         authChecking: false,
+        accessToken: action.payload.accessToken,
         ...action.payload
       };
     case USER_SIGNIN_FAIL:
@@ -217,7 +219,7 @@ export default (state = initialState, action) => {
       };
     case LOGOUT_SUCCESS:
     case LOGOUT_FAIL:
-    case CHECK_AUTH_FAIL:
+      // case CHECK_AUTH_FAIL:
       localStorage.removeItem("userInfo");
       localStorage.removeItem("notifications");
       localStorage.removeItem("userId");
@@ -231,8 +233,8 @@ export default (state = initialState, action) => {
         notifications: [],
         isEmailVerified: false,
         userId: "",
-        authChecking: false
-        // ...action.payload
+        authChecking: false,
+        ...action.payload
       };
     case SET_KEYS:
       localStorage.setItem("privateKey", JSON.stringify(action.payload.privateKey));
