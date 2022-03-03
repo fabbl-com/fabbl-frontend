@@ -5,7 +5,10 @@ const chatStyles = (theme) => ({
   appBar: {
     marginTop: theme.spacing(6),
     backgroundColor: theme.palette.background.default,
-    zIndex: 10
+    zIndex: 10,
+    [theme.breakpoints.up("md")]: {
+      padding: " 0 9%"
+    }
   },
   search: {
     position: "relative",
@@ -38,6 +41,9 @@ const chatStyles = (theme) => ({
   msgContainer: {
     marginTop: theme.spacing(12),
     padding: theme.spacing(1),
+    [theme.breakpoints.up("md")]: {
+      padding: " 0 3%"
+    },
     "& > div": {
       margin: theme.spacing(0.5)
     }

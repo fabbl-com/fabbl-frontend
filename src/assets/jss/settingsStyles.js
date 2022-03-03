@@ -44,6 +44,12 @@ const settingsStyles = (theme) => ({
   },
   visibility: {
     display: "flex"
+  },
+  disabled: {
+    "&.Mui-disabled": {
+      color: theme.palette.primary.main
+    }
+    // "&.Mui-disabled:hover": { background: theme.palette.secondary.main }
   }
 });
 

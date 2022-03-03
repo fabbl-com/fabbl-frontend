@@ -12,10 +12,14 @@ const randomStyles = (theme) => ({
   },
   finding: {
     height: `calc(100vh - ${theme.spacing(12)}px)`,
+
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "space-around"
+    justifyContent: "space-around",
+    [theme.breakpoints.up("md")]: {
+      marginTop: theme.spacing(13)
+    }
   },
   person: {
     flex: 0.5,
@@ -33,7 +37,8 @@ const randomStyles = (theme) => ({
     height: "100px"
   },
   header: {
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(2),
+    color: "#131928"
   },
   matching: {
     width: "150px",

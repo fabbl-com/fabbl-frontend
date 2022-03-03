@@ -7,6 +7,7 @@ import animationData from "../assets/animation/home.json";
 import { useDispatch } from "react-redux";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { setUser } from "../redux/actions/userActions";
+import demoImage from "../assets/logo/Asset 1.png";
 function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
@@ -28,8 +29,23 @@ const useStyles = makeStyles((theme) => ({
     color: "#fff"
   },
   animation: {
-    height: "16rem",
-    marginTop: theme.spacing(0)
+    height: "28rem",
+    width: "38.13rem",
+    marginTop: theme.spacing(-5),
+    [theme.breakpoints.down("md")]: {
+      display: "none"
+    }
+  },
+  content: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    height: "100%",
+    marginTop: theme.spacing(-5),
+    [theme.breakpoints.down("md")]: {
+      alignItems: "top"
+    }
   },
   copyRight: {
     marginTop: theme.spacing(3),
@@ -70,34 +86,38 @@ const Home = () => {
   }, []);
 
   return (
-    <Container className={classes.root} maxWidth="sm">
-      <Typography variant="h1" component="h2">
-        Fabbl
-      </Typography>
-      <Typography component="h2" variant="subtitle1" align="left">
-        The annonymous messaging app
-      </Typography>
-      <br />
-      <div>
-        <Typography variant="h3" align="left" gutterBottom>
-          Welcome To Our Community
-        </Typography>
-        <div className={classes.animation} ref={container}></div>
-        <Typography variant="h4" gutterBottom>
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur Lorem
-          ipsum dolor sit amet, consectetur
-        </Typography>
-      </div>
-      <br />
-      <Link to="/find">
-        <Button variant="contained" color="secondary" aria-label="get started">
-          Get Started
-        </Button>
-      </Link>
+    <div className={classes.root}>
+      <Container maxWidth="lg" className={classes.content}>
+        <Container maxWidth="sm">
+          <Typography variant="h1" align="left">
+            The annonymous messaging app
+          </Typography>
+          <br />
+          <div>
+            <Typography variant="h3" align="left" gutterBottom>
+              Welcome To Our Community
+            </Typography>
+            <Typography variant="subtitle1" gutterBottom>
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur
+              Lorem ipsum dolor sit amet, consectetur Lorem ipsum dolor sit amet, consectetur
+              adipisicing elit. Quos blanditiis tenetur Lorem ipsum dolor sit amet, consectetur
+            </Typography>
+          </div>
+          <br />
+          <Link to="/find">
+            <Button variant="contained" color="secondary" aria-label="get started">
+              Get Started
+            </Button>
+          </Link>
+        </Container>
+        <div>
+          <img className={classes.animation} src={demoImage} alt="demo" />
+        </div>
+      </Container>
       <div className={classes.copyRight} align="center">
         <Copyright />
       </div>
-    </Container>
+    </div>
   );
 };
 

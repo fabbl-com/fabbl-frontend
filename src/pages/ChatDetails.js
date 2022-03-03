@@ -87,25 +87,24 @@ const Message = ({ derivedKey, time, isRead, children, ...props }) => {
             style={{ width: message && message.length <= 10 && "150px" }}
             className={classes.msgBubble}>
             <div>{message}</div>
-            <div className={classes.msginfo}>
-              <Typography variant="caption" className={classes.timestamp}>
-                {new Date(time).toLocaleString("en-US", {
-                  hour: "numeric",
-                  minute: "numeric",
-                  hour12: true
-                })}
-              </Typography>
+            {props.align === "left" && <br />}
+            <Typography variant="caption" className={classes.timestamp}>
+              {new Date(time).toLocaleString("en-US", {
+                hour: "numeric",
+                minute: "numeric",
+                hour12: true
+              })}
+            </Typography>
 
-              {props.align === "left" && (
-                <Box align="left" mb={-5}>
-                  {isRead ? (
-                    <DoneAll style={{ color: "#42C2FF" }} fontSize="small" />
-                  ) : (
-                    <Done fontSize="small" />
-                  )}
-                </Box>
-              )}
-            </div>
+            {props.align === "left" && (
+              <Box align="left" mb={-5}>
+                {isRead ? (
+                  <DoneAll style={{ color: "#42C2FF" }} fontSize="small" />
+                ) : (
+                  <Done fontSize="small" />
+                )}
+              </Box>
+            )}
           </div>
         </div>
         <div style={{ margin: theme.spacing(1, 0) }} />

@@ -3,7 +3,10 @@ const chatStyles = (theme) => ({
     marginTop: theme.spacing(7),
     marginBottom: theme.spacing(1),
     position: "relative",
-    overflow: "hidden"
+    overflow: "hidden",
+    [theme.breakpoints.up("md")]: {
+      padding: " 0 10%"
+    }
   },
   container: {
     overflow: "hidden"
@@ -24,7 +27,10 @@ const chatStyles = (theme) => ({
     left: "50%",
     transform: "translateX(-50%)",
     top: theme.spacing(8),
-    zIndex: 10
+    zIndex: 10,
+    [theme.breakpoints.up("md")]: {
+      padding: " 0 8%"
+    }
   },
   toolBar: {
     padding: theme.spacing(0, 1)
@@ -163,7 +169,10 @@ const chatStyles = (theme) => ({
     display: "flex",
     justifyContent: "space-around",
     alignItems: "end",
-    padding: theme.spacing(0.2, 2, 1, 2)
+    padding: theme.spacing(0.2, 2, 1, 2),
+    [theme.breakpoints.up("md")]: {
+      padding: " 0 8%"
+    }
   },
   inputRoot: {
     padding: theme.spacing(0, 0.6),
