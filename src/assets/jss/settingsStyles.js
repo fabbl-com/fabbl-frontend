@@ -1,6 +1,9 @@
 const settingsStyles = (theme) => ({
   root: {
-    marginTop: theme.spacing(6)
+    marginTop: theme.spacing(6),
+    [theme.breakpoints.down("md")]: {
+      paddingBottom: theme.spacing(8)
+    }
   },
   profileHeader: {
     width: "100%",
