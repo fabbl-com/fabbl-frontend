@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   makeStyles,
   Avatar,
@@ -9,8 +9,6 @@ import {
   TextField,
   useTheme,
   Box,
-  FormControl,
-  Grid,
   useMediaQuery
 } from "@material-ui/core";
 import {

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import { Button, Container, Typography } from "@material-ui/core";
+import { Button, Container, Typography, useMediaQuery, useTheme } from "@material-ui/core";
 import lottie from "lottie-web";
 import queryString from "query-string";
 import animationData from "../assets/animation/home.json";
@@ -23,7 +23,7 @@ function Copyright() {
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    height: `calc(100vh - ${theme.spacing(6)}px)`,
+    height: `calc(100vh - ${theme.spacing(1)}px)`,
     marginTop: theme.spacing(6),
     backgroundColor: "#2e9cca",
     color: "#fff"
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   animation: {
     height: "28rem",
     width: "38.13rem",
-    marginTop: theme.spacing(-5),
+    // marginTop: theme.spacing(-5),
     [theme.breakpoints.down("md")]: {
       display: "none"
     }
@@ -39,12 +39,17 @@ const useStyles = makeStyles((theme) => ({
   content: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    justifyContent: "space-between",
+    padding: 0,
     alignItems: "center",
-    height: "100%",
-    marginTop: theme.spacing(-5),
     [theme.breakpoints.down("md")]: {
-      alignItems: "top"
+      alignItems: "top",
+      justifyContent: "center",
+      marginTop: theme.spacing(6),
+      paddingTop: theme.spacing(7)
+    },
+    [theme.breakpoints.up("md")]: {
+      height: "100%"
     }
   },
   copyRight: {
@@ -54,15 +59,26 @@ const useStyles = makeStyles((theme) => ({
     position: "fixed",
     bottom: "0",
     left: "0"
-  }
+  },
+  btn: {
+    borderRadius: theme.spacing(3),
+    boxShadow: theme.shadows[16],
+    padding: "1ch 3ch",
+    [theme.breakpoints.down("md")]: {
+      borderRadius: theme.spacing(0.5)
+    }
+  },
+  headline: {}
 }));
 
 const Home = () => {
-  const classes = useStyles();
   const container = useRef(null);
   const dispatch = useDispatch();
   const location = useLocation();
   const history = useHistory();
+  const theme = useTheme();
+  const matchesMd = useMediaQuery(theme.breakpoints.down("md"));
+  const classes = useStyles(matchesMd);
 
   useEffect(() => {
     var query = queryString.parse(location?.search);
@@ -88,16 +104,22 @@ const Home = () => {
   return (
     <div className={classes.root}>
       <Container maxWidth="lg" className={classes.content}>
-        <Container maxWidth="sm">
-          <Typography variant="h1" align="left">
+        <Container
+          align={matchesMd ? "center" : "left"}
+          style={{ margin: 0, paddingLeft: !matchesMd && 0 }}
+          maxWidth="sm">
+          <Typography
+            variant="h1"
+            className={classes.headline}
+            align={matchesMd ? "center" : "left"}>
             The annonymous messaging app
           </Typography>
           <br />
           <div>
-            <Typography variant="h3" align="left" gutterBottom>
+            <Typography variant="h3" align={matchesMd ? "center" : "left"} gutterBottom>
               Welcome To Our Community
             </Typography>
-            <Typography variant="subtitle1" gutterBottom>
+            <Typography style={{ color: "#b8c4c2" }} variant="body2" gutterBottom>
               Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur
               Lorem ipsum dolor sit amet, consectetur Lorem ipsum dolor sit amet, consectetur
               adipisicing elit. Quos blanditiis tenetur Lorem ipsum dolor sit amet, consectetur
@@ -105,7 +127,12 @@ const Home = () => {
           </div>
           <br />
           <Link to="/find">
-            <Button variant="contained" color="secondary" aria-label="get started">
+            <Button
+              fullWidth={matchesMd}
+              className={classes.btn}
+              variant="contained"
+              color="secondary"
+              aria-label="get started">
               Get Started
             </Button>
           </Link>
@@ -114,9 +141,9 @@ const Home = () => {
           <img className={classes.animation} src={demoImage} alt="demo" />
         </div>
       </Container>
-      <div className={classes.copyRight} align="center">
+      {/* <div className={classes.copyRight} align="center">
         <Copyright />
-      </div>
+      </div> */}
     </div>
   );
 };

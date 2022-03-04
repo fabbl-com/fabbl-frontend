@@ -60,8 +60,11 @@ export const light = responsiveFontSizes(
         fontWeight: 700
       },
       h1: {
-        fontSize: "2.125rem",
-        fontWeight: 700
+        fontSize: "2.5rem !important",
+        fontWeight: 700,
+        letterSpacing: "2px",
+        lineHeight: 1.5,
+        textTransform: "uppercase"
       },
       caption: {
         fontSize: "0.75rem",
@@ -75,7 +78,8 @@ export const light = responsiveFontSizes(
       body2: {
         letterSpacing: "0em",
         fontWeight: 400,
-        lineHeight: "1.5em"
+        fontSize: "14px",
+        lineHeight: "1.5rem"
       },
       button: {
         textTransform: "capitalize"
@@ -161,8 +165,11 @@ export const dark = responsiveFontSizes(
         fontWeight: 700
       },
       h1: {
-        fontSize: "2.125rem",
-        fontWeight: 700
+        fontSize: "2.5rem !important",
+        fontWeight: 700,
+        letterSpacing: "2px",
+        lineHeight: 1.5,
+        textTransform: "uppercase"
       },
       caption: {
         fontSize: "0.75rem",
@@ -176,7 +183,8 @@ export const dark = responsiveFontSizes(
       body2: {
         letterSpacing: "0em",
         fontWeight: 400,
-        lineHeight: "1.5em"
+        fontSize: "14px",
+        lineHeight: "1.5rem"
       },
       button: {
         textTransform: "capitalize"
