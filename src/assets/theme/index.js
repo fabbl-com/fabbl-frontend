@@ -197,14 +197,14 @@ export const dark = responsiveFontSizes(
         global: "#a9f7e0",
         hover: "#182628",
         warning: "#182628",
-        error: "#ef006f",
+        error: "#890F0D",
         disabled: "#212121"
       },
       primary: {
         main: "#6749dc"
       },
       secondary: {
-        main: "#eee",
+        main: "#5E35B1",
         icons: "#6749dc"
       },
       icons: {

@@ -8,6 +8,7 @@ import { Route, Redirect } from "react-router-dom";
 function PrivateRoute({ children, isAuth, ...props }) {
   return (
     <Route
+      exact
       {...props}
       render={({ location }) =>
         isAuth ? (

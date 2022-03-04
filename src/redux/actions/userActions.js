@@ -23,10 +23,11 @@ import {
   CHECK_AUTH_REQUEST,
   CHECK_AUTH_SUCCESS,
   CHECK_AUTH_FAIL,
-  UPDATE_PROFILE_PREF,
+  UPDATE_PROFILE_PREF_SUCCESS,
   GET_USER_PROFILE,
   UPDATE_EMAIL_SUCCESS,
   UPDATE_PASSWORD_SUCCESS,
+  UPDATE_PASSWORD_FAIL,
   SET_NOTIFICATIONS,
   REOMVE_NOTIFICATIONS,
   SEND_RESET_PASSWORD_SUCCESS,
@@ -210,8 +211,9 @@ export const updateProfilePref =
   async (dispatch) => {
     try {
       const res = await Axios.post(`/user/profile/${userId}`, data);
+      console.log(res.data);
       dispatch({
-        type: UPDATE_PROFILE_PREF,
+        type: UPDATE_PROFILE_PREF_SUCCESS,
         payload: res.data
       });
     } catch (error) {
@@ -281,7 +283,7 @@ export const updatePassword =
     } catch (error) {
       console.log(error);
       dispatch({
-        type: USER_UPLOAD_AVATAR_FAIL,
+        type: UPDATE_PASSWORD_FAIL,
         payload: {
           code: error.response.status,
           message:

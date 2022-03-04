@@ -16,8 +16,12 @@ const chatStyles = (theme) => ({
     width: "100%"
   },
   avatar: {
-    height: theme.spacing(12),
-    width: theme.spacing(12)
+    height: theme.spacing(24),
+    width: theme.spacing(24),
+    [theme.breakpoints.down("md")]: {
+      height: theme.spacing(12),
+      width: theme.spacing(12)
+    }
   },
   verify: {
     display: "flex",

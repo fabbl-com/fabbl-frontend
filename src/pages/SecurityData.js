@@ -25,6 +25,7 @@ import { getUserProfile, updateEmail, updatePassword } from "../redux/actions/us
 import { LOGOUT_SUCCESS } from "../redux/constants/userActionTypes";
 import { personalDataStyles } from "../assets/jss";
 import { strengthColor, strengthIndicator } from "../utils/paswordStrenth";
+import { CustomAlert } from "../components";
 import PasswordStrength from "../components/PasswordStrength";
 import { PropTypes } from "prop-types";
 
@@ -39,15 +40,15 @@ const SecurityData = ({ userId }) => {
   const location = useLocation();
   const dispatch = useDispatch();
   const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
-  const { profile, loading } = useSelector((state) => state.user);
-
-  console.log(level);
+  const {
+    isEmailSent = false,
+    isPasswordUpdated = false,
+    error = null,
+    profile,
+    loading
+  } = useSelector((state) => state.user);
 
   const [showPassword, setShowPassword] = useState(false);
-
-  // useEffect(() => {
-  //   dispatch(getUserProfile(userId));
-  // }, []);
   const [formData, setFormData] = useState({});
   const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
   const handleClick = () => {
@@ -136,6 +137,26 @@ const SecurityData = ({ userId }) => {
   if (loading) return <div>loading</div>;
   return (
     <Container className={classes.root}>
+      {error &&
+        (error.code === 401 ? (
+          <CustomAlert variant="filled" color="error">
+            Invalid Credentials!
+          </CustomAlert>
+        ) : (
+          <CustomAlert variant="filled" color="error">
+            Something went wrong. Please try agin
+          </CustomAlert>
+        ))}
+      {isEmailSent && !error && (
+        <CustomAlert variant="filled" color={"success"}>
+          An email has been sent. Please verify your email
+        </CustomAlert>
+      )}
+      {isPasswordUpdated && !error && (
+        <CustomAlert variant="filled" color={"success"}>
+          Password updated succesfully!
+        </CustomAlert>
+      )}
       <div className={classes.profileHeader}>
         <IconButton onClick={goBack} color="primary">
           <KeyboardBackspace />
@@ -177,7 +198,6 @@ const SecurityData = ({ userId }) => {
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div />
               <Button
-                type="submit"
                 aria-label="update email"
                 variant="contained"
                 color="secondary"
@@ -241,7 +261,6 @@ const SecurityData = ({ userId }) => {
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div />
               <Button
-                type="submit"
                 variant="contained"
                 aria-label="Update password"
                 color="secondary"

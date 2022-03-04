@@ -59,6 +59,10 @@ const App = () => {
     dispatch(checkAuth());
   }, []);
 
+  useEffect(() => {
+    setTheme(_isTheme);
+  }, [_isTheme]);
+
   // console.log(isAuth);
 
   const appliedTheme = createTheme(isTheme ? dark : light);

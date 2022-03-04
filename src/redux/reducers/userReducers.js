@@ -24,10 +24,12 @@ import {
   CHECK_AUTH_SUCCESS,
   CHECK_AUTH_FAIL,
   CHECK_AUTH_REQUEST,
-  UPDATE_PROFILE_PREF,
+  UPDATE_PROFILE_PREF_SUCCESS,
+  UPDATE_PROFILE_PREF_FAIL,
   GET_USER_PROFILE,
   UPDATE_PASSWORD_SUCCESS,
   UPDATE_EMAIL_SUCCESS,
+  UPDATE_PASSWORD_FAIL,
   SET_NOTIFICATIONS,
   REOMVE_NOTIFICATIONS,
   SEND_RESET_PASSWORD_SUCCESS,
@@ -113,10 +115,12 @@ export default (state = initialState, action) => {
         loading: false,
         isAuth: true,
         authChecking: false,
+        isProfileUpdated: true,
         ...action.payload
       };
     case CHECK_AUTH_SUCCESS:
     case USER_SIGNIN_SUCCESS:
+      localStorage.setItem("theme", action.payload?.profile?.settings?.theme === 1);
       localStorage.setItem("userId", action.payload?.profile?._id);
       localStorage.setItem(
         "userInfo",
@@ -166,7 +170,7 @@ export default (state = initialState, action) => {
         error: action.payload
       };
     case UPDATE_PROFILE_FAIL:
-      // case CHECK_AUTH_FAIL:
+    case CHECK_AUTH_FAIL:
       return {
         ...state,
         isAuth: false,
@@ -191,19 +195,43 @@ export default (state = initialState, action) => {
         loading: false,
         userInfo: { ...state.userInfo, ...action.payload }
       };
-    case GET_USER_PROFILE:
-    case UPDATE_PROFILE_PREF:
+    // case GET_USER_PROFILE:
+    case UPDATE_PROFILE_PREF_SUCCESS:
+      localStorage.setItem("theme", action.payload?.profile?.settings?.theme === 1);
       return {
         ...state,
         loading: false,
+        isPrefUpdated: true,
         profile: action.payload.profile
       };
+    case UPDATE_PROFILE_PREF_FAIL:
+      return {
+        ...state,
+        loading: false,
+        isPrefUpdated: false,
+        error: action.payload
+      };
     case UPDATE_PASSWORD_SUCCESS:
+      return {
+        ...state,
+        isEmailSent: false,
+        isPasswordUpdated: true,
+        loading: false
+      };
+
     case UPDATE_EMAIL_SUCCESS:
     case SEND_RESET_PASSWORD_SUCCESS:
       return {
         ...state,
+        isEmailSent: true,
+        isPasswordUpdated: false,
         loading: false
+      };
+    case UPDATE_PASSWORD_FAIL:
+      return {
+        ...state,
+        isEmailSent: false,
+        error: action.payload
       };
     case SET_NOTIFICATIONS:
       return {

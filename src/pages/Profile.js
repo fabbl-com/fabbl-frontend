@@ -22,6 +22,7 @@ import { useParams, useLocation, useHistory } from "react-router-dom";
 import { profileStyles } from "../assets/jss";
 import { useSelector, useDispatch } from "react-redux";
 import { getUserProfile } from "../redux/actions/userActions.js";
+import Tags from "../components/Tags";
 const useStyles = makeStyles((theme) => profileStyles(theme));
 const tagsColor = [
   "#000000",
@@ -111,19 +112,9 @@ const Profile = ({ userId }) => {
           <Typography align="center" component="h3" variant="h4">
             Hobbies & Interest
           </Typography>
-          <center>
-            {profile.hobby.value.map((tag, i) => (
-              <Button
-                disableRipple
-                aria-label="tag"
-                style={{ backgroundColor: tagsColor[i % tagsColor.length], color: "#eee" }}
-                size="small"
-                className={classes.tags}
-                key={i}>
-                {tag}
-              </Button>
-            ))}
-          </center>
+          <Box align="center">
+            <Tags tags={profile.hobby.value || []} />
+          </Box>
         </div>
 
         {id === userId || (

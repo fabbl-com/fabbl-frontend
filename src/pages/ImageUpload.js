@@ -18,7 +18,7 @@ import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import lottie from "lottie-web";
 import { uploadAvatar } from "../redux/actions/userActions";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import { Alert } from "@material-ui/lab";
 import { PropTypes } from "prop-types";
 const useStyles = makeStyles((theme) => ({
@@ -57,6 +57,7 @@ const ImageUpload = ({ userId }) => {
   const [image, setImage] = useState(null);
   const dispatch = useDispatch();
   const history = useHistory();
+  const location = useLocation();
   const container = useRef(null);
 
   useEffect(() => {
@@ -71,7 +72,11 @@ const ImageUpload = ({ userId }) => {
     return () => anim.destroy();
   }, []);
 
-  const err = useSelector((state) => state.user?.error);
+  const { error = null, isAuth = false, profile = {} } = useSelector((state) => state.user);
+
+  const { isProfileCompleted } = profile;
+
+  if (isAuth && isProfileCompleted) history.push(location.from || "/");
 
   const handleUpload = (e) => {
     e.preventDefault();

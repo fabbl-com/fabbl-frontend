@@ -402,7 +402,7 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
                     <Grid item xs={12}>
                       <div
                         style={{
-                          maxHeight: isViewAll ? `calc(100vh - 200px)` : `400px`,
+                          maxHeight: isViewAll ? `400px` : `200px`,
                           overflow: !isViewAll ? "hidden" : "hidden scroll"
                         }}>
                         <List className={classes.list}>

@@ -112,17 +112,16 @@ const Home = () => {
             variant="h1"
             className={classes.headline}
             align={matchesMd ? "center" : "left"}>
-            The annonymous messaging app
+            The anonymous messaging app
           </Typography>
           <br />
           <div>
             <Typography variant="h3" align={matchesMd ? "center" : "left"} gutterBottom>
               Welcome To Our Community
             </Typography>
-            <Typography style={{ color: "#b8c4c2" }} variant="body2" gutterBottom>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quos blanditiis tenetur
-              Lorem ipsum dolor sit amet, consectetur Lorem ipsum dolor sit amet, consectetur
-              adipisicing elit. Quos blanditiis tenetur Lorem ipsum dolor sit amet, consectetur
+            <Typography style={{ color: "#b8c4c2" }} variant="body1" gutterBottom>
+              With fabbl, get the fast,simple, secure messaging and connect with millions of people
+              like you for free*, available on phones all over the world.
             </Typography>
           </div>
           <br />

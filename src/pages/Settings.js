@@ -32,9 +32,9 @@ import {
   BrightnessHigh
 } from "@material-ui/icons";
 import { PropTypes } from "prop-types";
-
+import { CustomAlert } from "../components";
 import { settingsStyles } from "../assets/jss";
-import { updateProfilePref, getUserProfile } from "../redux/actions/userActions";
+import { updateProfilePref } from "../redux/actions/userActions";
 import { useLocation, useHistory } from "react-router-dom";
 const useStyles = makeStyles((theme) => settingsStyles(theme));
 
@@ -44,8 +44,11 @@ const Settings = ({ userId, isTheme, setTheme }) => {
   const theme = useTheme();
   const history = useHistory();
   const location = useLocation();
-  const profile = useSelector((state) => state.user?.userInfo);
-  console.log(profile);
+  const {
+    profile = null,
+    error = null,
+    isPrefUpdated = false
+  } = useSelector((state) => state.user);
 
   const [formData, setFormData] = useState({
     age: 1,
@@ -59,7 +62,7 @@ const Settings = ({ userId, isTheme, setTheme }) => {
     username: 1
   });
   useEffect(() => {
-    if (!profile) dispatch(getUserProfile(userId));
+    // if (!profile) dispatch(getUserProfile(userId));
     if (profile)
       setFormData({
         age: profile.dob.status,
@@ -73,7 +76,6 @@ const Settings = ({ userId, isTheme, setTheme }) => {
         username: profile.displayName.status
       });
   }, [profile]);
-  console.log(formData);
   const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
   const handleSubmit = (e) => {
@@ -89,6 +91,21 @@ const Settings = ({ userId, isTheme, setTheme }) => {
 
   return (
     <Container maxWidth="lg" className={classes.root}>
+      {error &&
+        (error.code === 401 ? (
+          <CustomAlert variant="filled" color="error">
+            Unauthorized!
+          </CustomAlert>
+        ) : (
+          <CustomAlert variant="filled" color="error">
+            Something went wrong. Please try agin
+          </CustomAlert>
+        ))}
+      {isPrefUpdated && !error && (
+        <CustomAlert variant="filled" color={"success"}>
+          Profile Updated Successfully!
+        </CustomAlert>
+      )}
       <div className={classes.profileHeader}>
         <IconButton onClick={goBack} color="primary">
           <KeyboardBackspace />
@@ -99,13 +116,10 @@ const Settings = ({ userId, isTheme, setTheme }) => {
         <div />
       </div>
       <div className={classes.profilePic}>
-        <Avatar
-          src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHw%3D&w=1000&q=80"
-          variant="rounded"
-        />
+        <Avatar src={profile?.avatar?.value} variant="rounded" />
         <div className={classes.username}>
           <Typography component="h1" variant="h6">
-            Dora
+            {profile?.displayName?.value}
           </Typography>
           <Typography component="h2" variant="body2">
             @uuid
@@ -123,9 +137,9 @@ const Settings = ({ userId, isTheme, setTheme }) => {
           <Switch
             color="primary"
             className={classes.changeTheme}
-            onChange={(e) => {
+            onChange={(e, newValue) => {
               setTheme((state) => !state);
-              onChange(e);
+              setFormData((state) => ({ ...state, theme: Number(newValue) }));
             }}
             size="small"
             checked={isTheme}

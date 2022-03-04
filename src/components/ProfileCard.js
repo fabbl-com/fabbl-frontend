@@ -31,14 +31,16 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2)
   },
   mtb1: {
-    margin: theme.spacing(1, 0)
+    margin: theme.spacing(1, 0),
+    lineHeight: "16px"
   },
   divider: {
     backgroundColor: "#abb",
     height: "0.7px"
   },
   check: {
-    position: "absolute"
+    position: "absolute",
+    fontSize: theme.spacing(2)
   }
 }));
 
@@ -67,14 +69,14 @@ const ProfileCard = ({
       <CardContent align="center">
         <Avatar variant="rounded" className={classes.avatar} src={avatar.value} />
         <div className={classes.status}>
-          <Favorite fontSize="small" />
+          <Favorite style={{ color: "#ec5e6f" }} fontSize="small" />
           &nbsp;&nbsp;
           <Typography align="center" variant="body1" component="p">
             {mapToString(relationshipStatus.value)}
           </Typography>
         </div>
         <div className={classes.status}>
-          <LocationOn fontSize="small" />
+          <LocationOn style={{ color: "#5D8BF4" }} fontSize="small" />
           &nbsp;&nbsp;
           <Typography align="center" variant="body1" component="p">
             {location.value}
