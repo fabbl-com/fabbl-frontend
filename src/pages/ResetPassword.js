@@ -38,6 +38,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+const ENDPOINT = process.env.REACT_APP_ENDPOINT;
+
 const ResetPassword = () => {
   const theme = useTheme();
 
@@ -148,7 +150,7 @@ const ResetPassword = () => {
                     <Grid item xs={12}>
                       <Grid container direction="column" justifyContent="center" spacing={2}>
                         <Grid item xs={12}>
-                          <form action="http://localhost:4000/auth/google">
+                          <form action={`${ENDPOINT}/auth/google`}>
                             <Button
                               fullWidth
                               aria-label="sign in with google"
@@ -162,7 +164,7 @@ const ResetPassword = () => {
                           </form>
                         </Grid>
                         <Grid item xs={12}>
-                          <form action="http://localhost:4000/auth/facebook">
+                          <form action={`${ENDPOINT}/auth/facebook`}>
                             <Button
                               type="submit"
                               fullWidth
