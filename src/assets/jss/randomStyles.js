@@ -1,7 +1,7 @@
 const randomStyles = (theme) => ({
   root: {
     overflow: "hidden",
-    maxHeight: "100vh",
+    height: "100vh",
     backgroundColor: "#CCFBFE"
   },
   searchControl: {

@@ -88,7 +88,10 @@ const chatStyles = (theme) => ({
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center"
+    alignItems: "center",
+    [theme.breakpoints.down("md")]: {
+      paddingBottom: theme.spacing(8)
+    }
   },
   popup: {
     width: "auto !important"
