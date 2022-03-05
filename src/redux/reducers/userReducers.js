@@ -40,7 +40,10 @@ import {
   LOGOUT_SUCCESS,
   LOGOUT_FAIL,
   SET_KEYS,
-  SET_KEYS_1
+  SET_KEYS_1,
+  GENDER_UPDATE_SUCCESS,
+  GENDER_UPDATE_REQUEST,
+  GENDER_UPDATE_FAIL
 } from "../constants/userActionTypes";
 const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 const notifications = JSON.parse(localStorage.getItem("notifications"));
@@ -66,6 +69,7 @@ const initialState = {
 
 export default (state = initialState, action) => {
   switch (action.type) {
+    case GENDER_UPDATE_REQUEST:
     case USER_REGISTER_REQUEST:
     case USER_SIGNIN_REQUEST:
     case GET_ALL_USERS_REQUEST:
@@ -77,11 +81,13 @@ export default (state = initialState, action) => {
       return { ...state, loading: true };
     case USER_REGISTER_SUCCESS:
       localStorage.setItem("userId", action.payload.userId);
+      localStorage.setItem("userInfo", JSON.stringify({ isAuth: true }));
       return {
         ...state,
         ...action.payload,
         userId: action.payload.userId,
         isAuth: true,
+        isEmailSent: true,
         loading: false,
         error: null
       };
@@ -142,6 +148,19 @@ export default (state = initialState, action) => {
         userId: action.payload.profile._id,
         ...action.payload
       };
+    case GENDER_UPDATE_SUCCESS:
+      localStorage.setItem(
+        "userInfo",
+        JSON.stringify({
+          isAuth: true,
+          profile: action.payload.profile
+        })
+      );
+      return {
+        ...state,
+        loading: false,
+        profile: action.payload.profile
+      };
     case USER_SIGNIN_FAIL:
     case USER_REGISTER_FAIL:
       localStorage.removeItem("userId");
@@ -163,6 +182,7 @@ export default (state = initialState, action) => {
     case GET_ALL_USERS_FAIL:
     case SET_LIKES_FAIL:
     case USER_UPLOAD_AVATAR_FAIL:
+    case GENDER_UPDATE_FAIL:
       return {
         ...state,
         loading: false,
@@ -173,6 +193,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         isAuth: false,
+        loading: false,
         authChecking: false
       };
     case SET_USER:
@@ -247,7 +268,6 @@ export default (state = initialState, action) => {
       };
     case LOGOUT_SUCCESS:
     case LOGOUT_FAIL:
-      // case CHECK_AUTH_FAIL:
       localStorage.removeItem("userInfo");
       localStorage.removeItem("notifications");
       localStorage.removeItem("userId");

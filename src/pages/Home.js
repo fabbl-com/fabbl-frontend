@@ -89,7 +89,7 @@ const Home = () => {
     if (accessToken) {
       localStorage.setItem("accessToken", accessToken);
       dispatch(checkAuth());
-      history.push("/");
+      history.push({ pathname: "/" });
     }
   }, [accessToken]);
 

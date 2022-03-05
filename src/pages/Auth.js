@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Typography,
@@ -15,16 +15,17 @@ import {
   useTheme,
   makeStyles
 } from "@material-ui/core";
+import Loader from "../components/Loader";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation, Link } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
-import { Alert } from "@material-ui/lab";
 import PropTypes from "prop-types";
 import { login, register, sendResetPasswordEmail } from "../redux/actions/userActions";
 import Logo from "../assets/logo/Logo";
 import { FacebookIcon, GoogleIcon } from "../assets/icons";
 import { strengthColor, strengthIndicator } from "../utils/paswordStrenth";
 import PasswordStrength from "../components/PasswordStrength";
+import Swal from "sweetalert2";
 const useStyles = makeStyles((theme) => ({
   btn: {
     borderRadius: theme.spacing(1),
@@ -35,6 +36,21 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#F6FBFF",
       borderColor: "rgb(33, 150, 243)"
     }
+  },
+  popup: {
+    width: "auto !important"
+  },
+  icon: {
+    fontSize: "10px"
+  },
+  title: {
+    fontSize: "1rem !important"
+  },
+  titleMd: {
+    lineHeight: "1.5 !important"
+  },
+  button: {
+    fontSize: "inherit"
   }
 }));
 
@@ -43,7 +59,7 @@ const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 const Auth = () => {
   const theme = useTheme();
 
-  const matchDownSM = useMediaQuery(theme.breakpoints.down("md"));
+  const matchesSm = useMediaQuery(theme.breakpoints.down("md"));
   const [isRegister, setRegister] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [isForgotPassword, setForgotPassword] = useState(false);
@@ -55,9 +71,15 @@ const Auth = () => {
   const history = useHistory();
   const classes = useStyles();
 
-  const { isAuth, error, success } = useSelector((state) => state.user);
+  const {
+    isAuth,
+    error,
+    success,
+    loading = false,
+    isEmailSent = false
+  } = useSelector((state) => state.user);
 
-  if (isAuth && success) history.push(location?.state?.from?.pathname || "/");
+  if (isAuth && success && !isEmailSent) history.push(location?.state?.from?.pathname || "/");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -71,7 +93,7 @@ const Auth = () => {
 
   const handelForgetPassword = (e) => {
     setForgotPassword(!isForgotPassword);
-    // dispatch(sendResetPasswordEmail({ email: user.email }));
+    dispatch(sendResetPasswordEmail({ email: user.email }));
   };
 
   const handlePasswordStrength = (value) => {
@@ -80,6 +102,26 @@ const Auth = () => {
     setLevel(strengthColor(temp));
   };
 
+  useEffect(() => {
+    if (!loading && isEmailSent) {
+      Swal.fire({
+        title: "Successfully registered!. Click OK to continue.",
+        confirmButtonText: "OK",
+        icon: "success",
+        customClass: {
+          button: matchesSm && `${classes.button}`,
+          popup: matchesSm && `${classes.popup}`,
+          icon: matchesSm && `${classes.icon}`,
+          title: matchesSm ? `${classes.title}` : `${classes.titleMd}`
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          history.push("/image");
+        }
+      });
+    }
+  }, []);
+
   return (
     <div
       style={{
@@ -87,14 +129,7 @@ const Auth = () => {
         minHeight: "100vh",
         marginTop: "3rem"
       }}>
-      {error &&
-        (error.code === 401 ? (
-          <Alert style={{ top: 0, position: "absolute", zIndex: 1200 }} severity="error">
-            Oops! Invalid credential. Please Try again
-          </Alert>
-        ) : (
-          <Alert severity="error">Something went wrong. Please try agin</Alert>
-        ))}
+      {loading && <Loader />}
       <Grid
         container
         direction="column"
@@ -129,7 +164,7 @@ const Auth = () => {
                     <Grid item xs={12}>
                       <Grid
                         container
-                        direction={matchDownSM ? "column-reverse" : "row"}
+                        direction={matchesSm ? "column-reverse" : "row"}
                         alignItems="center"
                         justifyContent="center">
                         <Grid item>
@@ -138,13 +173,13 @@ const Auth = () => {
                               color="secondary"
                               align="center"
                               gutterBottom
-                              variant={matchDownSM ? "h3" : "h2"}>
+                              variant={matchesSm ? "h3" : "h2"}>
                               {isForgotPassword ? "Reset Password" : "Hi, Welcome Back"}
                             </Typography>
                             <Typography
                               variant="body1"
                               fontSize="16px"
-                              textAlign={matchDownSM ? "center" : "inherit"}>
+                              textAlign={matchesSm ? "center" : "inherit"}>
                               {isForgotPassword
                                 ? "Enter your mail to continue"
                                 : "Enter your credentials to continue"}

@@ -37,7 +37,10 @@ import {
   LOGOUT_SUCCESS,
   LOGOUT_FAIL,
   SET_KEYS,
-  SET_KEYS_1
+  SET_KEYS_1,
+  GENDER_UPDATE_REQUEST,
+  GENDER_UPDATE_SUCCESS,
+  GENDER_UPDATE_FAIL
 } from "../constants/userActionTypes";
 import { setAlert } from "./alert";
 export const register = (user) => async (dispatch) => {
@@ -45,7 +48,7 @@ export const register = (user) => async (dispatch) => {
   try {
     const { data } = await Axios.post("/auth/register", user);
     dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
-    dispatch(setAlert("User successfully registered", "success"));
+    // dispatch(setAlert("Successfully registered. Please verify your email..", "success"));
   } catch (error) {
     console.log(error.response);
     dispatch({
@@ -75,7 +78,7 @@ export const login = (user) => async (dispatch) => {
       type: SET_KEYS_1,
       payload: { privateKey: data?.profile?.privateKey, publicKey: data?.profile?.publicKey }
     });
-    dispatch(setAlert("User successfully Login", "success"));
+    dispatch(setAlert("User successfully Logged in", "success"));
   } catch (error) {
     console.log(error);
     dispatch({
@@ -427,5 +430,31 @@ export const logout = () => async (dispatch) => {
           error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
       }
     });
+  }
+};
+
+export const verifyGender = (gender) => async (dispatch) => {
+  dispatch({ type: GENDER_UPDATE_REQUEST });
+  try {
+    const { data } = await Axios.post("/user/verify-gender", { gender });
+    console.log(data);
+    dispatch({ type: GENDER_UPDATE_SUCCESS, payload: data });
+    dispatch(setAlert("Gender successfully updated", "success"));
+  } catch (error) {
+    console.log(error);
+    dispatch({
+      type: GENDER_UPDATE_FAIL,
+      payload: {
+        code: error.response.status,
+        message:
+          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+      }
+    });
+    dispatch(
+      setAlert(
+        error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message,
+        "error"
+      )
+    );
   }
 };

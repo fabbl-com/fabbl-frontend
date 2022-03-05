@@ -295,7 +295,7 @@ const SecurityData = ({ userId }) => {
           </Typography>
         </div>
         <Button
-          disabled={canDelete}
+          disabled={!canDelete}
           aria-label="delete"
           onClick={handleDelete}
           variant="contained"

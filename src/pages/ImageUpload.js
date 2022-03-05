@@ -74,7 +74,7 @@ const ImageUpload = ({ userId }) => {
 
   const { error = null, isAuth = false, profile = {} } = useSelector((state) => state.user);
 
-  const { isProfileCompleted } = profile;
+  const { isProfileCompleted = false } = profile;
 
   if (isAuth && isProfileCompleted) history.push(location.from || "/");
 

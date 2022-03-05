@@ -19,14 +19,13 @@ const SecurityData = lazy(() => import("./pages/SecurityData"));
 const Settings = lazy(() => import("./pages/Settings"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const VerifyVoice = lazy(() => import("./pages/VerifyVoice"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const Alert = lazy(() => import("./components/CustomAlert"));
 
 // const Loader = lazy(() => import("./components/Loader"));
 
 import Loader from "./components/Loader";
-
-import NotFound from "./pages/NotFound";
 
 const Navbar = lazy(() => import("./components/Navbar"));
 const BottomNav = lazy(() => import("./components/BottomNav"));
