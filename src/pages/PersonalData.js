@@ -28,7 +28,7 @@ import { withStyles } from "@material-ui/styles";
 import { PropTypes } from "prop-types";
 import { useHistory, useLocation } from "react-router-dom";
 import { CustomAlert } from "../components";
-
+import Spinner from "../components/Spinner";
 const useStyles = makeStyles((theme) => personalDataStyles(theme));
 
 const BootstrapInput = withStyles((theme) => ({
@@ -90,7 +90,7 @@ const PersonalData = ({ userId }) => {
   });
   const theme = useTheme();
   const matchesMd = useMediaQuery(theme.breakpoints.down("md"));
-
+  const [isClicked, setClicked] = useState(false);
   useEffect(() => {
     if (profile) {
       setFormData({
@@ -119,6 +119,9 @@ const PersonalData = ({ userId }) => {
     e.preventDefault();
     console.log(formData);
     dispatch(updateProfile({ userId, data: formData }));
+    setTimeout(() => {
+      setClicked(false);
+    }, 3000);
   };
 
   const handleAvatarChange = (e) => {
@@ -384,8 +387,11 @@ const PersonalData = ({ userId }) => {
                   variant="contained"
                   aria-label="update"
                   color="secondary"
+                  onClick={() => {
+                    setClicked(true);
+                  }}
                   type="submit">
-                  Update Profile
+                  {isClicked ? <Spinner /> : "Update Profile"}
                 </Button>
               </div>
             </div>

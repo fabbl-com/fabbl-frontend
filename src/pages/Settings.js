@@ -36,6 +36,7 @@ import { CustomAlert } from "../components";
 import { settingsStyles } from "../assets/jss";
 import { updateProfilePref } from "../redux/actions/userActions";
 import { useLocation, useHistory } from "react-router-dom";
+import Spinner from "../components/Spinner";
 const useStyles = makeStyles((theme) => settingsStyles(theme));
 
 const Settings = ({ userId, isTheme, setTheme }) => {
@@ -44,6 +45,7 @@ const Settings = ({ userId, isTheme, setTheme }) => {
   const theme = useTheme();
   const history = useHistory();
   const location = useLocation();
+
   const {
     profile = null,
     error = null,
@@ -61,6 +63,8 @@ const Settings = ({ userId, isTheme, setTheme }) => {
     theme: 1,
     username: 1
   });
+
+  const [isClicked, setClicked] = useState(false);
   useEffect(() => {
     // if (!profile) dispatch(getUserProfile(userId));
     if (profile)
@@ -82,6 +86,9 @@ const Settings = ({ userId, isTheme, setTheme }) => {
     e.preventDefault();
     console.log(formData);
     dispatch(updateProfilePref({ userId, data: formData }));
+    setTimeout(() => {
+      setClicked(false);
+    }, 3000);
   };
 
   const goBack = (e) => {
@@ -110,8 +117,8 @@ const Settings = ({ userId, isTheme, setTheme }) => {
         <IconButton onClick={goBack} color="primary">
           <KeyboardBackspace />
         </IconButton>
-        <Typography component="h6" variant="h6">
-          settings
+        <Typography component="h3" variant="h3">
+          Settings
         </Typography>
         <div />
       </div>
@@ -279,8 +286,15 @@ const Settings = ({ userId, isTheme, setTheme }) => {
           </div>
         </div>
         <Box align="center" mb={2} mt={1}>
-          <Button variant="contained" color="secondary" type="submit" aria-label="delete">
-            Update Profile
+          <Button
+            variant="contained"
+            color="secondary"
+            type="submit"
+            aria-label="delete"
+            onClick={() => {
+              setClicked(true);
+            }}>
+            {isClicked ? <Spinner /> : "Update Profile"}
           </Button>
         </Box>
       </form>

@@ -28,7 +28,7 @@ import { strengthColor, strengthIndicator } from "../utils/paswordStrenth";
 import { CustomAlert } from "../components";
 import PasswordStrength from "../components/PasswordStrength";
 import { PropTypes } from "prop-types";
-
+import Spinner from "../components/Spinner";
 const useStyles = makeStyles((theme) => personalDataStyles(theme));
 
 const SecurityData = ({ userId }) => {
@@ -40,6 +40,7 @@ const SecurityData = ({ userId }) => {
   const location = useLocation();
   const dispatch = useDispatch();
   const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
+
   const {
     isEmailSent = false,
     isPasswordUpdated = false,
@@ -47,19 +48,27 @@ const SecurityData = ({ userId }) => {
     profile,
     loading
   } = useSelector((state) => state.user);
-
+  const [isClicked, setClicked] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({});
   const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
   const handleClick = () => {
     console.log(formData);
     dispatch(updateEmail({ id: userId, data: formData.email }));
+    setClicked(true);
+    setTimeout(() => {
+      setClicked(false);
+    }, 3000);
   };
   const handelPasswordChange = () => {
     const data = { oldPassword: formData.password1, newPassword: formData.password2 };
     if (formData.password2 === formData.password3) {
       dispatch(updatePassword({ data, id: userId }));
     }
+    setClicked(true);
+    setTimeout(() => {
+      setClicked(false);
+    }, 3000);
   };
 
   const goBack = (e) => {
@@ -161,10 +170,12 @@ const SecurityData = ({ userId }) => {
         <IconButton onClick={goBack} color="primary">
           <KeyboardBackspace />
         </IconButton>
-        <Typography component="h6" variant="h6">
+        <Typography component="h3" variant="h3">
           Privacy & Secuirty Data
         </Typography>
-        <div />
+        <IconButton style={{ visibility: "hidden" }}>
+          <KeyboardBackspace />
+        </IconButton>
       </div>
       <div className={classes.profileBody}>
         <Avatar src={profile.avatar.value} className={classes.avatar} variant="rounded" />
@@ -175,7 +186,7 @@ const SecurityData = ({ userId }) => {
           &nbsp;
           <CheckCircleOutlined fontSize="small" />
         </div>
-        <form className={classes.fullWidth}>
+        <form className={classes.fullWidth} style={{ width: !matchesXs && "70%" }}>
           <div>
             <Typography component="h6" variant="h6">
               Email
@@ -202,12 +213,12 @@ const SecurityData = ({ userId }) => {
                 variant="contained"
                 color="secondary"
                 onClick={handleClick}>
-                Update Email
+                {isClicked ? <Spinner /> : "Update Email"}
               </Button>
             </div>
           </div>
         </form>
-        <form className={classes.fullWidth}>
+        <form className={classes.fullWidth} style={{ width: !matchesXs && "70%" }}>
           {[
             { placeholder: "Old Password", prop: "password1" },
             { placeholder: "New Password", prop: "password2" },
@@ -265,7 +276,7 @@ const SecurityData = ({ userId }) => {
                 aria-label="Update password"
                 color="secondary"
                 onClick={handelPasswordChange}>
-                Update Password
+                {isClicked ? <Spinner /> : "Update Password"}
               </Button>
             </div>
             {strength !== 0 && <PasswordStrength level={level} />}

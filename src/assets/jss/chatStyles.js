@@ -42,7 +42,8 @@ const chatStyles = (theme) => ({
     marginTop: theme.spacing(12),
     padding: theme.spacing(1),
     [theme.breakpoints.up("md")]: {
-      padding: " 0 3%"
+      padding: " 0 3%",
+      width: "70%"
     },
     "& > div": {
       margin: theme.spacing(0.5)
