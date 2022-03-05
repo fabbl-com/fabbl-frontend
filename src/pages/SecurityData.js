@@ -146,7 +146,7 @@ const SecurityData = ({ userId }) => {
   if (loading) return <div>loading</div>;
   return (
     <Container className={classes.root}>
-      {error &&
+      {/* {error &&
         (error.code === 401 ? (
           <CustomAlert variant="filled" color="error">
             Invalid Credentials!
@@ -165,7 +165,7 @@ const SecurityData = ({ userId }) => {
         <CustomAlert variant="filled" color={"success"}>
           Password updated succesfully!
         </CustomAlert>
-      )}
+      )} */}
       <div className={classes.profileHeader}>
         <IconButton onClick={goBack} color="primary">
           <KeyboardBackspace />

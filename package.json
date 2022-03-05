@@ -32,7 +32,8 @@
     "redux-thunk": "^2.4.1",
     "socket.io-client": "^4.0.0",
     "sweetalert2": "^11.4.0",
-    "swiper": "^8.0.3"
+    "swiper": "^8.0.3",
+    "uuid": "^8.3.2"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -19,6 +19,9 @@ const SecurityData = lazy(() => import("./pages/SecurityData"));
 const Settings = lazy(() => import("./pages/Settings"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const VerifyVoice = lazy(() => import("./pages/VerifyVoice"));
+
+const Alert = lazy(() => import("./components/CustomAlert"));
+
 // const Loader = lazy(() => import("./components/Loader"));
 
 import Loader from "./components/Loader";
@@ -76,6 +79,7 @@ const App = () => {
             isTheme={isTheme}
             setTheme={setTheme}
           />
+          <Alert />
           <Switch>
             <Route path="/" exact>
               <Home />
