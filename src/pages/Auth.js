@@ -86,7 +86,8 @@ const Auth = () => {
         backgroundColor: "rgba(46, 156, 202, .9)",
         minHeight: "100vh",
         marginTop: "3rem"
-      }}>
+      }}
+    >
       {error &&
         (error.code === 401 ? (
           <Alert style={{ top: 0, position: "absolute", zIndex: 1200 }} severity="error">
@@ -99,13 +100,15 @@ const Auth = () => {
         container
         direction="column"
         justifyContent="flex-end"
-        style={{ minHeight: "100vh", borderRadius: "12px" }}>
+        style={{ minHeight: "100vh", borderRadius: "12px" }}
+      >
         <Grid item xs={12}>
           <Grid
             container
             justifyContent="center"
             alignItems="center"
-            style={{ minHeight: "calc(100vh - 68px)" }}>
+            style={{ minHeight: "calc(100vh - 68px)" }}
+          >
             <Grid item style={{ margin: "1ch", marginBottom: 0 }}>
               <Card
                 style={{
@@ -118,7 +121,8 @@ const Auth = () => {
                   },
                   borderColor: "#42a5f5",
                   boxShadow: theme.shadows[16]
-                }}>
+                }}
+              >
                 <Box style={{ padding: "2ch" }}>
                   <Grid container spacing={2} alignItems="center" justifyContent="center">
                     <Grid item style={{ marginBottom: "3ch" }}>
@@ -131,20 +135,23 @@ const Auth = () => {
                         container
                         direction={matchDownSM ? "column-reverse" : "row"}
                         alignItems="center"
-                        justifyContent="center">
+                        justifyContent="center"
+                      >
                         <Grid item>
                           <Grid container alignItems="center" justifyContent="center" spacing={1}>
                             <Typography
                               color="secondary"
                               align="center"
                               gutterBottom
-                              variant={matchDownSM ? "h3" : "h2"}>
+                              variant={matchDownSM ? "h3" : "h2"}
+                            >
                               {isForgotPassword ? "Reset Password" : "Hi, Welcome Back"}
                             </Typography>
                             <Typography
                               variant="body1"
                               fontSize="16px"
-                              textAlign={matchDownSM ? "center" : "inherit"}>
+                              textAlign={matchDownSM ? "center" : "inherit"}
+                            >
                               {isForgotPassword
                                 ? "Enter your mail to continue"
                                 : "Enter your credentials to continue"}
@@ -164,7 +171,8 @@ const Auth = () => {
                               variant="outlined"
                               aria-label="google"
                               startIcon={<GoogleIcon />}
-                              className={classes.btn}>
+                              className={classes.btn}
+                            >
                               Sign in with Google
                             </Button>
                           </form>
@@ -178,7 +186,8 @@ const Auth = () => {
                               variant="outlined"
                               aria-label="facebook"
                               startIcon={<FacebookIcon />}
-                              className={classes.btn}>
+                              className={classes.btn}
+                            >
                               Sign in with Facebook
                             </Button>
                           </form>
@@ -188,7 +197,8 @@ const Auth = () => {
                             style={{
                               alignItems: "center",
                               display: "flex"
-                            }}>
+                            }}
+                          >
                             <Divider light style={{ flexGrow: 1 }} orientation="horizontal" />
 
                             <Button
@@ -204,7 +214,8 @@ const Auth = () => {
                                 borderRadius: "12px"
                               }}
                               disableRipple
-                              disabled>
+                              disabled
+                            >
                               OR
                             </Button>
 
@@ -271,7 +282,8 @@ const Auth = () => {
                                     aria-label="toggle password visibility"
                                     onClick={() => {
                                       setShowPassword(!showPassword);
-                                    }}>
+                                    }}
+                                  >
                                     {showPassword ? (
                                       <Visibility color="primary" />
                                     ) : (
@@ -288,7 +300,8 @@ const Auth = () => {
                           direction="row"
                           alignItems="center"
                           justifyContent={!isRegister ? "space-between" : "flex-end"}
-                          spacing={1}>
+                          spacing={1}
+                        >
                           {!isForgotPassword && !isRegister && (
                             <FormControlLabel
                               control={
@@ -316,7 +329,8 @@ const Auth = () => {
                               style={{
                                 textDecoration: "none",
                                 cursor: "pointer"
-                              }}>
+                              }}
+                            >
                               Forgot Password?
                             </Typography>
                           )}
@@ -333,7 +347,8 @@ const Auth = () => {
                             fullWidth
                             size="large"
                             type="submit"
-                            variant="contained">
+                            variant="contained"
+                          >
                             {isForgotPassword ? "send mail" : isRegister ? "Register" : "Sign in"}
                           </Button>
                         </Box>
@@ -347,7 +362,8 @@ const Auth = () => {
                         <Typography
                           onClick={() => setRegister((state) => !state)}
                           variant="subtitle1"
-                          style={{ textDecoration: "none", cursor: "pointer" }}>
+                          style={{ textDecoration: "none", cursor: "pointer" }}
+                        >
                           {isRegister ? `Already have an account` : `Don't have an account?`}
                         </Typography>
                       </Grid>
