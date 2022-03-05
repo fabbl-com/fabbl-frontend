@@ -39,12 +39,13 @@ import {
   SET_KEYS,
   SET_KEYS_1
 } from "../constants/userActionTypes";
-
+import { setAlert } from "./alert";
 export const register = (user) => async (dispatch) => {
   dispatch({ type: USER_REGISTER_REQUEST });
   try {
     const { data } = await Axios.post("/auth/register", user);
     dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
+    dispatch(setAlert("User successfully registered", "success"));
   } catch (error) {
     console.log(error.response);
     dispatch({
@@ -55,6 +56,12 @@ export const register = (user) => async (dispatch) => {
           error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
       }
     });
+    dispatch(
+      setAlert(
+        error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message,
+        "error"
+      )
+    );
   }
 };
 
@@ -68,6 +75,7 @@ export const login = (user) => async (dispatch) => {
       type: SET_KEYS_1,
       payload: { privateKey: data?.profile?.privateKey, publicKey: data?.profile?.publicKey }
     });
+    dispatch(setAlert("User successfully Login", "success"));
   } catch (error) {
     console.log(error);
     dispatch({
@@ -78,6 +86,12 @@ export const login = (user) => async (dispatch) => {
           error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
       }
     });
+    dispatch(
+      setAlert(
+        error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message,
+        "error"
+      )
+    );
   }
 };
 
@@ -157,6 +171,7 @@ export const updateProfile =
         type: UPDATE_PROFILE_SUCCESS,
         payload: res.data?.profile
       });
+      dispatch(setAlert("Profile successfully updated", "success"));
     } catch (error) {
       console.log(error);
       dispatch({
@@ -167,6 +182,12 @@ export const updateProfile =
             error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
         }
       });
+      dispatch(
+        setAlert(
+          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message,
+          "error"
+        )
+      );
     }
   };
 export const checkAuth = () => async (dispatch) => {
@@ -216,6 +237,7 @@ export const updateProfilePref =
         type: UPDATE_PROFILE_PREF_SUCCESS,
         payload: res.data
       });
+      dispatch(setAlert("Profile Pref successfully registered", "success"));
     } catch (error) {
       console.log(error);
       dispatch({
@@ -226,6 +248,12 @@ export const updateProfilePref =
             error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
         }
       });
+      dispatch(
+        setAlert(
+          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message,
+          "error"
+        )
+      );
     }
   };
 
@@ -258,6 +286,7 @@ export const updateEmail =
       dispatch({
         type: UPDATE_EMAIL_SUCCESS
       });
+      dispatch(setAlert("Email successfully Updated", "success"));
     } catch (error) {
       console.log(error);
       dispatch({
@@ -268,6 +297,12 @@ export const updateEmail =
             error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
         }
       });
+      dispatch(
+        setAlert(
+          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message,
+          "error"
+        )
+      );
     }
   };
 
@@ -280,6 +315,7 @@ export const updatePassword =
       dispatch({
         type: UPDATE_PASSWORD_SUCCESS
       });
+      dispatch(setAlert("Password successfully Updated", "success"));
     } catch (error) {
       console.log(error);
       dispatch({
@@ -290,6 +326,12 @@ export const updatePassword =
             error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
         }
       });
+      dispatch(
+        setAlert(
+          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message,
+          "error"
+        )
+      );
     }
   };
 
@@ -310,6 +352,7 @@ export const sendResetPasswordEmail =
       await Axios.post(`/user/send-reset-password-email`, { email });
 
       dispatch({ type: SEND_RESET_PASSWORD_SUCCESS });
+      dispatch(setAlert("Email successfully sent", "success"));
     } catch (error) {
       console.log(error);
       dispatch({
@@ -320,6 +363,12 @@ export const sendResetPasswordEmail =
             error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
         }
       });
+      dispatch(
+        setAlert(
+          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message,
+          "error"
+        )
+      );
     }
   };
 
@@ -333,6 +382,7 @@ export const resetPassword =
         token
       });
       dispatch({ type: RESET_PASSWORD_SUCCESS, payload: data });
+      dispatch(setAlert("Password successfully Updated", "success"));
     } catch (error) {
       console.log(error);
       dispatch({
@@ -343,6 +393,12 @@ export const resetPassword =
             error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
         }
       });
+      dispatch(
+        setAlert(
+          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message,
+          "error"
+        )
+      );
     }
   };
 

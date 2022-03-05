@@ -19,7 +19,7 @@ const SecurityData = lazy(() => import("./pages/SecurityData"));
 const Settings = lazy(() => import("./pages/Settings"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const VerifyVoice = lazy(() => import("./pages/VerifyVoice"));
-
+const Alert = lazy(() => import("./components/CustomAlert"));
 import NotFound from "./pages/NotFound";
 
 const Navbar = lazy(() => import("./components/Navbar"));
@@ -80,6 +80,7 @@ const App = () => {
             isTheme={isTheme}
             setTheme={setTheme}
           />
+          <Alert />
           <Switch>
             <Route path="/" exact>
               <Home />

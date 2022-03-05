@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Collapse, IconButton, makeStyles } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-import { Close } from "@material-ui/icons";
-import PropTypes from "prop-types";
 
+import PropTypes from "prop-types";
+import { useDispatch, useSelector } from "react-redux";
 const useStyles = makeStyles((theme) => ({
   root: {
     "& > * + *": {
@@ -18,42 +18,20 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const CustomAlert = ({ variant = "outlined", children, color }) => {
+const CustomAlert = () => {
   const classes = useStyles();
-  const [open, setOpen] = useState(true);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setOpen(false);
-    }, 2000);
-  }, [open]);
-
+  const alerts = useSelector((state) => state.alert);
   return (
-    <div className={classes.root}>
-      <Collapse in={open}>
-        <Alert
-          variant={variant}
-          severity={color}
-          action={
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              size="small"
-              onClick={() => setOpen(false)}>
-              <Close fontSize="inherit" />
-            </IconButton>
-          }>
-          {children}
+    alerts !== null &&
+    alerts.length > 0 &&
+    alerts.map((alert) => (
+      <div key={alert.id} className={classes.root}>
+        <Alert variant="filled" severity={alert.alertType}>
+          {alert.msg}
         </Alert>
-      </Collapse>
-    </div>
+      </div>
+    ))
   );
-};
-
-CustomAlert.propTypes = {
-  children: PropTypes.string.isRequired,
-  variant: PropTypes.string,
-  color: PropTypes.string.isRequired
 };
 
 export default CustomAlert;

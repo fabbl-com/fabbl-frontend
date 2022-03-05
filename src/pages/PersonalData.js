@@ -91,6 +91,7 @@ const PersonalData = ({ userId }) => {
   const theme = useTheme();
   const matchesMd = useMediaQuery(theme.breakpoints.down("md"));
   const [isClicked, setClicked] = useState(false);
+  // const [open, setOpen] = useState(true);
   useEffect(() => {
     if (profile) {
       setFormData({
@@ -112,6 +113,14 @@ const PersonalData = ({ userId }) => {
       setDisableGenderUpdate(true);
     }
   }, [gender, profile]);
+
+  // useEffect(() => {
+  //   if (isProfileUpdated) {
+  //     setTimeout(() => {
+  //       setOpen(false);
+  //     }, 2000);
+  //   }
+  // }, [isProfileUpdated]);
 
   const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -144,7 +153,7 @@ const PersonalData = ({ userId }) => {
 
   return (
     <Container className={classes.root}>
-      {!isProfileUpdated &&
+      {/* {!isProfileUpdated &&
         error &&
         (error.code === 401 ? (
           <CustomAlert variant="filled" color="error">
@@ -159,7 +168,7 @@ const PersonalData = ({ userId }) => {
         <CustomAlert variant="filled" color={"success"}>
           Profile Updated Successfully!
         </CustomAlert>
-      )}
+      )} */}
       <div className={classes.profileHeader}>
         <IconButton onClick={goBack} color="primary">
           <KeyboardBackspace />

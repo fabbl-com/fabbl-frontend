@@ -91,12 +91,12 @@ const ResetPassword = () => {
         minHeight: "100vh",
         marginTop: "3rem"
       }}>
-      {error &&
+      {/* {error &&
         (error.code === 401 ? (
           <Alert severity="error">Oops! Invalid credential. Please Try again</Alert>
         ) : (
           <Alert severity="error">Something went wrong. Please try agin</Alert>
-        ))}
+        ))} */}
       <Grid
         container
         direction="column"

@@ -42,7 +42,6 @@ import {
   SET_KEYS,
   SET_KEYS_1
 } from "../constants/userActionTypes";
-
 const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 const notifications = JSON.parse(localStorage.getItem("notifications"));
 

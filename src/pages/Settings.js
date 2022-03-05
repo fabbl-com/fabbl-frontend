@@ -98,7 +98,7 @@ const Settings = ({ userId, isTheme, setTheme }) => {
 
   return (
     <Container maxWidth="lg" className={classes.root}>
-      {error &&
+      {/* {error &&
         (error.code === 401 ? (
           <CustomAlert variant="filled" color="error">
             Unauthorized!
@@ -112,7 +112,7 @@ const Settings = ({ userId, isTheme, setTheme }) => {
         <CustomAlert variant="filled" color={"success"}>
           Profile Updated Successfully!
         </CustomAlert>
-      )}
+      )} */}
       <div className={classes.profileHeader}>
         <IconButton onClick={goBack} color="primary">
           <KeyboardBackspace />
