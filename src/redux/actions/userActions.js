@@ -81,6 +81,15 @@ export const login = (user) => async (dispatch) => {
   }
 };
 
+export const googleLogin = () => async (dispatch) => {
+  try {
+    const { data } = await Axios.get("/auth/google");
+    console.log(data);
+  } catch (error) {
+    console.log(error, error.response);
+  }
+};
+
 export const signout = () => async (dispatch) => {
   localStorage.removeItem("userId");
   dispatch({ type: USER_SIGNOUT });

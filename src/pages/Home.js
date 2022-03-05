@@ -6,7 +6,7 @@ import queryString from "query-string";
 import animationData from "../assets/animation/home.json";
 import { useDispatch } from "react-redux";
 import { Link, useHistory, useLocation } from "react-router-dom";
-import { setUser } from "../redux/actions/userActions";
+import { checkAuth, setUser } from "../redux/actions/userActions";
 import demoImage from "../assets/logo/Asset 1.png";
 function Copyright() {
   return (
@@ -80,14 +80,18 @@ const Home = () => {
   const matchesMd = useMediaQuery(theme.breakpoints.down("md"));
   const classes = useStyles(matchesMd);
 
+  const query = queryString.parse(location?.search);
+
+  const accessToken = query.accessToken;
+
   useEffect(() => {
-    var query = queryString.parse(location?.search);
     console.log(query);
-    if (query.userId) {
-      dispatch(setUser(query.userId));
+    if (accessToken) {
+      localStorage.setItem("accessToken", accessToken);
+      dispatch(checkAuth());
+      history.push("/");
     }
-    history.push("/");
-  }, []);
+  }, [accessToken]);
 
   useEffect(() => {
     const anim = lottie.loadAnimation({
