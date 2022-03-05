@@ -19,6 +19,9 @@ const SecurityData = lazy(() => import("./pages/SecurityData"));
 const Settings = lazy(() => import("./pages/Settings"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const VerifyVoice = lazy(() => import("./pages/VerifyVoice"));
+// const Loader = lazy(() => import("./components/Loader"));
+
+import Loader from "./components/Loader";
 
 import NotFound from "./pages/NotFound";
 
@@ -55,15 +58,8 @@ const App = () => {
     return () => newSocket && newSocket.off();
   }, [userId]);
 
-  useEffect(() => {
-    dispatch(checkAuth());
-  }, []);
-
-  useEffect(() => {
-    setTheme(_isTheme);
-  }, [_isTheme]);
-
-  // console.log(isAuth);
+  useEffect(() => dispatch(checkAuth()), []);
+  useEffect(() => setTheme(_isTheme), [_isTheme]);
 
   const appliedTheme = createTheme(isTheme ? dark : light);
   const matchesMd = useMediaQuery(appliedTheme.breakpoints.up("sm"));
@@ -71,7 +67,7 @@ const App = () => {
   return (
     <ThemeProvider theme={appliedTheme}>
       <Router>
-        <Suspense fallback={!socket && authChecking && <span>loading...</span>}>
+        <Suspense fallback={<Loader />}>
           <CssBaseline />
           <Navbar
             matchesMd={matchesMd}
@@ -125,6 +121,7 @@ const App = () => {
             <Route component={NotFound} />
           </Switch>
           {!matchesMd && <BottomNav isAuth={isAuth} />}
+          {authChecking && <Loader />}
         </Suspense>
       </Router>
     </ThemeProvider>
