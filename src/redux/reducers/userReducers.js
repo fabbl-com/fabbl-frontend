@@ -251,10 +251,15 @@ export default (state = initialState, action) => {
       };
 
     case UPDATE_EMAIL_SUCCESS:
-    case SEND_RESET_PASSWORD_SUCCESS:
       return {
         ...state,
         isEmailSent: true,
+        isPasswordUpdated: false,
+        loading: false
+      };
+    case SEND_RESET_PASSWORD_SUCCESS:
+      return {
+        ...state,
         isPasswordUpdated: false,
         loading: false
       };
