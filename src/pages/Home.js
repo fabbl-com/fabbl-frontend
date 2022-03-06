@@ -63,10 +63,10 @@ const useStyles = makeStyles((theme) => ({
   btn: {
     borderRadius: theme.spacing(3),
     boxShadow: theme.shadows[16],
-    padding: "1ch 3ch",
-    [theme.breakpoints.down("md")]: {
-      borderRadius: theme.spacing(0.5)
-    }
+    padding: "1ch 3ch"
+    // [theme.breakpoints.down("md")]: {
+    //   borderRadius: theme.spacing(0.5)
+    // }
   },
   headline: {}
 }));
@@ -131,7 +131,7 @@ const Home = () => {
           <br />
           <Link to="/find">
             <Button
-              fullWidth={matchesMd}
+              // fullWidth={matchesMd}
               className={classes.btn}
               variant="contained"
               color="secondary"
