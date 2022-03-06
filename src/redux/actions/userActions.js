@@ -61,7 +61,11 @@ export const register = (user) => async (dispatch) => {
     });
     dispatch(
       setAlert(
-        error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message,
+        error.response.status === 401
+          ? "Already registered"
+          : error.reponse && error.reponse.data.message
+          ? error.reponse.data.message
+          : error.message,
         "error"
       )
     );
@@ -91,7 +95,11 @@ export const login = (user) => async (dispatch) => {
     });
     dispatch(
       setAlert(
-        error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message,
+        error.response.status === 401
+          ? "Invalid credentials"
+          : error.reponse && error.reponse.data.message
+          ? error.reponse.data.message
+          : error.message,
         "error"
       )
     );

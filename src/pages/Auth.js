@@ -120,7 +120,7 @@ const Auth = () => {
         }
       });
     }
-  }, []);
+  }, [loading, isEmailSent]);
 
   return (
     <div

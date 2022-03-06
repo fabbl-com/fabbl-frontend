@@ -89,7 +89,8 @@ export default (state = initialState, action) => {
         isAuth: true,
         isEmailSent: true,
         loading: false,
-        error: null
+        error: null,
+        isLoggedOut: false
       };
     case EMAIL_VERIFY_SUCCESS:
       localStorage.removeItem("userInfo");

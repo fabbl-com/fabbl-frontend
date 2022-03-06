@@ -95,7 +95,7 @@ const Navbar = ({ socket, userId, isTheme, setTheme, matchesMd }) => {
         </Link>
         <div style={{ flexGrow: 1 }} />
         <div style={{ display: "flex", alignItems: "center" }}>
-          {matchesMd && (
+          {matchesMd && isAuth && (
             <>
               <Box className={classes.box}>
                 <ButtonWrapper className={classes.btnWrapper}>
