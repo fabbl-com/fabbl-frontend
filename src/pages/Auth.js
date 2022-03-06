@@ -92,7 +92,6 @@ const Auth = () => {
 
   const handelForgetPassword = (e) => {
     setForgotPassword(!isForgotPassword);
-    dispatch(sendResetPasswordEmail({ email: user.email }));
   };
 
   const handlePasswordStrength = (value) => {
@@ -114,7 +113,7 @@ const Auth = () => {
           title: matchesSm ? `${classes.title}` : `${classes.titleMd}`
         }
       }).then((result) => {
-        if (result.isConfirmed) {
+        if (result.isConfirmed && !isForgotPassword) {
           history.push("/image");
         }
       });
@@ -265,7 +264,7 @@ const Auth = () => {
                           fullWidth
                           label="Email"
                           type="email"
-                          vaule={user?.email}
+                          value={user?.email}
                           onChange={(e) =>
                             setUser((state) => ({ ...state, email: e.target.value }))
                           }
@@ -279,7 +278,7 @@ const Auth = () => {
                             label="Display name"
                             type="text"
                             margin="normal"
-                            vaule={user?.displayName}
+                            value={user?.displayName}
                             onChange={(e) =>
                               setUser((state) => ({ ...state, displayName: e.target.value }))
                             }
@@ -293,7 +292,7 @@ const Auth = () => {
                             name="password"
                             label="Password"
                             type={showPassword ? "text" : "password"}
-                            vaule={user?.password}
+                            value={user?.password}
                             onChange={(e) => {
                               setUser((state) => ({ ...state, password: e.target.value }));
                               handlePasswordStrength(e.target.value);
@@ -381,7 +380,10 @@ const Auth = () => {
                     <Grid item xs={12}>
                       <Grid item container direction="column" alignItems="center" xs={12}>
                         <Typography
-                          onClick={() => setRegister((state) => !state)}
+                          onClick={() => {
+                            setRegister((state) => !state);
+                            setForgotPassword(false);
+                          }}
                           variant="subtitle1"
                           style={{ textDecoration: "none", cursor: "pointer" }}>
                           {isRegister ? `Already have an account` : `Don't have an account?`}
