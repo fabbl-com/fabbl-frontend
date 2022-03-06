@@ -253,7 +253,6 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
   const handleChange = (event) => setValue(event.target.value);
 
   const handleConfirm = (e, { id, notificationId }) => {
-    console.log(userId, id, notificationId);
     e.preventDefault();
     if (socket)
       socket.emit("confirm-friends-request", { sender: userId, receiver: id, notificationId });

@@ -72,7 +72,6 @@ const Message = ({ derivedKey, time, isRead, children, ...props }) => {
         const msg = await decode(children, derivedKey);
         setMessage(msg);
       } catch (error) {
-        console.log(error);
         setMessage("");
       }
     };
@@ -170,7 +169,6 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
     }));
     dispatch({ type: SET_USER_MESSAGES_REQUEST });
     socket.on("get-user-messages-response", (data) => {
-      console.log(data);
       const key = data?.receiver?.publicKey;
       if (key) setPublicKey(JSON.parse(key));
       const msgs = data?.messages;
@@ -181,7 +179,6 @@ const ChatDetails = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
     });
 
     socket.on("send-message-response", (message) => {
-      console.log(message);
       setMessageId(message.message_id);
       setMsgs((state) => [message, ...state]);
     });

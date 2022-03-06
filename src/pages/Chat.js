@@ -175,7 +175,6 @@ const Chat = ({ userId, socket, eventEmitter, isTheme, setTheme }) => {
 
   useEffect(() => {
     socket.on("connection-response", (data) => {
-      console.log(data);
       dispatch(setChatListUserOffline(data));
     });
   }, [socket]);

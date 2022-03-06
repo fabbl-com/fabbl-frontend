@@ -56,15 +56,17 @@ export const register = (user) => async (dispatch) => {
       payload: {
         code: error.response.status,
         message:
-          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message
       }
     });
     dispatch(
       setAlert(
         error.response.status === 401
           ? "Already registered"
-          : error.reponse && error.reponse.data.message
-          ? error.reponse.data.message
+          : error.response && error.response.data.message
+          ? error.response.data.message
           : error.message,
         "error"
       )
@@ -90,15 +92,17 @@ export const login = (user) => async (dispatch) => {
       payload: {
         code: error.response.status,
         message:
-          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message
       }
     });
     dispatch(
       setAlert(
         error.response.status === 401
           ? "Invalid credentials"
-          : error.reponse && error.reponse.data.message
-          ? error.reponse.data.message
+          : error.response && error.response.data.message
+          ? error.response.data.message
           : error.message,
         "error"
       )
@@ -139,7 +143,9 @@ export const verifyEmail = (token) => async (dispatch) => {
       payload: {
         code: error.response.status,
         message:
-          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message
       }
     });
   }
@@ -175,7 +181,9 @@ export const uploadAvatar =
         payload: {
           code: error.response.status,
           message:
-            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+            error.response && error.response.data.message
+              ? error.response.data.message
+              : error.message
         }
       });
     }
@@ -199,12 +207,16 @@ export const updateProfile =
         payload: {
           code: error.response.status,
           message:
-            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+            error.response && error.response.data.message
+              ? error.response.data.message
+              : error.message
         }
       });
       dispatch(
         setAlert(
-          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message,
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
           "error"
         )
       );
@@ -235,13 +247,14 @@ export const checkAuth = () => async (dispatch) => {
       });
     }
   } catch (error) {
-    console.log(error.response);
     dispatch({
       type: CHECK_AUTH_FAIL,
       payload: {
         code: error.response?.status,
         message:
-          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message
       }
     });
   }
@@ -265,12 +278,16 @@ export const updateProfilePref =
         payload: {
           code: error.response.status,
           message:
-            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+            error.response && error.response.data.message
+              ? error.response.data.message
+              : error.message
         }
       });
       dispatch(
         setAlert(
-          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message,
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
           "error"
         )
       );
@@ -291,7 +308,9 @@ export const getUserProfile = (userId) => async (dispatch) => {
       payload: {
         code: error.response.status,
         message:
-          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message
       }
     });
   }
@@ -314,12 +333,16 @@ export const updateEmail =
         payload: {
           code: error.response.status,
           message:
-            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+            error.response && error.response.data.message
+              ? error.response.data.message
+              : error.message
         }
       });
       dispatch(
         setAlert(
-          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message,
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
           "error"
         )
       );
@@ -343,12 +366,16 @@ export const updatePassword =
         payload: {
           code: error.response.status,
           message:
-            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+            error.response && error.response.data.message
+              ? error.response.data.message
+              : error.message
         }
       });
       dispatch(
         setAlert(
-          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message,
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
           "error"
         )
       );
@@ -380,12 +407,16 @@ export const sendResetPasswordEmail =
         payload: {
           code: error.response.status,
           message:
-            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+            error.response && error.response.data.message
+              ? error.response.data.message
+              : error.message
         }
       });
       dispatch(
         setAlert(
-          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message,
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
           "error"
         )
       );
@@ -410,12 +441,16 @@ export const resetPassword =
         payload: {
           code: error.response.status,
           message:
-            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+            error.response && error.response.data.message
+              ? error.response.data.message
+              : error.message
         }
       });
       dispatch(
         setAlert(
-          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message,
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
           "error"
         )
       );
@@ -435,7 +470,9 @@ export const logout = () => async (dispatch) => {
       payload: {
         code: error.response.status,
         message:
-          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message
       }
     });
   }
@@ -455,14 +492,18 @@ export const verifyGender = (gender) => async (dispatch) => {
       payload: {
         code: error.response.status,
         message:
-          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message
       }
     });
     dispatch(
       setAlert(
-        error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message,
+        error.response && error.response.data.message ? error.response.data.message : error.message,
         "error"
       )
     );
   }
 };
+
+export const updateRefreshToken = () => async (dispatch) => {};

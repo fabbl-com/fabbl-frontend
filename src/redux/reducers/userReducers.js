@@ -64,7 +64,8 @@ const initialState = {
     : null,
   publicKey: localStorage.getItem("publicKey")
     ? JSON.parse(localStorage.getItem("publicKey"))
-    : null
+    : null,
+  accessToken: localStorage.getItem("accessToken") || null
 };
 
 export default (state = initialState, action) => {
@@ -140,6 +141,8 @@ export default (state = initialState, action) => {
         JSON.stringify({ notifications: action.payload.notifications })
       );
       localStorage.setItem("accessToken", action.payload.accessToken);
+      localStorage.setItem("privateKey", action.payload.profile.privateKey);
+      localStorage.setItem("publicKey", action.payload.profile.publicKey);
       return {
         ...state,
         loading: false,
@@ -191,6 +194,10 @@ export default (state = initialState, action) => {
       };
     case UPDATE_PROFILE_FAIL:
     case CHECK_AUTH_FAIL:
+      localStorage.removeItem("userId");
+      localStorage.removeItem("userInfo");
+      localStorage.removeItem("notifications");
+      localStorage.removeItem("accessToken");
       return {
         ...state,
         isAuth: false,
@@ -275,6 +282,7 @@ export default (state = initialState, action) => {
       localStorage.removeItem("theme");
       localStorage.removeItem("privateKey");
       localStorage.removeItem("publicKey");
+      localStorage.removeItem("accessToken");
       return {
         isAuth: false,
         loading: false,

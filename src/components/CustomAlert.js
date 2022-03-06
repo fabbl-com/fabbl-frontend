@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
     position: "fixed",
     width: "90%",
     top: theme.spacing(8),
-    zIndex: 1,
+    zIndex: 1333,
     left: 0,
     transform: `translateX(5%)`
   }

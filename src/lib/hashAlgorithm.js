@@ -79,7 +79,6 @@ const decode = async (text, derivedKey) => {
 
     return new TextDecoder().decode(decryptedData);
   } catch (e) {
-    // console.log(e);
     return `error`;
   }
 };

@@ -186,7 +186,6 @@ const ProfileSection = ({ userId, isTheme, setTheme }) => {
   const handleThemeChange = () => {
     localStorage.setItem("theme", !isTheme);
     setTheme((state) => !state);
-    console.log(isTheme);
   };
 
   return (

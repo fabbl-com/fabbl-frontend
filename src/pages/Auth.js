@@ -83,7 +83,6 @@ const Auth = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(user);
     isForgotPassword
       ? dispatch(sendResetPasswordEmail({ email: user.email }))
       : isRegister
@@ -168,23 +167,25 @@ const Auth = () => {
                         alignItems="center"
                         justifyContent="center">
                         <Grid item>
-                          <Grid container alignItems="center" justifyContent="center" spacing={1}>
-                            <Typography
-                              color="secondary"
-                              align="center"
-                              gutterBottom
-                              variant={matchesSm ? "h3" : "h2"}>
-                              {isForgotPassword ? "Reset Password" : "Hi, Welcome Back"}
-                            </Typography>
-                            <Typography
-                              variant="body1"
-                              fontSize="16px"
-                              textAlign={matchesSm ? "center" : "inherit"}>
-                              {isForgotPassword
-                                ? "Enter your mail to continue"
-                                : "Enter your credentials to continue"}
-                            </Typography>
-                          </Grid>
+                          <Typography
+                            color="secondary"
+                            align="center"
+                            gutterBottom
+                            variant={matchesSm ? "h3" : "h2"}>
+                            {isForgotPassword
+                              ? "Reset Password"
+                              : !isRegister
+                              ? "Hi, Welcome Back"
+                              : "Welcome"}
+                          </Typography>
+                          <Typography
+                            variant="body1"
+                            fontSize="16px"
+                            align={matchesSm ? "center" : "inherit"}>
+                            {isForgotPassword
+                              ? "Enter your mail to continue"
+                              : "Enter your credentials to continue"}
+                          </Typography>
                         </Grid>
                       </Grid>
                     </Grid>

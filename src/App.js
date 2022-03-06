@@ -45,13 +45,16 @@ const App = () => {
   const dispatch = useDispatch();
   const eventEmitter = new events.EventEmitter();
 
-  const { userId, isAuth, authChecking } = useSelector((state) => state.user);
+  const { userId, isAuth, authChecking, accessToken } = useSelector((state) => state.user);
 
   useEffect(() => {
-    console.log(userId);
     let newSocket;
-    if (userId) {
-      newSocket = io(ENDPOINT, { reconnectionDelayMax: 10000, query: `userId=${userId}` });
+    if (userId && accessToken) {
+      newSocket = io(ENDPOINT, {
+        reconnectionDelayMax: 10000,
+        auth: { accessToken },
+        query: `userId=${userId}`
+      });
       setSocket(newSocket);
       newSocket.on("connect_error", (err) => console.log(err.message));
       newSocket.on("error", (err) => console.log(err.message));
