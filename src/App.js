@@ -32,6 +32,7 @@ const BottomNav = lazy(() => import("./components/BottomNav"));
 
 import { checkAuth } from "./redux/actions/userActions";
 import PrivateRoute from "./PrivateRoute";
+import CustomAlert2 from "./components/CustomAlert2";
 const events = require("events");
 
 const ENDPOINT = process.env.REACT_APP_ENDPOINT;
@@ -45,7 +46,15 @@ const App = () => {
   const dispatch = useDispatch();
   const eventEmitter = new events.EventEmitter();
 
-  const { userId, isAuth, authChecking, accessToken } = useSelector((state) => state.user);
+  const {
+    userId,
+    isAuth,
+    authChecking,
+    accessToken,
+    isProfileCompleted,
+    isProfileVerified,
+    isEmailVerified
+  } = useSelector((state) => state.user);
 
   useEffect(() => {
     let newSocket;
@@ -128,6 +137,13 @@ const App = () => {
           </Switch>
           {!matchesMd && <BottomNav isAuth={isAuth} />}
           {authChecking && <Loader />}
+          {isAuth && (
+            <CustomAlert2
+              isProfileVerified={isProfileVerified}
+              isProfileCompleted={isProfileCompleted}
+              isEmailVerified={isEmailVerified}
+            />
+          )}
         </Suspense>
       </Router>
     </ThemeProvider>

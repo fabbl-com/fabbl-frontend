@@ -58,6 +58,8 @@ const initialState = {
   profile: userInfo?.profile || {},
   notifications: notifications?.notifications || [],
   isEmailVerified: userInfo?.profile?.isEmailVerified || false,
+  isProfileCompleted: userInfo?.profile?.isProfileCompleted || false,
+  isProfileVerified: userInfo?.profile?.isProfileVerified || false,
   userId: localStorage.getItem("userId") || "",
   isFriends: false,
   privateKey: localStorage.getItem("privateKey")
@@ -195,11 +197,17 @@ export default (state = initialState, action) => {
         error: action.payload
       };
     case UPDATE_PROFILE_FAIL:
-    case CHECK_AUTH_FAIL:
       localStorage.removeItem("userId");
       localStorage.removeItem("userInfo");
       localStorage.removeItem("notifications");
       localStorage.removeItem("accessToken");
+      return {
+        ...state,
+        isAuth: false,
+        loading: false,
+        authChecking: false
+      };
+    case CHECK_AUTH_FAIL:
       return {
         ...state,
         isAuth: false,
