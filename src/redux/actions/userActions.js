@@ -18,6 +18,7 @@ import {
   SET_LIKES_FAIL,
   RESET_PASSWORD_SUCCESS,
   RESET_PASSWORD_FAIL,
+  USER_UPLOAD_AVATAR_REQUEST,
   USER_UPLOAD_AVATAR_SUCCESS,
   USER_UPLOAD_AVATAR_FAIL,
   CHECK_AUTH_REQUEST,
@@ -164,6 +165,7 @@ export const setLikes = (data) => async (dispatch) => {
 export const uploadAvatar =
   ({ userId, data }) =>
   async (dispatch) => {
+    dispatch({ type: USER_UPLOAD_AVATAR_REQUEST });
     var formData = new FormData();
     formData.append("data", data);
     try {
@@ -484,6 +486,7 @@ export const verifyGender = (gender) => async (dispatch) => {
     const { data } = await Axios.post("/user/verify-gender", { gender });
     console.log(data);
     dispatch({ type: GENDER_UPDATE_SUCCESS, payload: data });
+    window.location.href = "/edit/personal-data";
     dispatch(setAlert("Gender successfully updated", "success"));
   } catch (error) {
     console.log(error);

@@ -142,14 +142,11 @@ const FindRandom = ({ userId, socket }) => {
     console.log(randomUsers[newIndex], childRefs);
   };
 
+  console.log(childRefs[0].current, childRefs[1], childRefs[4]);
+
   return (
     <div className={classes.root}>
-      <Container maxWidth="sm" align="center">
-        <div className={classes.searchControl}>
-          <IconButton onClick={() => history.goBack()}>
-            <ArrowBack fontSize="small" />
-          </IconButton>
-        </div>
+      <Container style={{ height: "100%" }} maxWidth="sm" align="center">
         {randomUsers.length == 0 ? (
           <>
             <div className={classes.finding}>
@@ -188,6 +185,7 @@ const FindRandom = ({ userId, socket }) => {
                       dob={user.profile.dob}
                       isProfileVerified={user.profile.isProfileVerified}
                       hobby={user.profile.hobby}
+                      isTestUser={user.profile.isTestUser || false}
                     />
                   </TinderCard>
                 ))}

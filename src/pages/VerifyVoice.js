@@ -256,7 +256,7 @@ const VoiceUpload = () => {
         </Box>
 
         <div className={classes.authControll}>
-          <Typography variant="subtitle1" align="center" color="Primary" paragraph>
+          <Typography variant="subtitle1" align="center" color="primary" paragraph>
             Already have an account?{" "}
             <Link style={{ textDecoration: "underline" }} to="/auth">
               {" "}

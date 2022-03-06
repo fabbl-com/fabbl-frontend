@@ -1,8 +1,12 @@
 const randomStyles = (theme) => ({
   root: {
     overflow: "hidden",
-    height: "100vh",
-    backgroundColor: "#CCFBFE"
+    height: `calc(100vh - ${theme.spacing(12)}px)`,
+    marginTop: theme.spacing(6),
+    backgroundColor: "#CCFBFE",
+    [theme.breakpoints.up("sm")]: {
+      minHeight: `calc(100vh - ${theme.spacing(6)}px)`
+    }
   },
   searchControl: {
     marginTop: theme.spacing(0),
@@ -11,14 +15,14 @@ const randomStyles = (theme) => ({
     justifyContent: "space-between"
   },
   finding: {
-    height: `calc(100vh - ${theme.spacing(12)}px)`,
+    height: `calc(100vh - ${theme.spacing(6)}px)`,
 
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "space-around",
     [theme.breakpoints.up("md")]: {
-      marginTop: theme.spacing(13)
+      marginTop: theme.spacing(7)
     }
   },
   person: {
@@ -30,7 +34,10 @@ const randomStyles = (theme) => ({
     height: "100%"
   },
   searchingConatiner: {
-    marginTop: theme.spacing(-5)
+    marginTop: theme.spacing(-5),
+    [theme.breakpoints.up("md")]: {
+      marginTop: theme.spacing(-10)
+    }
   },
   avatar: {
     width: "100px",
@@ -49,8 +56,11 @@ const randomStyles = (theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "space-evenly",
-    height: `calc(100vh - ${theme.spacing(11.5)}px)`
+    justifyContent: "flex-start",
+    height: `calc(100vh - ${theme.spacing(12)}px)`,
+    [theme.breakpoints.up("sm")]: {
+      height: `calc(100vh - ${theme.spacing(6)}px)`
+    }
   },
   profileCardContainer: {
     width: "100%",

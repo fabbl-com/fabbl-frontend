@@ -43,7 +43,8 @@ import {
   SET_KEYS_1,
   GENDER_UPDATE_SUCCESS,
   GENDER_UPDATE_REQUEST,
-  GENDER_UPDATE_FAIL
+  GENDER_UPDATE_FAIL,
+  USER_UPLOAD_AVATAR_REQUEST
 } from "../constants/userActionTypes";
 const userInfo = JSON.parse(localStorage.getItem("userInfo"));
 const notifications = JSON.parse(localStorage.getItem("notifications"));
@@ -79,6 +80,7 @@ export default (state = initialState, action) => {
     case RESET_PASSWORD_REQUEST:
     case CHECK_AUTH_REQUEST:
     case UPDATE_PROFILE_REQUEST:
+    case USER_UPLOAD_AVATAR_REQUEST:
       return { ...state, loading: true };
     case USER_REGISTER_SUCCESS:
       localStorage.setItem("userId", action.payload.userId);
@@ -138,11 +140,11 @@ export default (state = initialState, action) => {
       );
       localStorage.setItem(
         "notifications",
-        JSON.stringify({ notifications: action.payload.notifications })
+        JSON.stringify({ notifications: action.payload.notifications || [] })
       );
       localStorage.setItem("accessToken", action.payload.accessToken);
-      localStorage.setItem("privateKey", action.payload.profile.privateKey);
-      localStorage.setItem("publicKey", action.payload.profile.publicKey);
+      localStorage.setItem("privateKey", action.payload.profile?.privateKey || "");
+      localStorage.setItem("publicKey", action.payload.profile?.publicKey || "");
       return {
         ...state,
         loading: false,
@@ -221,6 +223,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         loading: false,
+        isImageUploaded: true,
         userInfo: { ...state.userInfo, ...action.payload }
       };
     // case GET_USER_PROFILE:
