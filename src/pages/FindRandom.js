@@ -147,6 +147,11 @@ const FindRandom = ({ userId, socket }) => {
   return (
     <div className={classes.root}>
       <Container style={{ height: "100%" }} maxWidth="sm" align="center">
+        <div className={classes.searchControl}>
+          <IconButton onClick={() => history.goBack()}>
+            <ArrowBack fontSize="small" />
+          </IconButton>
+        </div>
         {randomUsers.length == 0 ? (
           <>
             <div className={classes.finding}>

@@ -77,7 +77,7 @@ const ProfileCard = ({
   const age = parseInt((new Date() - new Date(dob.value)) / (365 * 24 * 60 * 60 * 1000));
 
   return (
-    <Card disableRipple elevation={4} className={classes.card}>
+    <Card elevation={4} className={classes.card}>
       <CardContent align="center">
         {isTestUser && (
           <Button color="primary" variant="outlined" className={classes.testUser}>
