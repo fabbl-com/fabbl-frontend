@@ -154,6 +154,9 @@ export default (state = initialState, action) => {
         authChecking: false,
         accessToken: action.payload.accessToken,
         userId: action.payload.profile._id,
+        isEmailVerified: action.payload.profile.isEmailVerified,
+        isProfileCompleted: action.payload.profile.isProfileCompleted,
+        isProfileVerified: action.payload.profile.isProfileVerified,
         ...action.payload
       };
     case GENDER_UPDATE_SUCCESS:
@@ -196,17 +199,17 @@ export default (state = initialState, action) => {
         loading: false,
         error: action.payload
       };
-    case UPDATE_PROFILE_FAIL:
-      localStorage.removeItem("userId");
-      localStorage.removeItem("userInfo");
-      localStorage.removeItem("notifications");
-      localStorage.removeItem("accessToken");
-      return {
-        ...state,
-        isAuth: false,
-        loading: false,
-        authChecking: false
-      };
+    // case UPDATE_PROFILE_FAIL:
+    //   localStorage.removeItem("userId");
+    //   localStorage.removeItem("userInfo");
+    //   localStorage.removeItem("notifications");
+    //   localStorage.removeItem("accessToken");
+    //   return {
+    //     ...state,
+    //     isAuth: false,
+    //     loading: false,
+    //     authChecking: false
+    //   };
     case CHECK_AUTH_FAIL:
       return {
         ...state,

@@ -91,7 +91,7 @@ const PersonalData = ({ userId }) => {
   const theme = useTheme();
   const matchesMd = useMediaQuery(theme.breakpoints.down("md"));
   const [isClicked, setClicked] = useState(false);
-  // const [open, setOpen] = useState(true);
+  // const [hobbyError, setHobbyError] = useState(false);
   useEffect(() => {
     if (profile) {
       setFormData({
@@ -113,14 +113,6 @@ const PersonalData = ({ userId }) => {
       setDisableGenderUpdate(true);
     }
   }, [gender, profile]);
-
-  // useEffect(() => {
-  //   if (isProfileUpdated) {
-  //     setTimeout(() => {
-  //       setOpen(false);
-  //     }, 2000);
-  //   }
-  // }, [isProfileUpdated]);
 
   const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -153,22 +145,6 @@ const PersonalData = ({ userId }) => {
 
   return (
     <Container className={classes.root}>
-      {/* {!isProfileUpdated &&
-        error &&
-        (error.code === 401 ? (
-          <CustomAlert variant="filled" color="error">
-            Unauthorized!
-          </CustomAlert>
-        ) : (
-          <CustomAlert variant="filled" color="error">
-            Something went wrong. Please try agin
-          </CustomAlert>
-        ))}
-      {isProfileUpdated && !error && (
-        <CustomAlert variant="filled" color={"success"}>
-          Profile Updated Successfully!
-        </CustomAlert>
-      )} */}
       <div className={classes.profileHeader}>
         <IconButton onClick={goBack} color="primary">
           <KeyboardBackspace />
@@ -335,6 +311,9 @@ const PersonalData = ({ userId }) => {
                 renderInput={(params) => (
                   <TextField
                     {...params}
+                    required={formData.hobbiesData.length < 3}
+                    helperText={formData.hobbiesData.length < 3 && "Select at least 3 hobbies"}
+                    FormHelperTextProps={{ error: formData.hobbiesData.length < 3 }}
                     size="small"
                     className={classes.textField}
                     variant="outlined"
