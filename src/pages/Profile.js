@@ -43,9 +43,9 @@ const Profile = ({ userId }) => {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(getUserProfile(id));
-  }, [getUserProfile]);
+  // useEffect(() => {
+  //   dispatch(getUserProfile(id));
+  // }, [getUserProfile]);
 
   console.log(profile);
   const goBack = (e) => {
