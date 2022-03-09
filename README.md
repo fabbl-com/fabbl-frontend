@@ -1,70 +1,55 @@
-# Getting Started with Create React App
+# [FABBL](https://fabbl.netlify.app/)
+Built with the MERN stack (MongoDB, Express, React and NodeJS).
+![image](https://user-images.githubusercontent.com/63586628/157425055-236ae97c-2ecc-40e6-8eb2-4e48f5dff988.png)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+  * [Introduction](#introduction)
+  * [Key Features](#key-features)
+  * [Technologies used](#technologies-used)
+      - [Frontend](#frontend)
+      - [Backend](#backend)
+      - [Database](#database)
+  * [Configuration and Setup](#configuration-and-setup)
+  * [Author](#author)
+  * [License](#license)
 
-## Available Scripts
+## Introduction
+Fabbl is an anonymous messaging app. With fabbl, get the fast,simple, secure messaging and connect with millions of people like you for free*, available on phones all over the world.
 
-In the project directory, you can run:
+## Key Features
 
-### `npm start`
+## Technologies used
+Fabbl was created using the following technologies.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+#### Frontend
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- React JS
+- Redux (for managing and centralizing application state)
+- React-router-dom (To handle routing)
+- Axios (for making api calls)
+- Material UI (for User Interface)
 
-### `npm test`
+#### [Backend](https://github.com/fabbl-com/fabbl-backend)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Express
+- Mongoose
+- bcryptjs (for data encryption)
+- JWT (For authentication)
+- Nodemailer (for sending invoice via email)
+- Cloudinary (to allows users to upload their imaage)
+- Socket.IO (for realtime, bi-directional communication between web clients and servers)
 
-### `npm run build`
+#### Database
+MongoDB (MongoDB Atlas)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Configuration and Setup
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Comment
+We intend to keep adding more features to this application, so if you like it, please give it a star, that will encourage us to 
+to keep improving the project.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Author
+- [Ichan Kabir](https://github.com/ikabir21)
+- [Nandan Kumar](https://github.com/nandan-shah)
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## License
+- This project is ISC licensed.
