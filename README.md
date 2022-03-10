@@ -82,7 +82,7 @@ Fabbl was created using the following technologies.
 MongoDB (MongoDB Atlas)
 
 ## Configuration and Setup
-*Setup [backend](https://github.com/fabbl-com/fabbl-backend#configuration-and-setup) then continue.
+Setup [backend](https://github.com/fabbl-com/fabbl-backend#configuration-and-setup) then continue.
 
 ### 1\. Clone this Repository
 
@@ -101,7 +101,7 @@ cd fabbl-frontend
 ```
 npm install
 ```
-### 4\. Create .env to root dir and add
+### 4\. Create .env in root directory and add
 ``` 
 REACT_APP_ENDPOINT=http://localhost:4000
 ```
@@ -124,4 +124,4 @@ to keep improving the project.
 - [Nandan Kumar](https://github.com/nandan-shah)
 
 ## License
-- This project is MIT licensed.
+- This project is [MIT](https://github.com/fabbl-com/fabbl-frontend/blob/main/LICENSE) licensed.
