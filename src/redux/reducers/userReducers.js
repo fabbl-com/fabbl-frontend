@@ -82,8 +82,9 @@ export default (state = initialState, action) => {
     case RESET_PASSWORD_REQUEST:
     case CHECK_AUTH_REQUEST:
     case UPDATE_PROFILE_REQUEST:
-    case USER_UPLOAD_AVATAR_REQUEST:
       return { ...state, loading: true };
+    case USER_UPLOAD_AVATAR_REQUEST:
+      return { ...state, isImageUploaded: true };
     case USER_REGISTER_SUCCESS:
       localStorage.setItem("userId", action.payload.userId);
       localStorage.setItem("userInfo", JSON.stringify({ isAuth: true }));
@@ -197,6 +198,7 @@ export default (state = initialState, action) => {
       return {
         ...state,
         loading: false,
+        isImageUploaded: false,
         error: action.payload
       };
     // case UPDATE_PROFILE_FAIL:

@@ -70,7 +70,7 @@ const App = () => {
     }
 
     return () => newSocket && newSocket.off();
-  }, [userId]);
+  }, [userId, accessToken]);
 
   useEffect(() => dispatch(checkAuth()), []);
   useEffect(() => setTheme(_isTheme), [_isTheme]);
