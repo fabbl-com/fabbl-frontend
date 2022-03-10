@@ -73,7 +73,8 @@ const PersonalData = ({ userId }) => {
     error = null,
     loading,
     profile = null,
-    isProfileUpdated = false
+    isProfileUpdated = false,
+    isImageUploaded = false
   } = useSelector((state) => state.user);
   const [image, setImage] = useState(null);
   const history = useHistory();
@@ -179,7 +180,7 @@ const PersonalData = ({ userId }) => {
               </label>
             </>
           }>
-          {loading ? (
+          {isImageUploaded ? (
             <Skeleton width={matchesMd ? 100 : 200} height={matchesMd ? 150 : 300} animation="wave">
               <Avatar className={classes.avatar} />
             </Skeleton>
@@ -363,6 +364,7 @@ const PersonalData = ({ userId }) => {
                 }}>
                 <Button
                   className={classes.button}
+                  href="/verify-voice"
                   aria-label="verify"
                   color="primary"
                   variant="contained"
