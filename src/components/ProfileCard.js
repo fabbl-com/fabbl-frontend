@@ -23,7 +23,12 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(1, 0)
   },
   card: {
-    background: theme.palette.background.default
+    background: theme.palette.card.default,
+    borderRadius: theme.spacing(3),
+    padding: theme.spacing(2, 1),
+    height: "530px",
+    maxWidth: "450px",
+    minWidth: "300px"
   },
   avatar: {
     height: "8rem",
@@ -31,14 +36,22 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2)
   },
   mtb1: {
-    margin: theme.spacing(1, 0)
+    margin: theme.spacing(1, 0),
+    lineHeight: "16px"
   },
   divider: {
     backgroundColor: "#abb",
     height: "0.7px"
   },
   check: {
-    position: "absolute"
+    position: "absolute",
+    fontSize: theme.spacing(2)
+  },
+  testUser: {
+    position: "absolute",
+    right: "10px",
+    top: "10px",
+    padding: "0.2ch 0.3ch"
   }
 }));
 
@@ -51,7 +64,8 @@ const ProfileCard = ({
   relationshipStatus,
   dob,
   hobby,
-  isProfileVerified
+  isProfileVerified,
+  isTestUser = false
 }) => {
   const classes = useStyles();
 
@@ -63,18 +77,23 @@ const ProfileCard = ({
   const age = parseInt((new Date() - new Date(dob.value)) / (365 * 24 * 60 * 60 * 1000));
 
   return (
-    <Card elevation={1} className={classes.card}>
+    <Card elevation={4} className={classes.card}>
       <CardContent align="center">
+        {isTestUser && (
+          <Button color="primary" variant="outlined" className={classes.testUser}>
+            Test User
+          </Button>
+        )}
         <Avatar variant="rounded" className={classes.avatar} src={avatar.value} />
         <div className={classes.status}>
-          <Favorite fontSize="small" />
+          <Favorite style={{ color: "#ec5e6f" }} fontSize="small" />
           &nbsp;&nbsp;
           <Typography align="center" variant="body1" component="p">
             {mapToString(relationshipStatus.value)}
           </Typography>
         </div>
         <div className={classes.status}>
-          <LocationOn fontSize="small" />
+          <LocationOn style={{ color: "#5D8BF4" }} fontSize="small" />
           &nbsp;&nbsp;
           <Typography align="center" variant="body1" component="p">
             {location.value}
@@ -111,7 +130,8 @@ ProfileCard.propTypes = {
   relationshipStatus: PropTypes.object,
   dob: PropTypes.object,
   hobby: PropTypes.object,
-  isProfileVerified: PropTypes.bool
+  isProfileVerified: PropTypes.bool,
+  isTestUser: PropTypes.bool.isRequired
 };
 
 export default ProfileCard;

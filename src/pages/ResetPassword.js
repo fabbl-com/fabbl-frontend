@@ -38,6 +38,8 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+const ENDPOINT = process.env.REACT_APP_ENDPOINT;
+
 const ResetPassword = () => {
   const theme = useTheme();
 
@@ -89,12 +91,12 @@ const ResetPassword = () => {
         minHeight: "100vh",
         marginTop: "3rem"
       }}>
-      {error &&
+      {/* {error &&
         (error.code === 401 ? (
           <Alert severity="error">Oops! Invalid credential. Please Try again</Alert>
         ) : (
           <Alert severity="error">Something went wrong. Please try agin</Alert>
-        ))}
+        ))} */}
       <Grid
         container
         direction="column"
@@ -148,9 +150,10 @@ const ResetPassword = () => {
                     <Grid item xs={12}>
                       <Grid container direction="column" justifyContent="center" spacing={2}>
                         <Grid item xs={12}>
-                          <form action="http://localhost:4000/auth/google">
+                          <form action={`${ENDPOINT}/auth/google`}>
                             <Button
                               fullWidth
+                              aria-label="sign in with google"
                               type="submit"
                               size="large"
                               variant="outlined"
@@ -161,12 +164,13 @@ const ResetPassword = () => {
                           </form>
                         </Grid>
                         <Grid item xs={12}>
-                          <form action="http://localhost:4000/auth/facebook">
+                          <form action={`${ENDPOINT}/auth/facebook`}>
                             <Button
                               type="submit"
                               fullWidth
                               size="large"
                               variant="outlined"
+                              aria-label="Sign in with Facebook"
                               startIcon={<FacebookIcon />}
                               className={classes.btn}>
                               Sign in with Facebook
@@ -183,6 +187,7 @@ const ResetPassword = () => {
 
                             <Button
                               variant="outlined"
+                              aria-label="or"
                               style={{
                                 cursor: "unset",
                                 margin: "2ch",
@@ -282,6 +287,7 @@ const ResetPassword = () => {
                           <Button
                             color="secondary"
                             disableElevation
+                            aria-label="reset password"
                             fullWidth
                             size="large"
                             type="submit"

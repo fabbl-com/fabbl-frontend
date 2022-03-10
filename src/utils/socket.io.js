@@ -3,9 +3,9 @@ import { GET_CHAT_LIST_USERS_REQUEST } from "../redux/constants/messageActionTyp
 export const getChatList = (socket, eventEmitter, userId, dispatch) => {
   dispatch({ type: GET_CHAT_LIST_USERS_REQUEST });
   console.log(userId);
-  socket.emit("chat-list", userId);
-  socket.on("chat-list-response", (data) => {
-    eventEmitter.emit("chat-list-response", data);
+  socket.emit("get-chat-list", userId);
+  socket.on("get-chat-list-response", (data) => {
+    eventEmitter.emit("get-chat-list-response", data);
   });
 };
 

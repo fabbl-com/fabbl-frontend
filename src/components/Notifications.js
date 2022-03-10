@@ -174,6 +174,7 @@ const CustomListItem = ({
                   style={{
                     backgroundColor: theme.palette.primary
                   }}
+                  aria-label="Accept"
                   onClick={handleConfirm}
                   variant="contained"
                   disableElevation
@@ -186,6 +187,7 @@ const CustomListItem = ({
                   style={{
                     backgroundColor: theme.palette.error.light
                   }}
+                  aria-label="decline"
                   onClick={handleDecline}
                   variant="contained"
                   disableElevation
@@ -251,7 +253,6 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
   const handleChange = (event) => setValue(event.target.value);
 
   const handleConfirm = (e, { id, notificationId }) => {
-    console.log(userId, id, notificationId);
     e.preventDefault();
     if (socket)
       socket.emit("confirm-friends-request", { sender: userId, receiver: id, notificationId });
@@ -287,7 +288,7 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
     <>
       <Box className={classes.box}>
         <Badge badgeContent={unreadCount} max={9} color="secondary">
-          <ButtonBase className={classes.iconWrapper}>
+          <ButtonBase className={classes.iconWrapper} aria-label="icon">
             <Avatar
               variant="rounded"
               className={classes.iconAvatar}
@@ -400,7 +401,7 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
                     <Grid item xs={12}>
                       <div
                         style={{
-                          maxHeight: isViewAll ? `calc(100vh - 200px)` : `400px`,
+                          maxHeight: isViewAll ? `400px` : `200px`,
                           overflow: !isViewAll ? "hidden" : "hidden scroll"
                         }}>
                         <List className={classes.list}>
@@ -445,6 +446,7 @@ const NotificationSection = ({ socket, userId, notifications, unread }) => {
                     <Button
                       onClick={() => setViewAll((state) => !state)}
                       size="small"
+                      aria-label="view"
                       color="primary"
                       disableElevation>
                       {!isViewAll ? "View All" : "Hide"}

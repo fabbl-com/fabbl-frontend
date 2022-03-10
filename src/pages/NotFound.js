@@ -1,42 +1,35 @@
-import React, { useEffect, useRef } from "react";
-import lottie from "lottie-web";
-import animationData from "../assets/animation/404.json";
+import React from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import { Button } from "@material-ui/core";
+import notFoundSvg from "../assets/animation/404.svg";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    backgroundImage: `url(${notFoundSvg})`,
+    height: "100vh",
+    backgroundPosition: " center",
+    backgroundRepeat: "no-repeat",
+    backgroundSize: "80vw 90vh",
+    [theme.breakpoints.down("md")]: {
+      backgroundPosition: " top"
+    }
+  },
+  button: {
+    marginTop: "40vh"
+  }
+}));
+
 const NotFound = () => {
-  const container = useRef(null);
-  useEffect(() => {
-    const anim = lottie.loadAnimation({
-      container: container.current,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-      animationData
-    });
-    return () => anim.destroy();
-  }, []);
+  const classes = useStyles();
   return (
     <>
-      <div
-        style={{
-          backgroundColor: " black",
-          height: "100vh",
-          position: "fixed",
-          overflow: "hidden"
-        }}
-        ref={container}></div>
-      <div
-        style={{
-          color: "white",
-          position: "fixed",
-          width: "100%",
-          height: "100%",
-          textAlign: "center",
-          marginTop: "20%",
-          scale: "13"
-        }}>
+      <div className={classes.root}>
+        {" "}
         <center>
-          <h2>404</h2>
-          <br />
-          <h1>Page Not Found</h1>
+          <Button className={classes.button} variant="outlined" color="primary" href={"/"}>
+            {" "}
+            Go Home
+          </Button>
         </center>
       </div>
     </>

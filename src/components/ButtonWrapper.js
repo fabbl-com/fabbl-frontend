@@ -28,7 +28,7 @@ const ButtonWrapper = ({ children, className }) => {
   const classes = useStyles();
   return (
     <ButtonBase className={classNames(classes.iconWrapper, className)}>
-      <Avatar variant="rounded" className={classes.iconAvatar}>
+      <Avatar variant="rounded" className={classes.iconAvatar} alt="avatar">
         {children}
       </Avatar>
     </ButtonBase>

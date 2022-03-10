@@ -22,6 +22,7 @@ import { useParams, useLocation, useHistory } from "react-router-dom";
 import { profileStyles } from "../assets/jss";
 import { useSelector, useDispatch } from "react-redux";
 import { getUserProfile } from "../redux/actions/userActions.js";
+import Tags from "../components/Tags";
 const useStyles = makeStyles((theme) => profileStyles(theme));
 const tagsColor = [
   "#000000",
@@ -42,9 +43,9 @@ const Profile = ({ userId }) => {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(getUserProfile(id));
-  }, [getUserProfile]);
+  // useEffect(() => {
+  //   dispatch(getUserProfile(id));
+  // }, [getUserProfile]);
 
   console.log(profile);
   const goBack = (e) => {
@@ -111,22 +112,17 @@ const Profile = ({ userId }) => {
           <Typography align="center" component="h3" variant="h4">
             Hobbies & Interest
           </Typography>
-          <center>
-            {profile.hobby.value.map((tag, i) => (
-              <Button
-                disableRipple
-                style={{ backgroundColor: tagsColor[i % tagsColor.length], color: "#eee" }}
-                size="small"
-                className={classes.tags}
-                key={i}>
-                {tag}
-              </Button>
-            ))}
-          </center>
+          <Box align="center">
+            <Tags tags={profile.hobby.value || []} />
+          </Box>
         </div>
 
         {id === userId || (
-          <Button className={classes.favorite} variant="contained" color="secondary">
+          <Button
+            className={classes.favorite}
+            variant="contained"
+            color="secondary"
+            aria-label="add friend">
             Add To Friends &nbsp;&nbsp;&nbsp;
             <FavoriteBorder />
           </Button>

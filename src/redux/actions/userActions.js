@@ -1,5 +1,5 @@
-import Axios from "axios";
 import { genKeys } from "../../lib/hashAlgorithm";
+import Axios from "../api";
 
 import {
   USER_REGISTER_FAIL,
@@ -18,34 +18,38 @@ import {
   SET_LIKES_FAIL,
   RESET_PASSWORD_SUCCESS,
   RESET_PASSWORD_FAIL,
+  USER_UPLOAD_AVATAR_REQUEST,
   USER_UPLOAD_AVATAR_SUCCESS,
   USER_UPLOAD_AVATAR_FAIL,
   CHECK_AUTH_REQUEST,
   CHECK_AUTH_SUCCESS,
   CHECK_AUTH_FAIL,
-  UPDATE_PROFILE_PREF,
+  UPDATE_PROFILE_PREF_SUCCESS,
   GET_USER_PROFILE,
   UPDATE_EMAIL_SUCCESS,
   UPDATE_PASSWORD_SUCCESS,
+  UPDATE_PASSWORD_FAIL,
   SET_NOTIFICATIONS,
   REOMVE_NOTIFICATIONS,
   SEND_RESET_PASSWORD_SUCCESS,
-  UPDATE_PROFILE_REQUEST,
   UPDATE_PROFILE_SUCCESS,
   UPDATE_PROFILE_FAIL,
   RESET_PASSWORD_REQUEST,
-  LOGOUT_REQUEST,
   LOGOUT_SUCCESS,
   LOGOUT_FAIL,
   SET_KEYS,
-  SET_KEYS_1
+  SET_KEYS_1,
+  GENDER_UPDATE_REQUEST,
+  GENDER_UPDATE_SUCCESS,
+  GENDER_UPDATE_FAIL
 } from "../constants/userActionTypes";
-
-export const register = (userId) => async (dispatch) => {
-  dispatch({ type: USER_REGISTER_REQUEST, payload: userId });
+import { setAlert } from "./alert";
+export const register = (user) => async (dispatch) => {
+  dispatch({ type: USER_REGISTER_REQUEST });
   try {
-    const { data } = await Axios.post("/auth/register", userId);
+    const { data } = await Axios.post("/auth/register", user);
     dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
+    // dispatch(setAlert("Successfully registered. Please verify your email..", "success"));
   } catch (error) {
     console.log(error.response);
     dispatch({
@@ -53,28 +57,66 @@ export const register = (userId) => async (dispatch) => {
       payload: {
         code: error.response.status,
         message:
-          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message
       }
     });
+    dispatch(
+      setAlert(
+        error.response.status === 401
+          ? "Already registered"
+          : error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+        "error"
+      )
+    );
   }
 };
 
-export const login = (userId) => async (dispatch) => {
-  dispatch({ type: USER_SIGNIN_REQUEST, payload: userId });
+export const login = (user) => async (dispatch) => {
+  dispatch({ type: USER_SIGNIN_REQUEST });
   try {
-    const { data } = await Axios.post("/auth/login", userId);
+    const { data } = await Axios.post("/auth/login", user);
     console.log(data);
     dispatch({ type: USER_SIGNIN_SUCCESS, payload: data });
+    dispatch({
+      type: SET_KEYS_1,
+      payload: { privateKey: data?.profile?.privateKey, publicKey: data?.profile?.publicKey }
+    });
+    dispatch(setAlert("User successfully Logged in", "success"));
   } catch (error) {
-    console.log(error.response);
+    console.log(error);
     dispatch({
       type: USER_SIGNIN_FAIL,
       payload: {
         code: error.response.status,
         message:
-          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message
       }
     });
+    dispatch(
+      setAlert(
+        error.response.status === 401
+          ? "Invalid credentials"
+          : error.response && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+        "error"
+      )
+    );
+  }
+};
+
+export const googleLogin = () => async (dispatch) => {
+  try {
+    const { data } = await Axios.get("/auth/google");
+    console.log(data);
+  } catch (error) {
+    console.log(error, error.response);
   }
 };
 
@@ -102,7 +144,9 @@ export const verifyEmail = (token) => async (dispatch) => {
       payload: {
         code: error.response.status,
         message:
-          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message
       }
     });
   }
@@ -121,6 +165,7 @@ export const setLikes = (data) => async (dispatch) => {
 export const uploadAvatar =
   ({ userId, data }) =>
   async (dispatch) => {
+    dispatch({ type: USER_UPLOAD_AVATAR_REQUEST });
     var formData = new FormData();
     formData.append("data", data);
     try {
@@ -138,7 +183,9 @@ export const uploadAvatar =
         payload: {
           code: error.response.status,
           message:
-            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+            error.response && error.response.data.message
+              ? error.response.data.message
+              : error.message
         }
       });
     }
@@ -154,6 +201,7 @@ export const updateProfile =
         type: UPDATE_PROFILE_SUCCESS,
         payload: res.data?.profile
       });
+      dispatch(setAlert("Profile successfully updated", "success"));
     } catch (error) {
       console.log(error);
       dispatch({
@@ -161,9 +209,19 @@ export const updateProfile =
         payload: {
           code: error.response.status,
           message:
-            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+            error.response && error.response.data.message
+              ? error.response.data.message
+              : error.message
         }
       });
+      dispatch(
+        setAlert(
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
+          "error"
+        )
+      );
     }
   };
 export const checkAuth = () => async (dispatch) => {
@@ -191,13 +249,14 @@ export const checkAuth = () => async (dispatch) => {
       });
     }
   } catch (error) {
-    console.log(error.response);
     dispatch({
       type: CHECK_AUTH_FAIL,
       payload: {
         code: error.response?.status,
         message:
-          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message
       }
     });
   }
@@ -207,16 +266,13 @@ export const updateProfilePref =
   ({ data, userId }) =>
   async (dispatch) => {
     try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      };
-      const res = await Axios.post(`/user/profile/${userId}`, data, config);
+      const res = await Axios.post(`/user/profile/${userId}`, data);
+      console.log(res.data);
       dispatch({
-        type: UPDATE_PROFILE_PREF,
+        type: UPDATE_PROFILE_PREF_SUCCESS,
         payload: res.data
       });
+      dispatch(setAlert("Profile Pref successfully registered", "success"));
     } catch (error) {
       console.log(error);
       dispatch({
@@ -224,9 +280,19 @@ export const updateProfilePref =
         payload: {
           code: error.response.status,
           message:
-            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+            error.response && error.response.data.message
+              ? error.response.data.message
+              : error.message
         }
       });
+      dispatch(
+        setAlert(
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
+          "error"
+        )
+      );
     }
   };
 
@@ -244,7 +310,9 @@ export const getUserProfile = (userId) => async (dispatch) => {
       payload: {
         code: error.response.status,
         message:
-          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message
       }
     });
   }
@@ -254,16 +322,12 @@ export const updateEmail =
   ({ data, id }) =>
   async (dispatch) => {
     try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      };
       console.log(data);
-      await Axios.post(`/user/send-update-email/${id}`, { email: data }, config);
+      await Axios.post(`/user/send-update-email/${id}`, { email: data });
       dispatch({
         type: UPDATE_EMAIL_SUCCESS
       });
+      dispatch(setAlert("Email successfully Updated", "success"));
     } catch (error) {
       console.log(error);
       dispatch({
@@ -271,9 +335,19 @@ export const updateEmail =
         payload: {
           code: error.response.status,
           message:
-            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+            error.response && error.response.data.message
+              ? error.response.data.message
+              : error.message
         }
       });
+      dispatch(
+        setAlert(
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
+          "error"
+        )
+      );
     }
   };
 
@@ -281,26 +355,32 @@ export const updatePassword =
   ({ data, id }) =>
   async (dispatch) => {
     try {
-      const config = {
-        headers: {
-          "Content-Type": "application/json"
-        }
-      };
       console.log(data);
-      await Axios.post(`/user/update-password/${id}`, data, config);
+      await Axios.post(`/user/update-password/${id}`, data);
       dispatch({
         type: UPDATE_PASSWORD_SUCCESS
       });
+      dispatch(setAlert("Password successfully Updated", "success"));
     } catch (error) {
       console.log(error);
       dispatch({
-        type: USER_UPLOAD_AVATAR_FAIL,
+        type: UPDATE_PASSWORD_FAIL,
         payload: {
           code: error.response.status,
           message:
-            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+            error.response && error.response.data.message
+              ? error.response.data.message
+              : error.message
         }
       });
+      dispatch(
+        setAlert(
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
+          "error"
+        )
+      );
     }
   };
 
@@ -321,6 +401,7 @@ export const sendResetPasswordEmail =
       await Axios.post(`/user/send-reset-password-email`, { email });
 
       dispatch({ type: SEND_RESET_PASSWORD_SUCCESS });
+      dispatch(setAlert("Email successfully sent", "success"));
     } catch (error) {
       console.log(error);
       dispatch({
@@ -328,9 +409,19 @@ export const sendResetPasswordEmail =
         payload: {
           code: error.response.status,
           message:
-            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+            error.response && error.response.data.message
+              ? error.response.data.message
+              : error.message
         }
       });
+      dispatch(
+        setAlert(
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
+          "error"
+        )
+      );
     }
   };
 
@@ -344,6 +435,7 @@ export const resetPassword =
         token
       });
       dispatch({ type: RESET_PASSWORD_SUCCESS, payload: data });
+      dispatch(setAlert("Password successfully Updated", "success"));
     } catch (error) {
       console.log(error);
       dispatch({
@@ -351,9 +443,19 @@ export const resetPassword =
         payload: {
           code: error.response.status,
           message:
-            error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+            error.response && error.response.data.message
+              ? error.response.data.message
+              : error.message
         }
       });
+      dispatch(
+        setAlert(
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message,
+          "error"
+        )
+      );
     }
   };
 
@@ -370,8 +472,41 @@ export const logout = () => async (dispatch) => {
       payload: {
         code: error.response.status,
         message:
-          error.reponse && error.reponse.data.message ? error.reponse.data.message : error.message
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message
       }
     });
   }
 };
+
+export const verifyGender = (gender) => async (dispatch) => {
+  dispatch({ type: GENDER_UPDATE_REQUEST });
+  try {
+    const { data } = await Axios.post("/user/verify-gender", { gender });
+    console.log(data);
+    dispatch({ type: GENDER_UPDATE_SUCCESS, payload: data });
+    window.location.href = "/edit/personal-data";
+    dispatch(setAlert("Gender successfully updated", "success"));
+  } catch (error) {
+    console.log(error);
+    dispatch({
+      type: GENDER_UPDATE_FAIL,
+      payload: {
+        code: error.response.status,
+        message:
+          error.response && error.response.data.message
+            ? error.response.data.message
+            : error.message
+      }
+    });
+    dispatch(
+      setAlert(
+        error.response && error.response.data.message ? error.response.data.message : error.message,
+        "error"
+      )
+    );
+  }
+};
+
+export const updateRefreshToken = () => async (dispatch) => {};

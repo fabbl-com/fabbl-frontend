@@ -16,7 +16,6 @@ const genKeys = async () => {
 };
 
 const genDerivedKey = async (publicKeyJwk, privateKeyJwk) => {
-  console.log(publicKeyJwk);
   const publicKey = await window.crypto.subtle.importKey(
     "jwk",
     publicKeyJwk,
@@ -80,7 +79,6 @@ const decode = async (text, derivedKey) => {
 
     return new TextDecoder().decode(decryptedData);
   } catch (e) {
-    // console.log(e);
     return `error`;
   }
 };

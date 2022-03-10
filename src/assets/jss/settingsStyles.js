@@ -1,6 +1,11 @@
 const settingsStyles = (theme) => ({
   root: {
-    marginTop: theme.spacing(6)
+    marginTop: theme.spacing(6),
+    width: "70%",
+    [theme.breakpoints.down("md")]: {
+      paddingBottom: theme.spacing(8),
+      width: "100%"
+    }
   },
   profileHeader: {
     width: "100%",
@@ -44,6 +49,12 @@ const settingsStyles = (theme) => ({
   },
   visibility: {
     display: "flex"
+  },
+  disabled: {
+    "&.Mui-disabled": {
+      color: theme.palette.primary.main
+    }
+    // "&.Mui-disabled:hover": { background: theme.palette.secondary.main }
   }
 });
 

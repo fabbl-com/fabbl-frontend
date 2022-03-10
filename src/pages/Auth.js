@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Typography,
@@ -15,16 +15,17 @@ import {
   useTheme,
   makeStyles
 } from "@material-ui/core";
+import Loader from "../components/Loader";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useLocation, Link } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@material-ui/icons";
-import { Alert } from "@material-ui/lab";
 import PropTypes from "prop-types";
 import { login, register, sendResetPasswordEmail } from "../redux/actions/userActions";
 import Logo from "../assets/logo/Logo";
 import { FacebookIcon, GoogleIcon } from "../assets/icons";
 import { strengthColor, strengthIndicator } from "../utils/paswordStrenth";
 import PasswordStrength from "../components/PasswordStrength";
+import Swal from "sweetalert2";
 const useStyles = makeStyles((theme) => ({
   btn: {
     borderRadius: theme.spacing(1),
@@ -35,13 +36,30 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#F6FBFF",
       borderColor: "rgb(33, 150, 243)"
     }
+  },
+  popup: {
+    width: "auto !important"
+  },
+  icon: {
+    fontSize: "10px"
+  },
+  title: {
+    fontSize: "1rem !important"
+  },
+  titleMd: {
+    lineHeight: "1.5 !important"
+  },
+  button: {
+    fontSize: "inherit"
   }
 }));
 
-const Auth = ({ isAuth }) => {
+const ENDPOINT = process.env.REACT_APP_ENDPOINT;
+
+const Auth = () => {
   const theme = useTheme();
 
-  const matchDownSM = useMediaQuery(theme.breakpoints.down("md"));
+  const matchesSm = useMediaQuery(theme.breakpoints.down("md"));
   const [isRegister, setRegister] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [isForgotPassword, setForgotPassword] = useState(false);
@@ -53,18 +71,18 @@ const Auth = ({ isAuth }) => {
   const history = useHistory();
   const classes = useStyles();
 
-  if (isAuth) {
-    if (!isRegister) history.push(location?.state?.from?.pathname);
-    else history.push("/image");
-  }
+  const {
+    isAuth,
+    error,
+    success,
+    loading = false,
+    isEmailSent = false
+  } = useSelector((state) => state.user);
 
-  const { error, success } = useSelector((state) => state.user);
-
-  if (success) history.push(location?.state?.from?.pathname);
+  if (isAuth && success && !isEmailSent) history.push(location?.state?.from?.pathname || "/");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(user);
     isForgotPassword
       ? dispatch(sendResetPasswordEmail({ email: user.email }))
       : isRegister
@@ -74,7 +92,6 @@ const Auth = ({ isAuth }) => {
 
   const handelForgetPassword = (e) => {
     setForgotPassword(!isForgotPassword);
-    // dispatch(sendResetPasswordEmail({ email: user.email }));
   };
 
   const handlePasswordStrength = (value) => {
@@ -83,21 +100,34 @@ const Auth = ({ isAuth }) => {
     setLevel(strengthColor(temp));
   };
 
+  useEffect(() => {
+    if (!loading && isEmailSent) {
+      Swal.fire({
+        title: "Successfully registered!. Click OK to continue.",
+        confirmButtonText: "OK",
+        icon: "success",
+        customClass: {
+          button: matchesSm && `${classes.button}`,
+          popup: matchesSm && `${classes.popup}`,
+          icon: matchesSm && `${classes.icon}`,
+          title: matchesSm ? `${classes.title}` : `${classes.titleMd}`
+        }
+      }).then((result) => {
+        if (result.isConfirmed && !isForgotPassword) {
+          history.push("/image");
+        }
+      });
+    }
+  }, [loading, isEmailSent]);
+
   return (
     <div
       style={{
-        backgroundColor: theme.palette.primary.light,
+        backgroundColor: "rgba(46, 156, 202, .9)",
         minHeight: "100vh",
         marginTop: "3rem"
       }}>
-      {error &&
-        (error.code === 401 ? (
-          <Alert style={{ top: 0, position: "absolute", zIndex: 1200 }} severity="error">
-            Oops! Invalid credential. Please Try again
-          </Alert>
-        ) : (
-          <Alert severity="error">Something went wrong. Please try agin</Alert>
-        ))}
+      {loading && <Loader />}
       <Grid
         container
         direction="column"
@@ -132,39 +162,42 @@ const Auth = ({ isAuth }) => {
                     <Grid item xs={12}>
                       <Grid
                         container
-                        direction={matchDownSM ? "column-reverse" : "row"}
+                        direction={matchesSm ? "column-reverse" : "row"}
                         alignItems="center"
                         justifyContent="center">
                         <Grid item>
-                          <Grid container alignItems="center" justifyContent="center" spacing={1}>
-                            <Typography
-                              color="secondary"
-                              align="center"
-                              gutterBottom
-                              variant={matchDownSM ? "h3" : "h2"}>
-                              {isForgotPassword ? "Reset Password" : "Hi, Welcome Back"}
-                            </Typography>
-                            <Typography
-                              variant="body1"
-                              fontSize="16px"
-                              textAlign={matchDownSM ? "center" : "inherit"}>
-                              {isForgotPassword
-                                ? "Enter your mail to continue"
-                                : "Enter your credentials to continue"}
-                            </Typography>
-                          </Grid>
+                          <Typography
+                            color="secondary"
+                            align="center"
+                            gutterBottom
+                            variant={matchesSm ? "h3" : "h2"}>
+                            {isForgotPassword
+                              ? "Reset Password"
+                              : !isRegister
+                              ? "Hi, Welcome Back"
+                              : "Welcome"}
+                          </Typography>
+                          <Typography
+                            variant="body1"
+                            fontSize="16px"
+                            align={matchesSm ? "center" : "inherit"}>
+                            {isForgotPassword
+                              ? "Enter your mail to continue"
+                              : "Enter your credentials to continue"}
+                          </Typography>
                         </Grid>
                       </Grid>
                     </Grid>
                     <Grid item xs={12}>
                       <Grid container direction="column" justifyContent="center" spacing={2}>
                         <Grid item xs={12}>
-                          <form action="http://localhost:4000/auth/google">
+                          <form action={`${ENDPOINT}/auth/google`}>
                             <Button
                               fullWidth
                               type="submit"
                               size="large"
                               variant="outlined"
+                              aria-label="google"
                               startIcon={<GoogleIcon />}
                               className={classes.btn}>
                               Sign in with Google
@@ -172,12 +205,13 @@ const Auth = ({ isAuth }) => {
                           </form>
                         </Grid>
                         <Grid item xs={12}>
-                          <form action="http://localhost:4000/auth/facebook">
+                          <form action={`${ENDPOINT}/auth/facebook`}>
                             <Button
                               type="submit"
                               fullWidth
                               size="large"
                               variant="outlined"
+                              aria-label="facebook"
                               startIcon={<FacebookIcon />}
                               className={classes.btn}>
                               Sign in with Facebook
@@ -194,6 +228,7 @@ const Auth = ({ isAuth }) => {
 
                             <Button
                               variant="outlined"
+                              aria-label="or"
                               style={{
                                 cursor: "unset",
                                 margin: "2ch",
@@ -229,7 +264,7 @@ const Auth = ({ isAuth }) => {
                           fullWidth
                           label="Email"
                           type="email"
-                          vaule={user?.email}
+                          value={user?.email}
                           onChange={(e) =>
                             setUser((state) => ({ ...state, email: e.target.value }))
                           }
@@ -243,7 +278,7 @@ const Auth = ({ isAuth }) => {
                             label="Display name"
                             type="text"
                             margin="normal"
-                            vaule={user?.displayName}
+                            value={user?.displayName}
                             onChange={(e) =>
                               setUser((state) => ({ ...state, displayName: e.target.value }))
                             }
@@ -257,7 +292,7 @@ const Auth = ({ isAuth }) => {
                             name="password"
                             label="Password"
                             type={showPassword ? "text" : "password"}
-                            vaule={user?.password}
+                            value={user?.password}
                             onChange={(e) => {
                               setUser((state) => ({ ...state, password: e.target.value }));
                               handlePasswordStrength(e.target.value);
@@ -329,6 +364,7 @@ const Auth = ({ isAuth }) => {
                           <Button
                             color="secondary"
                             disableElevation
+                            aria-label="enter"
                             fullWidth
                             size="large"
                             type="submit"
@@ -344,7 +380,10 @@ const Auth = ({ isAuth }) => {
                     <Grid item xs={12}>
                       <Grid item container direction="column" alignItems="center" xs={12}>
                         <Typography
-                          onClick={() => setRegister((state) => !state)}
+                          onClick={() => {
+                            setRegister((state) => !state);
+                            setForgotPassword(false);
+                          }}
                           variant="subtitle1"
                           style={{ textDecoration: "none", cursor: "pointer" }}>
                           {isRegister ? `Already have an account` : `Don't have an account?`}
@@ -372,10 +411,6 @@ const Auth = ({ isAuth }) => {
       </Grid>
     </div>
   );
-};
-
-Auth.propTypes = {
-  isAuth: PropTypes.bool.isRequired
 };
 
 export default Auth;

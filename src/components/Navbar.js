@@ -7,13 +7,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { removeNotifications, setNotifications } from "../redux/actions/userActions";
 import ProfileSection from "./ProfileSection";
 import { Alert } from "@material-ui/lab";
-import { Explore, Favorite } from "@material-ui/icons";
+import { Explore, Favorite, GitHub } from "@material-ui/icons";
 import ButtonWrapper from "./ButtonWrapper";
 
 const useStyles = makeStyles((theme) => ({
   appBar: {
     backgroundColor: "#2e9cca",
-    color: "#fff"
+    color: "#fff",
+    [theme.breakpoints.up("md")]: {
+      padding: " 0 7%"
+    }
   },
   menu: {
     backgroundColor: theme.palette.background.default,
@@ -92,7 +95,7 @@ const Navbar = ({ socket, userId, isTheme, setTheme, matchesMd }) => {
         </Link>
         <div style={{ flexGrow: 1 }} />
         <div style={{ display: "flex", alignItems: "center" }}>
-          {matchesMd && (
+          {matchesMd && isAuth && (
             <>
               <Box className={classes.box}>
                 <ButtonWrapper className={classes.btnWrapper}>
@@ -110,6 +113,16 @@ const Navbar = ({ socket, userId, isTheme, setTheme, matchesMd }) => {
               </Box>
             </>
           )}
+          <Box className={classes.box}>
+            <ButtonWrapper className={classes.btnWrapper}>
+              <Link
+                className={classes.link}
+                target="__blank"
+                to={{ pathname: "https://github.com/fabbl-com" }}>
+                <GitHub className={classes.icon} fontSize="small" />
+              </Link>
+            </ButtonWrapper>
+          </Box>
           <NotificationSection
             socket={socket}
             userId={userId}

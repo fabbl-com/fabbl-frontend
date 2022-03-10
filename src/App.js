@@ -19,17 +19,23 @@ const SecurityData = lazy(() => import("./pages/SecurityData"));
 const Settings = lazy(() => import("./pages/Settings"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
 const VerifyVoice = lazy(() => import("./pages/VerifyVoice"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
-import NotFound from "./pages/NotFound";
+const Alert = lazy(() => import("./components/CustomAlert"));
+
+// const Loader = lazy(() => import("./components/Loader"));
+
+import Loader from "./components/Loader";
 
 const Navbar = lazy(() => import("./components/Navbar"));
 const BottomNav = lazy(() => import("./components/BottomNav"));
 
 import { checkAuth } from "./redux/actions/userActions";
 import PrivateRoute from "./PrivateRoute";
+import CustomAlert2 from "./components/CustomAlert2";
 const events = require("events");
 
-const ENDPOINT = "http://localhost:4000";
+const ENDPOINT = process.env.REACT_APP_ENDPOINT;
 
 const App = () => {
   const _isTheme = localStorage.getItem("theme")
@@ -40,21 +46,34 @@ const App = () => {
   const dispatch = useDispatch();
   const eventEmitter = new events.EventEmitter();
 
-  const { userId, isAuth, authChecking } = useSelector((state) => state.user);
+  const {
+    userId,
+    isAuth,
+    authChecking,
+    accessToken,
+    isProfileCompleted,
+    isProfileVerified,
+    isEmailVerified
+  } = useSelector((state) => state.user);
 
   useEffect(() => {
-    console.log(userId);
     let newSocket;
-    if (userId) {
-      newSocket = io(ENDPOINT, { reconnectionDelayMax: 10000, query: `userId=${userId}` });
+    if (userId && accessToken) {
+      newSocket = io(ENDPOINT, {
+        reconnectionDelayMax: 10000,
+        auth: { accessToken },
+        query: `userId=${userId}`
+      });
       setSocket(newSocket);
+      newSocket.on("connect_error", (err) => console.log(err.message));
+      newSocket.on("error", (err) => console.log(err.message));
     }
 
-    dispatch(checkAuth());
     return () => newSocket && newSocket.off();
-  }, []);
+  }, [userId, accessToken]);
 
-  // console.log(isAuth);
+  useEffect(() => dispatch(checkAuth()), []);
+  useEffect(() => setTheme(_isTheme), [_isTheme]);
 
   const appliedTheme = createTheme(isTheme ? dark : light);
   const matchesMd = useMediaQuery(appliedTheme.breakpoints.up("sm"));
@@ -62,7 +81,7 @@ const App = () => {
   return (
     <ThemeProvider theme={appliedTheme}>
       <Router>
-        <Suspense fallback={!socket && authChecking && <span>loading...</span>}>
+        <Suspense fallback={<Loader />}>
           <CssBaseline />
           <Navbar
             matchesMd={matchesMd}
@@ -71,6 +90,7 @@ const App = () => {
             isTheme={isTheme}
             setTheme={setTheme}
           />
+          <Alert />
           <Switch>
             <Route path="/" exact>
               <Home />
@@ -108,7 +128,7 @@ const App = () => {
             <PrivateRoute isAuth={isAuth} path="/find">
               <FindRandom userId={userId} socket={socket} eventEmitter={eventEmitter} />
             </PrivateRoute>
-            <Route path="/auth" render={() => <Auth isAuth={isAuth} />} />
+            <Route path="/auth" render={() => <Auth />} />
             <Route path="/image" render={() => <ImageUpload userId={userId} />} />
             <Route path="/verify-voice" render={() => <VerifyVoice />} />
             <Route path="/user/verify-email" render={() => <VerifyEmail />} />
@@ -116,6 +136,14 @@ const App = () => {
             <Route component={NotFound} />
           </Switch>
           {!matchesMd && <BottomNav isAuth={isAuth} />}
+          {authChecking && <Loader />}
+          {isAuth && (
+            <CustomAlert2
+              isProfileVerified={isProfileVerified}
+              isProfileCompleted={isProfileCompleted}
+              isEmailVerified={isEmailVerified}
+            />
+          )}
         </Suspense>
       </Router>
     </ThemeProvider>

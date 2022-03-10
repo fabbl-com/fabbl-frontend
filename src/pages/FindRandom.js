@@ -142,78 +142,86 @@ const FindRandom = ({ userId, socket }) => {
     console.log(randomUsers[newIndex], childRefs);
   };
 
+  console.log(childRefs[0].current, childRefs[1], childRefs[4]);
+
   return (
-    <Container maxWidth="sm" className={classes.root} align="center">
-      <div className={classes.searchControl}>
-        <IconButton onClick={() => history.goBack()}>
-          <ArrowBack fontSize="small" />
-        </IconButton>
-      </div>
-      {randomUsers.length == 0 ? (
-        <>
-          <div className={classes.finding}>
-            <div className={classes.person}>
-              <Typography className={classes.header} align="center" variant="h3">
-                Finding someone
-              </Typography>
-              <Avatar className={classes.avatar} src={profile.avatar.value} />
-            </div>
-            <div className={classes.matching} ref={container1} />
-            <div className={classes.searchingConatiner}>
-              <div className={classes.searching} ref={container2} />
-            </div>
-          </div>
-        </>
-      ) : (
-        <div className={classes.cardContainer}>
-          <div className={classes.profileCardContainer}>
-            {randomUsers
-              .sort((a, b) => a.score - b.score)
-              .map((user, i) => (
-                <TinderCard
-                  key={i}
-                  ref={childRefs[i]}
-                  className={classes.profileCard}
-                  preventSwipe={["up", "down"]}
-                  onSwipe={(dir) => swiped(dir, user.profile._id, i)}
-                  onCardLeftScreen={() => outOfFrame(user.profile.displayName.value, i)}>
-                  <ProfileCard
-                    displayName={user.profile.displayName}
-                    avatar={user.profile.avatar}
-                    headline={user.profile.headline}
-                    gender={user.profile.gender}
-                    location={user.profile.location}
-                    relationshipStatus={user.profile.relationshipStatus}
-                    dob={user.profile.dob}
-                    isProfileVerified={user.profile.isProfileVerified}
-                    hobby={user.profile.hobby}
-                  />
-                </TinderCard>
-              ))}
-          </div>
-          <div className={classes.action}>
-            <Button
-              disabled={!canGoBack}
-              className={classNames(classes.btn, classes.btn_repeat)}
-              onClick={() => goBack()}>
-              <Replay />
-            </Button>
-            <Button
-              disabled={!canSwipe}
-              className={classNames(classes.btn, classes.btn_close)}
-              onClick={() => swipe("left")}>
-              <Close />
-            </Button>
-            <Button
-              disabled={!canSwipe}
-              className={classNames(classes.btn, classes.btn_like)}
-              onClick={() => swipe("right")}>
-              <Favorite className={classes.like} />
-            </Button>
-          </div>
+    <div className={classes.root}>
+      <Container style={{ height: "100%" }} maxWidth="sm" align="center">
+        <div className={classes.searchControl}>
+          <IconButton onClick={() => history.goBack()}>
+            <ArrowBack fontSize="small" />
+          </IconButton>
         </div>
-      )}
-    </Container>
+        {randomUsers.length == 0 ? (
+          <>
+            <div className={classes.finding}>
+              <div className={classes.person}>
+                <Typography className={classes.header} align="center" variant="h3">
+                  Finding someone
+                </Typography>
+                <Avatar className={classes.avatar} src={profile.avatar.value} />
+              </div>
+              <div className={classes.matching} ref={container1} />
+              <div className={classes.searchingConatiner}>
+                <div className={classes.searching} ref={container2} />
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className={classes.cardContainer}>
+            <div className={classes.profileCardContainer}>
+              {randomUsers
+                .sort((a, b) => a.score - b.score)
+                .map((user, i) => (
+                  <TinderCard
+                    key={i}
+                    ref={childRefs[i]}
+                    className={classes.profileCard}
+                    preventSwipe={["up", "down"]}
+                    onSwipe={(dir) => swiped(dir, user.profile._id, i)}
+                    onCardLeftScreen={() => outOfFrame(user.profile.displayName.value, i)}>
+                    <ProfileCard
+                      displayName={user.profile.displayName}
+                      avatar={user.profile.avatar}
+                      headline={user.profile.headline}
+                      gender={user.profile.gender}
+                      location={user.profile.location}
+                      relationshipStatus={user.profile.relationshipStatus}
+                      dob={user.profile.dob}
+                      isProfileVerified={user.profile.isProfileVerified}
+                      hobby={user.profile.hobby}
+                      isTestUser={user.profile.isTestUser || false}
+                    />
+                  </TinderCard>
+                ))}
+            </div>
+            <div className={classes.action}>
+              <Button
+                disabled={!canGoBack}
+                aria-label="back"
+                className={classNames(classes.btn, classes.btn_repeat)}
+                onClick={() => goBack()}>
+                <Replay />
+              </Button>
+              <Button
+                disabled={!canSwipe}
+                aria-label="left"
+                className={classNames(classes.btn, classes.btn_close)}
+                onClick={() => swipe("left")}>
+                <Close />
+              </Button>
+              <Button
+                disabled={!canSwipe}
+                aria-label="right"
+                className={classNames(classes.btn, classes.btn_like)}
+                onClick={() => swipe("right")}>
+                <Favorite className={classes.like} />
+              </Button>
+            </div>
+          </div>
+        )}
+      </Container>
+    </div>
   );
 };
 

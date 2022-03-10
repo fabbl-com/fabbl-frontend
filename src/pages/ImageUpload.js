@@ -10,7 +10,9 @@ import {
   Grid,
   Avatar,
   Badge,
-  IconButton
+  IconButton,
+  useTheme,
+  useMediaQuery
 } from "@material-ui/core";
 import Circle from "@material-ui/icons/FiberManualRecord";
 import AddAPhotofrom from "@material-ui/icons/AddAPhotoRounded";
@@ -18,18 +20,22 @@ import AccountBoxIcon from "@material-ui/icons/AccountBox";
 import lottie from "lottie-web";
 import { uploadAvatar } from "../redux/actions/userActions";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import { Alert } from "@material-ui/lab";
 import { PropTypes } from "prop-types";
+import Swal from "sweetalert2";
+import Loader from "../components/Loader";
 const useStyles = makeStyles((theme) => ({
   root: {
     minHeight: `calc(100vh - ${theme.spacing(6)}px)`,
+
     backgroundColor: "#2e9cca",
     color: "#fff",
     marginTop: "3rem"
   },
   authControll: {
     backgroundColor: "#fff",
+
     height: "2.2rem",
     width: "100%",
     position: "fixed",
@@ -44,6 +50,21 @@ const useStyles = makeStyles((theme) => ({
   animation: {
     height: "15rem",
     marginTop: "0"
+  },
+  popup: {
+    width: "auto !important"
+  },
+  icon: {
+    fontSize: "10px"
+  },
+  title: {
+    fontSize: "1rem !important"
+  },
+  titleMd: {
+    lineHeight: "1.5 !important"
+  },
+  button: {
+    fontSize: "inherit"
   }
 }));
 
@@ -55,7 +76,18 @@ const ImageUpload = ({ userId }) => {
   const [image, setImage] = useState(null);
   const dispatch = useDispatch();
   const history = useHistory();
+  const location = useLocation();
   const container = useRef(null);
+  const theme = useTheme();
+  const matchesSm = useMediaQuery(theme.breakpoints.down("md"));
+
+  const {
+    loading,
+    error = null,
+    isAuth = false,
+    profile = {},
+    isImageUploaded = false
+  } = useSelector((state) => state.user);
 
   useEffect(() => {
     const anim = lottie.loadAnimation({
@@ -69,7 +101,29 @@ const ImageUpload = ({ userId }) => {
     return () => anim.destroy();
   }, []);
 
-  const err = useSelector((state) => state.user?.error);
+  useEffect(() => {
+    if (!loading && isImageUploaded) {
+      Swal.fire({
+        title: "Successfully registered!. Click OK to continue.",
+        confirmButtonText: "OK",
+        icon: "success",
+        customClass: {
+          button: matchesSm && `${classes.button}`,
+          popup: matchesSm && `${classes.popup}`,
+          icon: matchesSm && `${classes.icon}`,
+          title: matchesSm ? `${classes.title}` : `${classes.titleMd}`
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          history.push("/verify-voice");
+        }
+      });
+    }
+  }, [loading, isImageUploaded]);
+
+  const { isProfileCompleted = false, avatar } = profile;
+
+  if (isAuth && isProfileCompleted) history.push(location.from || "/");
 
   const handleUpload = (e) => {
     e.preventDefault();
@@ -85,102 +139,98 @@ const ImageUpload = ({ userId }) => {
     }
   };
   return (
-    <Container maxWidth="sm" className={classes.root} align="center">
-      <div className={classes.animation} ref={container}></div>
-      <Typography variant="h5">Upload Your avatar</Typography>
-      <br />
-      <form onSubmit={handleUpload}>
-        <div>
-          <Badge
-            overlap="circular"
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "right"
-            }}
-            badgeContent={
-              <>
-                <input
-                  accept="image/*"
-                  style={{ display: "none" }}
-                  id="upload-avatar"
-                  type="file"
-                  // value={user?.data}
-                  onChange={handleChange}
-                />
-                <label htmlFor="upload-avatar">
-                  <IconButton aria-label="upload avatar" component="span">
-                    {isUpload || <AddAPhotofrom style={{ fontSize: "2.5rem", color: "#4D38A2" }} />}
-                  </IconButton>
-                </label>
-              </>
-            }>
-            <Avatar
-              variant="rounded"
-              className={classes.image}
-              src={
-                image ||
-                "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8cHJvZmlsZXxlbnwwfHwwfHw%3D&w=1000&q=80"
+    <div className={classes.root}>
+      {loading && <Loader />}
+      <Container maxWidth="sm" align="center">
+        <div className={classes.animation} ref={container}></div>
+        <Typography variant="h5">Upload Your avatar</Typography>
+        <br />
+        <form onSubmit={handleUpload}>
+          <div>
+            <Badge
+              overlap="circular"
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right"
+              }}
+              badgeContent={
+                <>
+                  <input
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    id="upload-avatar"
+                    type="file"
+                    // value={user?.data}
+                    onChange={handleChange}
+                  />
+                  <label htmlFor="upload-avatar">
+                    <IconButton aria-label="upload avatar" component="span">
+                      {isUpload || (
+                        <AddAPhotofrom style={{ fontSize: "2.5rem", color: "#4D38A2" }} />
+                      )}
+                    </IconButton>
+                  </label>
+                </>
               }>
-              {isUpload || (
-                <AccountBoxIcon
-                  style={{ fontSize: "12rem", backgroundColor: "#fff", color: "#888181" }}
-                />
-              )}
-            </Avatar>
-          </Badge>
-        </div>
+              <Avatar variant="rounded" className={classes.image} src={image || avatar?.value}>
+                {isUpload || (
+                  <AccountBoxIcon
+                    style={{ fontSize: "12rem", backgroundColor: "#fff", color: "#888181" }}
+                  />
+                )}
+              </Avatar>
+            </Badge>
+          </div>
 
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={rememberMe}
-              name="RememberMe"
-              value={user?.RememberMe}
-              color="primary"
-            />
-          }
-          onChange={(e) => {
-            setRememberMe(!rememberMe);
-            setUser((state) => ({ ...state, rememberMe: e.target.checked }));
-          }}
-          label="Remember me"
-        />
-        <Grid container direction="column" justifyContent="center" spacing={1}>
-          <Grid item>
-            <Button
-              type="submit"
-              variant="contained"
-              onClick={() => {
-                setUpload(!isUpload);
-              }}>
-              {isUpload ? "Next" : "Upload"}
-            </Button>
-          </Grid>
-          {isUpload || (
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={rememberMe}
+                name="RememberMe"
+                value={user?.RememberMe}
+                color="primary"
+              />
+            }
+            onChange={(e) => {
+              setRememberMe(!rememberMe);
+              setUser((state) => ({ ...state, rememberMe: e.target.checked }));
+            }}
+            label="Remember me"
+          />
+          <Grid container direction="column" justifyContent="center" spacing={1}>
             <Grid item>
-              <Button onClick={() => history.push("/verify-voice")}>Skip</Button>
+              <Button type="submit" variant="contained" aria-label="upload">
+                Upload
+              </Button>
             </Grid>
-          )}
-        </Grid>
-      </form>
-      <Box align="center" m={2}>
-        <Link to="/auth">
-          <Circle fontSize="small" style={{ color: "#fff" }} />
-        </Link>
-        <Link to="/image">
-          <Circle fontSize="small" color="primary" />
-        </Link>
-        <Link to="/verify-voice">
-          <Circle fontSize="small" style={{ color: "#fff" }} />
-        </Link>
-      </Box>
+            {isUpload || (
+              <Grid item>
+                <Button aria-label="skip" onClick={() => history.push("/verify-voice")}>
+                  Skip
+                </Button>
+              </Grid>
+            )}
+          </Grid>
+        </form>
+        <Box align="center" m={2}>
+          <Link to="/auth">
+            <Circle fontSize="small" style={{ color: "#fff" }} />
+          </Link>
+          <Link to="/image">
+            <Circle fontSize="small" color="primary" />
+          </Link>
+          <Link to="/verify-voice">
+            <Circle fontSize="small" style={{ color: "#fff" }} />
+          </Link>
+        </Box>
 
-      <div className={classes.authControll}>
-        <Typography variant="subtitle1" align="center" color="textPrimary" paragraph>
-          Already have an account? Login now
-        </Typography>
-      </div>
-    </Container>
+        <div className={classes.authControll}>
+          <Typography variant="subtitle1" align="center" color="primary" paragraph>
+            Already have an account? Login now
+          </Typography>
+        </div>
+      </Container>
+    </div>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   makeStyles,
   Avatar,
@@ -9,8 +9,6 @@ import {
   TextField,
   useTheme,
   Box,
-  FormControl,
-  Grid,
   useMediaQuery
 } from "@material-ui/core";
 import {
@@ -27,9 +25,10 @@ import { getUserProfile, updateEmail, updatePassword } from "../redux/actions/us
 import { LOGOUT_SUCCESS } from "../redux/constants/userActionTypes";
 import { personalDataStyles } from "../assets/jss";
 import { strengthColor, strengthIndicator } from "../utils/paswordStrenth";
+import { CustomAlert } from "../components";
 import PasswordStrength from "../components/PasswordStrength";
 import { PropTypes } from "prop-types";
-
+import Spinner from "../components/Spinner";
 const useStyles = makeStyles((theme) => personalDataStyles(theme));
 
 const SecurityData = ({ userId }) => {
@@ -41,26 +40,35 @@ const SecurityData = ({ userId }) => {
   const location = useLocation();
   const dispatch = useDispatch();
   const matchesXs = useMediaQuery(theme.breakpoints.down("md"));
-  const { profile, loading } = useSelector((state) => state.user);
 
-  console.log(level);
-
+  const {
+    isEmailSent = false,
+    isPasswordUpdated = false,
+    error = null,
+    profile,
+    loading
+  } = useSelector((state) => state.user);
+  const [isClicked, setClicked] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
-  // useEffect(() => {
-  //   dispatch(getUserProfile(userId));
-  // }, []);
   const [formData, setFormData] = useState({});
   const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
   const handleClick = () => {
     console.log(formData);
     dispatch(updateEmail({ id: userId, data: formData.email }));
+    setClicked(true);
+    setTimeout(() => {
+      setClicked(false);
+    }, 3000);
   };
   const handelPasswordChange = () => {
     const data = { oldPassword: formData.password1, newPassword: formData.password2 };
     if (formData.password2 === formData.password3) {
       dispatch(updatePassword({ data, id: userId }));
     }
+    setClicked(true);
+    setTimeout(() => {
+      setClicked(false);
+    }, 3000);
   };
 
   const goBack = (e) => {
@@ -138,14 +146,36 @@ const SecurityData = ({ userId }) => {
   if (loading) return <div>loading</div>;
   return (
     <Container className={classes.root}>
+      {/* {error &&
+        (error.code === 401 ? (
+          <CustomAlert variant="filled" color="error">
+            Invalid Credentials!
+          </CustomAlert>
+        ) : (
+          <CustomAlert variant="filled" color="error">
+            Something went wrong. Please try agin
+          </CustomAlert>
+        ))}
+      {isEmailSent && !error && (
+        <CustomAlert variant="filled" color={"success"}>
+          An email has been sent. Please verify your email
+        </CustomAlert>
+      )}
+      {isPasswordUpdated && !error && (
+        <CustomAlert variant="filled" color={"success"}>
+          Password updated succesfully!
+        </CustomAlert>
+      )} */}
       <div className={classes.profileHeader}>
         <IconButton onClick={goBack} color="primary">
           <KeyboardBackspace />
         </IconButton>
-        <Typography component="h6" variant="h6">
+        <Typography component="h3" variant="h3">
           Privacy & Secuirty Data
         </Typography>
-        <div />
+        <IconButton style={{ visibility: "hidden" }}>
+          <KeyboardBackspace />
+        </IconButton>
       </div>
       <div className={classes.profileBody}>
         <Avatar src={profile.avatar.value} className={classes.avatar} variant="rounded" />
@@ -156,7 +186,7 @@ const SecurityData = ({ userId }) => {
           &nbsp;
           <CheckCircleOutlined fontSize="small" />
         </div>
-        <form className={classes.fullWidth}>
+        <form className={classes.fullWidth} style={{ width: !matchesXs && "70%" }}>
           <div>
             <Typography component="h6" variant="h6">
               Email
@@ -178,13 +208,17 @@ const SecurityData = ({ userId }) => {
           <div className={classes.fullWidth}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div />
-              <Button type="submit" variant="contained" color="secondary" onClick={handleClick}>
-                Update Email
+              <Button
+                aria-label="update email"
+                variant="contained"
+                color="secondary"
+                onClick={handleClick}>
+                {isClicked ? <Spinner /> : "Update Email"}
               </Button>
             </div>
           </div>
         </form>
-        <form className={classes.fullWidth}>
+        <form className={classes.fullWidth} style={{ width: !matchesXs && "70%" }}>
           {[
             { placeholder: "Old Password", prop: "password1" },
             { placeholder: "New Password", prop: "password2" },
@@ -233,18 +267,19 @@ const SecurityData = ({ userId }) => {
               </div>
             </React.Fragment>
           ))}
-          {strength !== 0 && <PasswordStrength level={level} />}
+
           <div className={classes.fullWidth}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
               <div />
               <Button
-                type="submit"
                 variant="contained"
+                aria-label="Update password"
                 color="secondary"
                 onClick={handelPasswordChange}>
-                Update Password
+                {isClicked ? <Spinner /> : "Update Password"}
               </Button>
             </div>
+            {strength !== 0 && <PasswordStrength level={level} />}
           </div>
         </form>
       </div>
@@ -260,7 +295,8 @@ const SecurityData = ({ userId }) => {
           </Typography>
         </div>
         <Button
-          disabled={canDelete}
+          disabled={!canDelete}
+          aria-label="delete"
           onClick={handleDelete}
           variant="contained"
           style={{

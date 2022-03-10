@@ -1,6 +1,17 @@
 import React from "react";
 import { Button, makeStyles } from "@material-ui/core";
 
+const tagsColor = [
+  "#000000",
+  "#172774",
+  "#544179",
+  "#0F044C",
+  "#14274E",
+  "#B000B9",
+  "#0B4619",
+  "#483434"
+];
+
 const useStyles = makeStyles((theme) => ({
   tags: {
     borderRadius: theme.spacing(2),
@@ -14,8 +25,15 @@ const useStyles = makeStyles((theme) => ({
 
 const Tags = ({ tags }) => {
   const classes = useStyles();
-  return tags.map((tag, index) => (
-    <Button disableRipple variant="text" size="small" className={classes.tags} key={index}>
+  return tags.map((tag, i) => (
+    <Button
+      style={{ backgroundColor: tagsColor[i % tagsColor.length], color: "#eee" }}
+      disableRipple
+      aria-label="tag"
+      variant="text"
+      size="small"
+      className={classes.tags}
+      key={i}>
       {tag}
     </Button>
   ));

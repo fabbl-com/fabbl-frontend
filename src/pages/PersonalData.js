@@ -1,173 +1,5 @@
 /* eslint-disable no-constant-condition */
-const hobbies = [
-  "3D printing",
-  "Amateur radio",
-  "Scrapbook",
-  "Amateur radio",
-  "Acting",
-  "Baton twirling",
-  "Board games",
-  "Book restoration",
-  "Cabaret",
-  "Calligraphy",
-  "Candle making",
-  "Computer programming",
-  "Coffee roasting",
-  "Cooking",
-  "Colouring",
-  "Cosplaying",
-  "Couponing",
-  "Creative writing",
-  "Crocheting",
-  "Cryptography",
-  "Dance",
-  "Digital arts",
-  "Drama",
-  "Drawing",
-  "Do it yourself",
-  "Electronics",
-  "Embroidery",
-  "Fashion",
-  "Flower arranging",
-  "Foreign language learning",
-  "Gaming",
-  "Tabletop games",
-  "Role-playing games",
-  "Gambling",
-  "Genealogy",
-  "Glassblowing",
-  "Gunsmithing",
-  "Homebrewing",
-  "Ice skating",
-  "Jewelry making",
-  "Jigsaw puzzles",
-  "Juggling",
-  "Knapping",
-  "Knitting",
-  "Kabaddi",
-  "Knife making",
-  "Lacemaking",
-  "Lapidary",
-  "Leather crafting",
-  "Lego building",
-  "Lockpicking",
-  "Machining",
-  "Macrame",
-  "Metalworking",
-  "Magic",
-  "Model building",
-  "Listening to music",
-  "Origami",
-  "Painting",
-  "Playing musical instruments",
-  "Pet",
-  "Poi",
-  "Pottery",
-  "Puzzles",
-  "Quilting",
-  "Reading",
-  "Scrapbooking",
-  "Sculpting",
-  "Sewing",
-  "Singing",
-  "Sketching",
-  "Soapmaking",
-  "Sports",
-  "Stand-up comedy",
-  "Sudoku",
-  "Table tennis",
-  "Taxidermy",
-  "Video gaming",
-  "Watching movies",
-  "Web surfing",
-  "Whittling",
-  "Wood carving",
-  "Woodworking",
-  "World Building",
-  "Writing",
-  "Yoga",
-  "Yo-yoing",
-  "Air sports",
-  "Archery",
-  "Astronomy",
-  "Backpacking",
-  "Base jumping",
-  "Baseball",
-  "Basketball",
-  "Beekeeping",
-  "Bird watching",
-  "Blacksmithing",
-  "Board sports",
-  "Bodybuilding",
-  "Brazilian jiu-jitsu",
-  "Community",
-  "Cycling",
-  "Dowsing",
-  "Driving",
-  "Fishing",
-  "Flag football",
-  "Flying",
-  "Flying disc",
-  "Foraging",
-  "Gardening",
-  "Geocaching",
-  "Ghost hunting",
-  "Graffiti",
-  "Handball",
-  "Hiking",
-  "Hooping",
-  "Horseback riding",
-  "Hunting",
-  "Inline skating",
-  "Jogging",
-  "Kayaking",
-  "Kite flying",
-  "Kitesurfing",
-  "Larping",
-  "Letterboxing",
-  "Metal detecting",
-  "Motor sports",
-  "Mountain biking",
-  "Mountaineering",
-  "Mushroom hunting",
-  "Mycology",
-  "Netball",
-  "Nordic skating",
-  "Orienteering",
-  "Paintball",
-  "Parkour",
-  "Photography",
-  "Polo",
-  "Rafting",
-  "Rappelling",
-  "Rock climbing",
-  "Roller skating",
-  "Rugby",
-  "Running",
-  "Sailing",
-  "Sand art",
-  "Scouting",
-  "Scuba diving",
-  "Sculling",
-  "Rowing",
-  "Shooting",
-  "Shopping",
-  "Skateboarding",
-  "Skiing",
-  "Skim Boarding",
-  "Skydiving",
-  "Slacklining",
-  "Snowboarding",
-  "Stone skipping",
-  "Surfing",
-  "Swimming",
-  "Taekwondo",
-  "Tai chi",
-  "Urban exploration",
-  "Vacation",
-  "Vehicle restoration",
-  "Water sports"
-];
+import { hobbies } from "../assets/static";
 import React, { useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -181,7 +13,9 @@ import {
   TextField,
   Select,
   MenuItem,
-  InputBase
+  InputBase,
+  useMediaQuery,
+  useTheme
 } from "@material-ui/core";
 import { KeyboardBackspace, CheckCircleOutlined, PhotoCamera } from "@material-ui/icons";
 import { KeyboardDatePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
@@ -193,6 +27,8 @@ import { updateProfile, uploadAvatar } from "../redux/actions/userActions";
 import { withStyles } from "@material-ui/styles";
 import { PropTypes } from "prop-types";
 import { useHistory, useLocation } from "react-router-dom";
+import { CustomAlert } from "../components";
+import Spinner from "../components/Spinner";
 const useStyles = makeStyles((theme) => personalDataStyles(theme));
 
 const BootstrapInput = withStyles((theme) => ({
@@ -233,7 +69,13 @@ const BootstrapInput = withStyles((theme) => ({
 const PersonalData = ({ userId }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
-  const { loading, profile } = useSelector((state) => state.user);
+  const {
+    error = null,
+    loading,
+    profile = null,
+    isProfileUpdated = false,
+    isImageUploaded = false
+  } = useSelector((state) => state.user);
   const [image, setImage] = useState(null);
   const history = useHistory();
   const location = useLocation();
@@ -247,17 +89,21 @@ const PersonalData = ({ userId }) => {
     relationshipStatusData: 0,
     hobbiesData: []
   });
+  const theme = useTheme();
+  const matchesMd = useMediaQuery(theme.breakpoints.down("md"));
+  const [isClicked, setClicked] = useState(false);
+  // const [hobbyError, setHobbyError] = useState(false);
   useEffect(() => {
     if (profile) {
       setFormData({
-        usernameData: profile.displayName.value,
-        bioData: profile.headline.value,
+        usernameData: profile.displayName?.value,
+        bioData: profile.headline?.value,
         ageData: profile.dob.value || new Date(),
-        locationData: profile.location.value,
-        relationshipStatusData: profile.relationshipStatus.value,
-        hobbiesData: profile.hobby.value
+        locationData: profile.location?.value,
+        relationshipStatusData: profile.relationshipStatus?.value,
+        hobbiesData: profile.hobby?.value
       });
-      setGender(profile.gender.value);
+      setGender(profile.gender?.value);
     }
   }, [profile]);
 
@@ -275,6 +121,9 @@ const PersonalData = ({ userId }) => {
     e.preventDefault();
     console.log(formData);
     dispatch(updateProfile({ userId, data: formData }));
+    setTimeout(() => {
+      setClicked(false);
+    }, 3000);
   };
 
   const handleAvatarChange = (e) => {
@@ -301,10 +150,12 @@ const PersonalData = ({ userId }) => {
         <IconButton onClick={goBack} color="primary">
           <KeyboardBackspace />
         </IconButton>
-        <Typography component="h6" variant="h6">
+        <Typography component="h3" variant="h3">
           Personal Data
         </Typography>
-        <div />
+        <IconButton style={{ visibility: "hidden" }}>
+          <KeyboardBackspace />
+        </IconButton>
       </div>
       <div className={classes.profileBody}>
         <Badge
@@ -329,8 +180,8 @@ const PersonalData = ({ userId }) => {
               </label>
             </>
           }>
-          {loading ? (
-            <Skeleton width={100} height={150} animation="wave">
+          {isImageUploaded ? (
+            <Skeleton width={matchesMd ? 100 : 200} height={matchesMd ? 150 : 300} animation="wave">
               <Avatar className={classes.avatar} />
             </Skeleton>
           ) : (
@@ -349,8 +200,11 @@ const PersonalData = ({ userId }) => {
           <CheckCircleOutlined fontSize="small" />
         </div>
         {!loading ? (
-          <form onSubmit={handleSubmit} className={classes.fullWidth}>
-            <div>
+          <form
+            onSubmit={handleSubmit}
+            style={{ width: !matchesMd && "70%" }}
+            className={classes.fullWidth}>
+            <div className={classes.fullWidth}>
               <Typography component="h6" variant="h6">
                 Headline
               </Typography>
@@ -365,12 +219,11 @@ const PersonalData = ({ userId }) => {
                 value={formData.bioData}
                 required
                 helperText={
-                  formData.bioData !== " " &&
-                  !formData.bioData.match(`^[a-zA-Z_$][a-zA-Z_$0-9]*$`) &&
-                  "Headline must be alphanumeric in 50-200 chars"
+                  (formData.bioData.length < 100 || formData.bioData.length > 200) &&
+                  "Headline must be in between 100-200 characters"
                 }
                 FormHelperTextProps={{ error: true }}
-                inputProps={{ maxLength: 200, pattern: `^[a-zA-Z_$][a-zA-Z_$0-9]*$` }}
+                inputProps={{ minLength: 100, maxLength: 200 }}
                 onChange={(e) => onChange(e)}
               />
             </div>
@@ -388,11 +241,10 @@ const PersonalData = ({ userId }) => {
                 value={formData.usernameData}
                 required
                 helperText={
-                  formData.usernameData !== " " &&
-                  !formData.usernameData.match("^[a-zA-Z_$][a-zA-Z_$0-9]*$") &&
-                  "DisplayName must be alphanumeric in 6-10 chars"
+                  !formData.usernameData.match("[a-zA-Z0-9_-]{3,10}") &&
+                  "DisplayName must be alphanumeric in 3-10 chars"
                 }
-                inputProps={{ maxLength: 10, pattern: "[a-zA-Z0-9_-]{5,10}" }}
+                inputProps={{ maxLength: 10, pattern: "[a-zA-Z0-9_-]{3,10}" }}
                 FormHelperTextProps={{ error: true }}
                 onChange={(e) => onChange(e)}
               />
@@ -450,7 +302,7 @@ const PersonalData = ({ userId }) => {
                 name="hobbiesData"
                 value={formData?.hobbiesData}
                 filterSelectedOptions
-                limitTags={1}
+                limitTags={matchesMd ? 1 : 5}
                 onChange={(e, value) =>
                   setFormData((state) => ({
                     ...state,
@@ -460,6 +312,9 @@ const PersonalData = ({ userId }) => {
                 renderInput={(params) => (
                   <TextField
                     {...params}
+                    required={formData.hobbiesData.length < 3}
+                    helperText={formData.hobbiesData.length < 3 && "Select at least 3 hobbies"}
+                    FormHelperTextProps={{ error: formData.hobbiesData.length < 3 }}
                     size="small"
                     className={classes.textField}
                     variant="outlined"
@@ -509,18 +364,24 @@ const PersonalData = ({ userId }) => {
                 }}>
                 <Button
                   className={classes.button}
+                  href="/verify-voice"
+                  aria-label="verify"
                   color="primary"
                   variant="contained"
                   disabled={disableGenderUpdate}>
                   Verify Gender
                 </Button>
                 <Button
+                  disabled={!disableGenderUpdate}
                   className={classes.button}
                   variant="contained"
+                  aria-label="update"
                   color="secondary"
-                  type="submit"
-                  disabled={!disableGenderUpdate}>
-                  Update Profile
+                  onClick={() => {
+                    setClicked(true);
+                  }}
+                  type="submit">
+                  {isClicked ? <Spinner /> : "Update Profile"}
                 </Button>
               </div>
             </div>
