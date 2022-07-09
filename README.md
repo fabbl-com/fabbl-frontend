@@ -32,7 +32,7 @@ You can swipe right to like someone and left to reject someone.
 - [x] Chat
 * After finding a match, you can immediately start a real time private conversation with the other person by chatting.
   - e2e encription
-  - emogi support
+  - emoji support
   - block/unblock
   - delete message
   - active/inactive status
